@@ -1,8 +1,7 @@
 name: flutter_gl
-description: A new flutter plugin project.
+description: Call OpenGL ES API BY DART FFI, Support iOS, Android, Web.
 version: 0.0.3
-author:
-homepage:
+homepage: https://github.com/wasabia/flutter_gl
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -14,9 +13,9 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   flutter_gl_platform_interface:
-    path: ../flutter_gl_platform_interface
+    # path: ../flutter_gl_platform_interface
   flutter_gl_web:
-    path: ../flutter_gl_web
+    # path: ../flutter_gl_web
     
   http: ^0.13.1
   universal_html: ^2.0.7
@@ -27,6 +26,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  plugin_platform_interface: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -44,8 +44,8 @@ flutter:
         pluginClass: FlutterGlPlugin
       ios:
         pluginClass: FlutterGlPlugin
-      macos:
-        pluginClass: FlutterGlPlugin  
+      # macos:
+      #   pluginClass: FlutterGlPlugin  
       web:
         default_package: flutter_gl_web
 
