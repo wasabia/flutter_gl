@@ -86,16 +86,16 @@ packages:
   flutter_gl_platform_interface:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_platform_interface"
-      relative: true
-    source: path
+      name: flutter_gl_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.1"
   flutter_gl_web:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_web"
-      relative: true
-    source: path
+      name: flutter_gl_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.1"
   flutter_test:
     dependency: "direct dev"
@@ -178,7 +178,7 @@ packages:
     source: hosted
     version: "4.1.0"
   plugin_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: plugin_platform_interface
       url: "https://pub.flutter-io.cn"
