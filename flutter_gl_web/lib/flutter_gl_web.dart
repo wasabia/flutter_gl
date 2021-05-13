@@ -28,8 +28,6 @@ class FlutterGlPlugin extends FlutterGlPlatform {
 
 
   Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
-    
-    /// 这里使用时间作为唯一标识
     _divId = DateTime.now().microsecondsSinceEpoch;
 
     num _ratio = window.devicePixelRatio;
@@ -42,20 +40,13 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return _resp;
   }
 
-  Future<bool> render(int textureId, Map<String, dynamic> data, double time, {Map<String, dynamic>? options, bool preload = false}) async {
-    return true;
-  }
-
-
-
   Future<List<int>> getEgl(int textureId) async {
     // web no need do something
     return [];
   }
 
-  Future<bool> updateTexture(int textureId, sourceTexture) {
+  Future<bool> updateTexture(sourceTexture) {
     // web no need do something
-    // web端不需要更新 移动端需要通知Texture Widget刷新
     return Future.sync(() => true);
   }
 
@@ -65,34 +56,4 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return super.dispose();
   }
 
-  /// Opens the given [url] in the specified [webOnlyWindowName].
-  ///
-  /// Returns the newly created window.
-  // @visibleForTesting
-  // html.WindowBase openNewWindow(String url, {String webOnlyWindowName}) {
-  //   // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
-  //   // See https://github.com/flutter/flutter/issues/51461 for reference.
-  //   final target = webOnlyWindowName ??
-  //       ((_isSafari && _isSafariTargetTopScheme(url)) ? '_top' : '');
-  //   return _window.open(url, target);
-  // }
-
-  // Future<bool> canLaunch(String url) {
-    // return Future<bool>.value(_supportedSchemes.contains(_getUrlScheme(url)));
-  // }
-
-  // @override
-  // Future<bool> launch(
-  //   String url, {
-  //   @required bool useSafariVC,
-  //   @required bool useWebView,
-  //   @required bool enableJavaScript,
-  //   @required bool enableDomStorage,
-  //   @required bool universalLinksOnly,
-  //   @required Map<String, String> headers,
-  //   String webOnlyWindowName,
-  // }) {
-  //   return Future<bool>.value(
-  //       openNewWindow(url, webOnlyWindowName: webOnlyWindowName) != null);
-  // }
 }

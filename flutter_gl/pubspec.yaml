@@ -44,6 +44,8 @@ flutter:
         pluginClass: FlutterGlPlugin
       ios:
         pluginClass: FlutterGlPlugin
+      macos:
+        pluginClass: FlutterGlPlugin  
       web:
         default_package: flutter_gl_web
 

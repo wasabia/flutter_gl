@@ -4,27 +4,53 @@ import 'dart:async';
 
 import 'package:flutter_gl_platform_interface/flutter_gl_platform_interface.dart';
 
+import 'openGL/OpenGL.dart';
+
 
 export './openGL/OpenGL.dart';
 
 
 class FlutterGlPlugin extends FlutterGlPlatform {
- 
+  late dynamic openGL;
+  late int width;
+  late int height;
+  late num dpr;
+  late List<int> egls;
+
   bool get isInitialized => FlutterGlPlatform.instance.isInitialized;
 
   int? get textureId => FlutterGlPlatform.instance.textureId;
 
-  Future<String?> get platformVersion async {
-    return FlutterGlPlatform.instance.platformVersion;
+  dynamic get gl => openGL.gl;
+
+  FlutterGlPlugin(int width, int height, {num dpr = 1.0}) {
+    this.width = width;
+    this.height = height;
+    this.dpr = dpr;
   }
 
   Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
+    Map<String, dynamic> _options = {
+      "width": width,
+      "height": height,
+      "dpr": dpr
+    };
     
-    return FlutterGlPlatform.instance.initialize(options: options, renderToVideo: renderToVideo);
+    _options.addAll(options ?? {});
+
+    final resp = await FlutterGlPlatform.instance.initialize(options: _options, renderToVideo: renderToVideo);
+    textureId = resp["textureId"];
+
+    // used for web
+    _options["divId"] = textureId.toString();
+    openGL = OpenGL().init(_options);
+
+    return resp;
   }
 
-  Future<bool> render(int textureId, Map<String, dynamic> data, double time, {Map<String, dynamic>? options, bool preload = false}) async {
-    return FlutterGlPlatform.instance.render(textureId, data, time, options: options, preload: preload);
+  prepareContext() async {
+    egls = await getEgl(textureId!);
+    openGL.makeCurrent(egls);
   }
 
   Future<List<int>> getEgl(int textureId) async {
@@ -33,52 +59,13 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   }
   
 
-  Future<bool> updateTexture(int textureId, sourceTexture) {
-    return FlutterGlPlatform.instance.updateTexture(textureId, sourceTexture);
+  Future<bool> updateTexture(sourceTexture) {
+    return FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
 
   dispose() {
     return FlutterGlPlatform.instance.dispose();
   }
 
-  Future<Null> initAsset(Map<String, dynamic> args) async {
-    return FlutterGlPlatform.instance.initAsset(args);
-  }
-  Future<Map<String, dynamic>> getInfo(String file_path) async {
-    return FlutterGlPlatform.instance.getInfo(file_path);
-  }
-  play() async {
-    return FlutterGlPlatform.instance.play();
-  }
-  pause() async {
-    return FlutterGlPlatform.instance.pause();
-  }
-  getFrameAt(String filePath, double time){
-    return FlutterGlPlatform.instance.getFrameAt(filePath, time);
-  }
-  getFrameFileAt(String filePath, double time, String framePath) async {
-    return FlutterGlPlatform.instance.getFrameFileAt(filePath, time, framePath);
-  }
-  startRecord(String target, String filePath) async {
-    return FlutterGlPlatform.instance.startRecord(target, filePath);
-  }
-  finishRecord(List<Map<String, dynamic>> audios) async {
-    return FlutterGlPlatform.instance.finishRecord(audios);
-  }
-  getSamples(String filePath, num width, num maxHeight) async {
-    return FlutterGlPlatform.instance.getSamples(filePath, width, maxHeight);
-  }
-  extraAudio(String filePath, String audioPath) {
-    return FlutterGlPlatform.instance.extraAudio(filePath, audioPath);
-  }
-  Future<Map<String, dynamic>> getAudioInfo(String filePath) async { 
-    return FlutterGlPlatform.instance.getAudioInfo(filePath);
-  }
-  mergeVideoAndAudios(String videoPath, List<Map<String, dynamic>> audios) async {
-    return FlutterGlPlatform.instance.mergeVideoAndAudios(videoPath, audios);
-  }
-  Future<List<double>> calcText(Map<String, dynamic> args) async {
-    return FlutterGlPlatform.instance.calcText(args);
-  }
 
 }

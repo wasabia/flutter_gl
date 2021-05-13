@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 
 import 'package:flutter/material.dart';
-import './MyApp01.dart';
+import 'ExampleTriangle01.dart';
 
 
 class MyApp extends StatefulWidget {
@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MyApp01();
+    return ExampleTriangle01();
   }
 
 

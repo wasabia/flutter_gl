@@ -72,38 +72,18 @@ class OpenGLES extends OpenGLBase {
     }
   }
 
-  initOpenGL([int width = 1, int height = 1, bool debug = false, List<int>? egls]) {
-    
-    // make sure we don't call this twice
-      if (_display != 0) {
-        return;
-      }
-      _display = egls![3];
-      _surface = egls[4];
-      _context = egls[5];
-
-      
+  makeCurrent(List<int> egls) {
 
     if(Platform.isAndroid) {
+      _display = egls[3];
+      _surface = egls[4];
+      _context = egls[5];
       /// bind context to this thread. All following OpenGL calls from this thread will use this context
       eglMakeCurrent(_display, _surface, _surface, _context);
     } else if(Platform.isIOS) {
-      final _testResult = egl.eglTest();
-      print("IOS TODO _testResult：${_testResult} ");
-      print("IOS TODO makeCurrent: _context ${_context} ");
-      final _r1 = egl.makeCurrent(_context);
-      print("IOS TODO makeCurrent: ${_r1} ");
- 
-      var size = gl.getIntegerv(_gl.MAX_TEXTURE_SIZE);
-
-      print("OpenGL-ES  GL_MAX_TEXTURE_SIZE: ${size} ");
-    
+      egl.makeCurrent(_context);
     }
-    
-
-
-    
-
+  
   }
 
 

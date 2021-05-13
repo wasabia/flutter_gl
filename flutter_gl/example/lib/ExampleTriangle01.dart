@@ -14,38 +14,34 @@ import 'package:flutter_gl/flutter_gl.dart';
 
 
 
-class MyApp01 extends StatefulWidget {
+class ExampleTriangle01 extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp01> {
+class _MyAppState extends State<ExampleTriangle01> {
   
   late FlutterGlPlugin flutterGlPlugin;
 
-  int? textureId;
+
 
   int? fboId;
   num dpr = 1.0;
   late double width;
   late double height;
 
-  late dynamic openGL;
-
   Size? screenSize;
 
   dynamic glProgram;
 
   dynamic sourceTexture;
-  dynamic? controls;
 
-  int _t = DateTime.now().millisecondsSinceEpoch;
-
-  ui.Image? _image;
 
   dynamic defaultFramebuffer;
   dynamic defaultFramebufferTexture;
 
   int n = 0;
+
+  int t = DateTime.now().millisecondsSinceEpoch;
 
   @override
   void initState() {
@@ -55,57 +51,37 @@ class _MyAppState extends State<MyApp01> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    flutterGlPlugin = FlutterGlPlugin();
     width = screenSize!.width;
     height = width;
 
+    flutterGlPlugin = FlutterGlPlugin(width.toInt(), height.toInt(), dpr: dpr);
+
     Map<String, dynamic> _options = {
-      "width": width.toInt(), 
-      "height": height.toInt(),
       "antialias": true,
       "alpha": false
     };
     
-    final resp = await flutterGlPlugin.initialize(options: _options);
-
-    textureId = resp["textureId"];
-
-
-    _options["divId"] = textureId.toString();
-    _options["dpr"] = dpr;
-
-    openGL = OpenGL().init(_options);
+    await flutterGlPlugin.initialize(options: _options);
 
     setState(() { });
 
-    // TODO web wait dom ok!!!
+    // web need wait dom ok!!!
     Future.delayed(Duration(milliseconds: 100), () {
-      setupOpenGL(width.toInt(), height.toInt());
+      setupOpenGL();
     });
   
   }
 
-  setupOpenGL(int width, int height) async {
+  setupOpenGL() async {
 
-    List<int> egls = await flutterGlPlugin.getEgl(textureId!);
-    print("setupOpenGL  width: ${width} height: ${height} ");
-    openGL.initOpenGL(width, height, true, egls);
+    await flutterGlPlugin.prepareContext();
 
-    if(!kIsWeb) {
-      setupDefaultFBO();
 
-      print(" setupDefaultFBO defaultFramebufferTexture: ${defaultFramebufferTexture}  ");
-      sourceTexture = defaultFramebufferTexture;
-    }
-    
+    setupDefaultFBO();
+    sourceTexture = defaultFramebufferTexture;
     prepare();
 
-    // Future.delayed(Duration(milliseconds: 100), () {
-    //   animate();
-    // });
-
-
-
+    animate();
   }
 
   initSize(BuildContext context) {
@@ -152,41 +128,14 @@ class _MyAppState extends State<MyApp01> {
           child: Builder(
             builder: (BuildContext context) {
               if(kIsWeb) {
-                return textureId != null ? HtmlElementView(viewType: textureId!.toString()) : Container();
+                return flutterGlPlugin.isInitialized ? HtmlElementView(viewType: flutterGlPlugin.textureId!.toString()) : Container();
               } else {
-                switch (defaultTargetPlatform) {
-                  case TargetPlatform.android:
-                    return textureId != null ? Texture(textureId: textureId!) : Container(
-                      color: Colors.white,
-                    );
-                  case TargetPlatform.iOS:
-                    // return widget on iOS.
-                    return flutterGlPlugin.isInitialized ? Texture(textureId: textureId!) : Container();
-                  default:
-                    throw UnsupportedError("Unsupported platform view");
-                }
+                return flutterGlPlugin.isInitialized ? Texture(textureId: flutterGlPlugin.textureId!) : Container();
               }
             }
           )
         ),
-        Container(
-          child: Row(
-            children: [
-              RaisedButton(
-                child: Text("render"),
-                onPressed: () {
-                  render();
-                }
-              ),
-              RaisedButton(
-                child: Text("test"),
-                onPressed: () {
-                  test();
-                }
-              )
-            ],
-          ),
-        )
+        
       ],
     );
   }
@@ -202,7 +151,7 @@ class _MyAppState extends State<MyApp01> {
   }
 
   setupDefaultFBO() {
-    final _gl = openGL.gl;
+    final _gl = flutterGlPlugin.gl;
     int glWidth = (width * dpr).toInt();
     int glHeight = (height * dpr).toInt();
 
@@ -220,49 +169,29 @@ class _MyAppState extends State<MyApp01> {
 
   }
 
-  test() {
-    int _t0 = DateTime.now().millisecondsSinceEpoch;
-
-    int j = 0;
-
-    for(var i = 0; i < 50000; i++) {
-      // Draw
-      j = j + i;
-    }
-
-    int _t1 = DateTime.now().millisecondsSinceEpoch;
-
-    print(" render cost: ${_t1 - _t0} j: ${j}");
-  }
-
   render() async {  
-    final _gl = openGL.gl;
+    final _gl = flutterGlPlugin.gl;
 
-    int _t0 = DateTime.now().millisecondsSinceEpoch;
+    int _current = DateTime.now().millisecondsSinceEpoch;
+
+    num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    _gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    _gl.clearColor(0.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-
-    for(var i = 0; i < 5000; i++) {
-      // Draw
-      _gl.drawArrays(_gl.TRIANGLES, 0, n);
-    }
+    _gl.drawArrays(_gl.TRIANGLES, 0, n);
     
-
     _gl.finish();
 
-    int _t1 = DateTime.now().millisecondsSinceEpoch;
 
-    print(" render cost: ${_t1 - _t0} ");
 
-    flutterGlPlugin.updateTexture(textureId!, sourceTexture);
+    flutterGlPlugin.updateTexture(sourceTexture);
   }
 
 
   prepare() {
-    final _gl = openGL.gl;
+    final _gl = flutterGlPlugin.gl;
 
     var vs = """
     attribute vec4 a_Position;
@@ -288,8 +217,6 @@ class _MyAppState extends State<MyApp01> {
         print('Failed to set the positions of the vertices');
         return;
     }
-
-    
   }
 
 

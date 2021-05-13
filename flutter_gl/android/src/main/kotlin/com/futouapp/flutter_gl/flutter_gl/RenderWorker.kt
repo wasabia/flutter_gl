@@ -1,6 +1,6 @@
 package com.futouapp.flutter_gl.flutter_gl
 
-import BufferUtils
+
 import android.opengl.GLES32.*
 import android.util.Log
 import java.nio.FloatBuffer

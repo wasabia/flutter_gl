@@ -1,0 +1,11 @@
+framework module three3d_egl {
+  umbrella header "three3d_egl.h"
+
+  export *
+  module * { export * }
+}
+
+module three3d_egl.Swift {
+    header "three3d_egl-Swift.h"
+    requires objc
+}

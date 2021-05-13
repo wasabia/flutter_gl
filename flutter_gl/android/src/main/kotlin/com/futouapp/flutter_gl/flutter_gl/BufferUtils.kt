@@ -1,3 +1,5 @@
+package com.futouapp.flutter_gl.flutter_gl
+
 import java.nio.*
 
 object BufferUtils {

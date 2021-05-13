@@ -40,7 +40,6 @@ class OpenGLWeb extends OpenGLBase {
       this.element = CanvasElement(width: (width * dpr).toInt(), height: (height * dpr).toInt())
       ..id = 'canvas-id';
 
-      print("element done .... ");
       return this.element;
     });
    
@@ -48,7 +47,8 @@ class OpenGLWeb extends OpenGLBase {
 
 
 
-  initOpenGL([int width = 1, int height = 1, bool debug = false, List<int>? egls]) {
+  makeCurrent(List<int> egls) {
+    // web no need do something
     // gl.viewport(0, 0, width, height);
   }
 
