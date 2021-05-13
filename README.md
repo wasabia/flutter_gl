@@ -8,6 +8,7 @@ Support iOS,Android,Web
 Now the api is similar to WebGL
 
 ## How to use
+Now this is only support draw to FBO. then share the FBO texture to Native side.
 
 ### import
 
@@ -39,6 +40,10 @@ gl = flutterGlPlugin.gl;
 // then you can call OpenGL ES API by gl like
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT);
+
+// use this method to notify Flutter update Texture Widget
+// sourceTextue is a texture which bind to FBO framebuffer
+flutterGlPlugin.updateTexture(sourceTexture);
 ```
 
 ### Run Examples
