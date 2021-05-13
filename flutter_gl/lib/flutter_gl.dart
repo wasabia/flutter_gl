@@ -17,11 +17,10 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   late num dpr;
   late List<int> egls;
 
-  bool get isInitialized => FlutterGlPlatform.instance.isInitialized;
-
-  int? get textureId => FlutterGlPlatform.instance.textureId;
-
   dynamic get gl => openGL.gl;
+
+  // for web
+  dynamic get element => openGL.element;
 
   FlutterGlPlugin(int width, int height, {num dpr = 1.0}) {
     this.width = width;
@@ -49,7 +48,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   }
 
   prepareContext() async {
-    egls = await getEgl(textureId!);
+    egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
     openGL.makeCurrent(egls);
   }
 

@@ -7,7 +7,6 @@ import 'method_channel_flutter_gl.dart';
 abstract class FlutterGlPlatform extends PlatformInterface {
   /// Constructs a FlutterGlPlatform.
   FlutterGlPlatform() : super(token: _token);
-
   static final Object _token = Object();
 
   static FlutterGlPlatform _instance = MethodChannelFlutterGl();
@@ -27,6 +26,20 @@ abstract class FlutterGlPlatform extends PlatformInterface {
   int? textureId;
   bool isDisposed = false;
   bool get isInitialized => this.textureId != null;
+
+  late dynamic openGL;
+  late int width;
+  late int height;
+  late num dpr;
+  late List<int> egls;
+
+  dynamic get gl => openGL.gl;
+
+  // for web
+  dynamic get element => openGL.element;
+
+
+  
 
   /// Launches the given [url]. Completes to [true] if the launch was successful.
   Future<String?> get platformVersion {

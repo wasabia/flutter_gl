@@ -67,18 +67,22 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     // web need wait dom ok!!!
     Future.delayed(Duration(milliseconds: 100), () {
-      setupOpenGL();
+      setup();
     });
   
   }
 
-  setupOpenGL() async {
+  setup() async {
 
-    await flutterGlPlugin.prepareContext();
+    if(!kIsWeb) {
+      // web no need use fbo
+      await flutterGlPlugin.prepareContext();
 
+      setupDefaultFBO();
+      sourceTexture = defaultFramebufferTexture;
+    }
+    
 
-    setupDefaultFBO();
-    sourceTexture = defaultFramebufferTexture;
     prepare();
 
     animate();
@@ -185,8 +189,10 @@ class _MyAppState extends State<ExampleTriangle01> {
     _gl.finish();
 
 
-
-    flutterGlPlugin.updateTexture(sourceTexture);
+    if(!kIsWeb) {
+      flutterGlPlugin.updateTexture(sourceTexture);
+    }
+    
   }
 
 

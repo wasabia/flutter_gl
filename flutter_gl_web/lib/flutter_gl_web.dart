@@ -12,6 +12,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 
 class FlutterGlPlugin extends FlutterGlPlatform {
+
   
   late int _divId;
 
@@ -20,7 +21,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     
   }
 
-  /// Registers this class as the default instance of [UrlLauncherPlatform].
+
   static void registerWith(Registrar registrar) {
     FlutterGlPlatform.instance = FlutterGlPlugin();
   }
@@ -29,6 +30,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
 
   Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
     _divId = DateTime.now().microsecondsSinceEpoch;
+    this.textureId = _divId;
 
     num _ratio = window.devicePixelRatio;
 
