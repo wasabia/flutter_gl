@@ -1,8 +1,8 @@
 name: flutter_gl
-description: A new flutter plugin project.
+description: Call OpenGL ES API BY DART FFI, Support iOS, Android, Web.
 version: 0.0.3
-author:
-homepage:
+author: wasabia
+homepage: https://github.com/wasabia/flutter_gl
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
