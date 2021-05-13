@@ -56,6 +56,12 @@ cd flutter_gl/flutter_gl/example
 flutter run
 ```
 
+## Screenshot
+
+![screen0](https://user-images.githubusercontent.com/1768228/118112805-15a0b300-b418-11eb-81c0-c693cfca95aa.png)
+
+![screen1](https://user-images.githubusercontent.com/1768228/118112813-176a7680-b418-11eb-8ff9-877b941048e1.png)
+
 ## Issues
 
 File any issues, bugs, or feature requests.
