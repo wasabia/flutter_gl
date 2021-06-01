@@ -1,5 +1,5 @@
 name: flutter_gl
-description: Call OpenGL ES API BY DART FFI, Support iOS, Android, Web.
+description: Call OpenGL ES by Dart ffi, Support iOS, Android, Web.
 version: 0.0.3
 homepage: https://github.com/wasabia/flutter_gl
 
@@ -13,9 +13,9 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   flutter_gl_platform_interface:
-    # path: ../flutter_gl_platform_interface
+    path: ../flutter_gl_platform_interface
   flutter_gl_web:
-    # path: ../flutter_gl_web
+    path: ../flutter_gl_web
     
   http: ^0.13.1
   universal_html: ^2.0.7

@@ -91,7 +91,16 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
 
       val render = this.renders[textureId];
 
-      val resp = render?.updateTexture(sourceTexture);
+      val resp = render!!.updateTexture(sourceTexture);
+
+      result.success(resp);
+    } else if(call.method == "initVideo") {
+      val args = call.arguments as Map<String, Any>;
+      val textureId = args["textureId"] as Int;
+
+      val render = this.renders[textureId];
+
+      val resp = render!!.initVideo(args);
 
       result.success(resp);
     } else if(call.method == "dispose") {

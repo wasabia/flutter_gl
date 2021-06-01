@@ -93,7 +93,12 @@ class OpenGLES extends OpenGLBase {
     int read,
     int context,
   ) {
-    final nativeCallResult = egl.eglMakeCurrent(display, draw, read, context) == 1;
+
+    var _v = egl.eglMakeCurrent(display, draw, read, context);
+
+    print(" OpenGLES eglMakeCurrent _v: ${_v} ");
+
+    final nativeCallResult = _v == 1;
 
     if (nativeCallResult) {
       return;

@@ -57,6 +57,10 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return result;
   }
   
+  Future<Map<String, dynamic>> initVideo(Map<String, dynamic> info) async {
+    var result = Map<String, dynamic>.from(await FlutterGlPlatform.instance.initVideo(info));
+    return result;
+  }
 
   Future<bool> updateTexture(sourceTexture) {
     return FlutterGlPlatform.instance.updateTexture(sourceTexture);

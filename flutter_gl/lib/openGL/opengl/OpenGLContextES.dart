@@ -35,9 +35,11 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   getExtension(String key) {
-
-    Pointer<Uint8> _v = gl.glGetString(EXTENSIONS);
+    print("OpenGLES getExtension key: ${key}");
+    Pointer _v = gl.glGetString(EXTENSIONS);
+    print("OpenGLES getExtension _v: ${_v} ");
     String _vstr = _v.cast<Utf8>().toDartString();
+    calloc.free(_v);
     List<String> _extensions = _vstr.split(" ");
     return _extensions;
   }
@@ -333,6 +335,16 @@ class OpenGLContextES extends OpenGL30Constant {
     return Buffer._create(_v);
   }
 
+
+  deleteBuffer(Buffer v0) {
+    var _buffersList = [v0.bufferId];
+    final ptr = calloc<Uint32>(_buffersList.length);
+    ptr.asTypedList(1).setAll(0, _buffersList);
+    gl.glDeleteBuffers(1, ptr);
+    calloc.free(ptr);
+  }
+
+
   bindBuffer(v0, v1) {
     return gl.glBindBuffer(v0, v1.bufferId);
   }
@@ -536,16 +548,16 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glDeleteProgram(v0);
   }
 
-  deleteBuffer(v0) {
-    return gl.glDeleteBuffer(v0);
-  }
-
   bindVertexArray(v0) {
     return gl.glBindVertexArray(v0);
   }
 
-  deleteVertexArray(v0) {
-    return gl.glDeleteVertexArray(v0);
+  deleteVertexArray(int v0) {
+    var _list = [v0];
+    final ptr = calloc<Uint32>(_list.length);
+    ptr.asTypedList(1).setAll(0, _list);
+    gl.glDeleteVertexArrays(1, ptr);
+    calloc.free(ptr);
   }
 
   enableVertexAttribArray(v0) {
@@ -579,6 +591,13 @@ class OpenGLContextES extends OpenGL30Constant {
   drawElements(int mode, int count, int type, int offset) {
     var offSetPointer = Pointer<Void>.fromAddress(offset);
     gl.glDrawElements(mode, count, type, offSetPointer.cast<Void>());
+    calloc.free(offSetPointer);
+    return;
+  }
+
+  drawElementsInstanced(mode, count, type, offset, instanceCount) {
+    var offSetPointer = Pointer<Void>.fromAddress(offset);
+    gl.glDrawElementsInstanced(mode, count, type, offSetPointer, instanceCount);
     calloc.free(offSetPointer);
     return;
   }
@@ -689,6 +708,14 @@ class OpenGLContextES extends OpenGL30Constant {
 
   uniform4fv(v0, v1) {
     return gl.glUniform4fv(v0, v1);
+  }
+
+  uniform4f(location, num v0, num v1, num v2, num v3) {
+    return gl.glUniform4f(location, v0.toDouble(), v1.toDouble(), v2.toDouble(), v3.toDouble());
+  }
+
+  vertexAttribDivisor(index, divisor) {
+    return gl.glVertexAttribDivisor(index, divisor);
   }
 
   flush() {

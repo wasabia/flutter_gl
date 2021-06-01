@@ -33,6 +33,18 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return List<int>.from(_result);
   }
 
+  Future<Map<String, dynamic>> initVideo(Map<String, dynamic> info) async {
+    final Map<String, dynamic> _args = {
+      "textureId": textureId
+    };
+
+    _args.addAll(info);
+
+    final _result = await _channel.invokeMethod('initVideo', _args);
+
+    return Map<String, dynamic>.from(_result);
+  }
+
   Future<bool> updateTexture(sourceTexture) async {
     final _args = {
       "textureId": textureId,

@@ -17,6 +17,11 @@ class CustomRender {
     // Make sure to initialize Filament first
     // This loads the JNI library needed by most API calls
 
+    companion object {
+        lateinit var sharedEglEnv: EglEnv;
+    }
+
+
     var disposed = false;
 
     private lateinit var worker: RenderWorker
@@ -32,17 +37,18 @@ class CustomRender {
     var renderToVideo: Boolean = false;
     var screenScale = 1.0f;
     var context: Context;
+
     lateinit var eglEnv: EglEnv;
-    var maxTextureSize = 4096;
-
     lateinit var dartEglEnv: EglEnv;
+    lateinit var shareEglEnv: EglEnv;
 
+    var maxTextureSize = 4096;
 
     var renderBuffer = IntArray(1);
 
     var frameBuffer = IntArray(1);
     var frameBufferTexture = IntArray(1)
-
+    var videoOutputs = mutableMapOf<String,VideoOutput>();
 
 
     constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int, renderToVideo: Boolean = false) {
@@ -103,17 +109,25 @@ class CustomRender {
 
 
     fun initEGL() {
+
+        var shareEglEnv = EglEnv(glWidth, glHeight);
+        shareEglEnv.setupRender();
+//        shareEglEnv.buildOffScreenSurface();
+//        CustomRender.sharedEglEnv = shareEglEnv;
+
         eglEnv = EglEnv(glWidth, glHeight);
         dartEglEnv = EglEnv(glWidth, glHeight);
 
-        eglEnv.setupRender();
-        dartEglEnv.setupRender(eglEnv.eglContext);
+        eglEnv.setupRender(shareEglEnv.eglContext);
+        dartEglEnv.setupRender(shareEglEnv.eglContext);
 
         // TODO DEBUG
         surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
         eglEnv.buildWindowSurface(surfaceTexture);
 
         dartEglEnv.buildOffScreenSurface();
+
+
 
         eglEnv.makeCurrent();
 
@@ -148,6 +162,19 @@ class CustomRender {
         glViewport(0, 0, glWidth, glHeight);
     }
 
+    fun initVideo(args: Map<String, Any>) : Map<String, Any> {
+        val filePath = args["file_path"] as String;
+        var _output = videoOutputs[filePath];
+        if(_output == null) {
+            _output = VideoOutput(filePath, width, height, renderToVideo);
+            videoOutputs[filePath] = _output;
+            _output.setup(this.shareEglEnv);
+        }
+
+        _output!!.playVideo(1.0, "running");
+
+        return _output.getInfo();
+    }
 
     fun getEgl() : List<Long> {
         var _res = mutableListOf<Long>();

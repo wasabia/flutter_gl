@@ -37,10 +37,40 @@ void main (void) {
 """
 
 
+private val OES_GLSL_VERTEX_SHADER = """#version 300 es
+precision mediump float;
+
+layout (location = 0) in vec4 Position;
+layout (location = 1) in vec2 TextureCoords;
+out vec2 TextureCoordsVarying;
+
+void main () {
+    gl_Position = Position;
+    TextureCoordsVarying = TextureCoords;
+}
+"""
+
+private val OES_GLSL_FRAGMENT_SHADER = """#version 300 es
+#extension GL_OES_EGL_image_external_essl3 : enable
+
+precision mediump float;
+uniform samplerExternalOES Texture0;
+in vec2 TextureCoordsVarying;
+
+out vec4 fragColor;
+
+void main (void) {
+  vec4 mask = texture(Texture0, TextureCoordsVarying);
+  fragColor = mask;
+}
+"""
 
 
 class OpenGLProgram {
 
+    fun getProgramOES() : Int {
+        return compileShaders(OES_GLSL_VERTEX_SHADER, OES_GLSL_FRAGMENT_SHADER);
+    }
 
     fun getProgram(): Int {
         return compileShaders(GLSL_VERTEX_SHADER, GLSL_FRAGMENT_SHADER);

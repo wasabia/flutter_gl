@@ -1191,7 +1191,7 @@ class LibOpenGLES {
   late final _dart_glGetShaderSource _glGetShaderSource =
       _glGetShaderSource_ptr.asFunction<_dart_glGetShaderSource>();
 
-  ffi.Pointer<ffi.Uint8> glGetString(
+  ffi.Pointer glGetString(
     int name,
   ) {
     return _glGetString(
@@ -3543,7 +3543,7 @@ class LibOpenGLES {
   late final _dart_glClearBufferfi _glClearBufferfi =
       _glClearBufferfi_ptr.asFunction<_dart_glClearBufferfi>();
 
-  ffi.Pointer<ffi.Uint8> glGetStringi(
+  ffi.Pointer glGetStringi(
     int name,
     int index,
   ) {
@@ -12682,11 +12682,11 @@ typedef _dart_glGetShaderSource = void Function(
   ffi.Pointer<ffi.Int8> source,
 );
 
-typedef _c_glGetString = ffi.Pointer<ffi.Uint8> Function(
+typedef _c_glGetString = ffi.Pointer Function(
   ffi.Uint32 name,
 );
 
-typedef _dart_glGetString = ffi.Pointer<ffi.Uint8> Function(
+typedef _dart_glGetString = ffi.Pointer Function(
   int name,
 );
 
@@ -14336,12 +14336,12 @@ typedef _dart_glClearBufferfi = void Function(
   int stencil,
 );
 
-typedef _c_glGetStringi = ffi.Pointer<ffi.Uint8> Function(
+typedef _c_glGetStringi = ffi.Pointer Function(
   ffi.Uint32 name,
   ffi.Uint32 index,
 );
 
-typedef _dart_glGetStringi = ffi.Pointer<ffi.Uint8> Function(
+typedef _dart_glGetStringi = ffi.Pointer Function(
   int name,
   int index,
 );

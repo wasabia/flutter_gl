@@ -46,6 +46,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.bindTexture(type, texture);
   }
 
+  drawElementsInstanced(mode, count, type, offset, instanceCount) {
+    return gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
+  }
+
   activeTexture(v0) {
     return gl.activeTexture(v0);
   }
@@ -407,6 +411,11 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform3f(v0, v1, v2, v3);
   }
 
+  uniform4f(location, num v0, num v1, num v2, num v3) {
+    return gl.uniform4f(location, v0, v1, v2, v3);
+  }
+
+
   uniform1fv(location, List<num> value) {
     return gl.uniform1fv(location, value);
   }
@@ -449,6 +458,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   uniform4fv(v0, v1) {
     return gl.uniform4fv(v0, v1);
+  }
+
+  vertexAttribDivisor(index, divisor) {
+    return gl.vertexAttribDivisor(index, divisor);
   }
 
   flush() {
