@@ -18,10 +18,6 @@ class OpenGLES extends OpenGLBase {
   int _surface = 0;
   int _context = 0;
 
-  late int width;
-  late int height;
-  num dpr = 1.0;
-
   Pointer<Uint32> frameBuffer =  malloc.allocate<Uint32>(sizeOf<Uint32>() * 1);
   Pointer<Uint32> frameBufferTexture =  malloc.allocate<Uint32>(sizeOf<Uint32>() * 1);
   Pointer<Uint32> renderBuffer =  malloc.allocate<Uint32>(sizeOf<Uint32>() * 1);
@@ -47,11 +43,7 @@ class OpenGLES extends OpenGLBase {
 
     _libOpenGLES = LibOpenGLES(libGLESv3!);
     _libEGL = LibEGL(libEGL!);
-
-    this.width = options["width"];
-    this.height = options["height"];
-    this.dpr = options["dpr"];
-
+    
     print(" init OpenGLES 123 ");
   }
 

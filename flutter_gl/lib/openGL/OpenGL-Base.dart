@@ -18,4 +18,6 @@ class OpenGLBase {
 
   void dispose(){}
 
+  void makeCurrent(List<int> egls) {}
+
 }

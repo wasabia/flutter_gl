@@ -58,6 +58,14 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('getEgl() has not been implemented.');
   }
 
+  getFrameAt(String filePath, num time) async {
+    throw UnimplementedError('getFrameAt() has not been implemented.');
+  }
+
+  getFrameFileAt(String filePath, num time, String framePath) async {
+    throw UnimplementedError('getFrameFileAt() has not been implemented.');
+  }
+
   Future<bool> updateTexture(sourceTexture) {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }

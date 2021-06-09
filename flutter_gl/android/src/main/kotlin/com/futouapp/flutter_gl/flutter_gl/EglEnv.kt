@@ -17,8 +17,8 @@ class EglEnv {
     var eglSurface = EGL14.EGL_NO_SURFACE
     private var eglConfig: EGLConfig? = null
 
-    private var width: Int;
-    private var height: Int;
+    var width: Int;
+    var height: Int;
 
     constructor(width: Int, height: Int) {
         this.width = width;
@@ -33,8 +33,8 @@ class EglEnv {
                 EGL14.EGL_ALPHA_SIZE, 8,
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_SURFACE_TYPE, EGL14.EGL_PBUFFER_BIT,
-//                EGL14.EGL_SAMPLE_BUFFERS, 1,
-//                EGL14.EGL_SAMPLES, 4,
+                EGL14.EGL_SAMPLE_BUFFERS, 1,
+                EGL14.EGL_SAMPLES, 4,
                 EGL14.EGL_NONE)
         setUpEnv(attribs, shareContext);
     }
@@ -49,8 +49,8 @@ class EglEnv {
                 EGL_RECORDABLE_ANDROID, 1,
                 EGL14.EGL_DEPTH_SIZE, 16,
                 EGL14.EGL_STENCIL_SIZE, 8,
-//                EGL14.EGL_SAMPLE_BUFFERS, 1,
-//                EGL14.EGL_SAMPLES, 4,
+                EGL14.EGL_SAMPLE_BUFFERS, 1,
+                EGL14.EGL_SAMPLES, 4,
                 EGL14.EGL_NONE)
         setUpEnv(attribs, shareContext);
     }
@@ -101,6 +101,7 @@ class EglEnv {
     }
 
     fun buildOffScreenSurface() {
+
         val pbufferAttributes = intArrayOf(
                 EGL14.EGL_WIDTH, width,
                 EGL14.EGL_HEIGHT, height,

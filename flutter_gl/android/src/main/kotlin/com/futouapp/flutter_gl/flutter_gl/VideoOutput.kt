@@ -4,20 +4,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.media.*
-import android.net.Uri
 import android.opengl.*
-
 import android.opengl.GLES32.*
 import android.opengl.GLU.gluErrorString
 import android.os.*
 import android.provider.MediaStore
-
 import android.util.Log
 import android.view.Surface
-
 import androidx.annotation.RequiresApi
 import java.io.BufferedOutputStream
-import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -25,7 +20,6 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.util.*
 import java.util.concurrent.Semaphore
-
 import kotlin.collections.ArrayList
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -47,7 +41,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
 
     var waitDecodeFrames: MutableList<Double> = ArrayList();
-
+    var videoFramesFrameDecoder: VideoFrameDecoder? = null;
 
     var degrees: Int = 0;
     private var duration: Double = 0.0
@@ -74,7 +68,6 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
     lateinit var vertexBuffer2: FloatBuffer;
     lateinit var textureBuffer2: FloatBuffer;
-
 
 
     lateinit var vertexBuffer90: FloatBuffer;
@@ -110,10 +103,10 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     var videoFrameDuration: Long = 40 * 1000L;
 
     var decoderThread: HandlerThread = HandlerThread("decoderThread");
-    private var decoderThreadHandler : Handler? = null;
+    private var decoderThreadHandler: Handler? = null;
 
     var decoderFrameThread: HandlerThread = HandlerThread("decoderFrameThread");
-    private var decoderFrameThreadHandler : Handler? = null;
+    private var decoderFrameThreadHandler: Handler? = null;
 
     var lastTime: Long = 0L;
 
@@ -128,9 +121,19 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
     fun getInfo(): Map<String, Any> {
         var info = mutableMapOf<String, Any>();
-        info["width"] = this.width;
-        info["heoght"] = this.height;
-        info["texture"] = this.textureId!!;
+
+        playVideo(1.0, "running");
+
+        this.executeSync {
+            info["width"] = this.width;
+            info["height"] = this.height;
+
+            val _textureID = getTextureAt(1.0);
+
+            info["texture"] = _textureID!!;
+        }
+
+
 
         return info;
     }
@@ -152,7 +155,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         semaphore.acquire()
     }
 
-    fun setup(shareEglEnv: EglEnv) {
+    fun setup(videoEglEnv: EglEnv) {
         decoderThread.start()
         decoderThreadHandler = Handler(decoderThread.looper)
 
@@ -162,15 +165,14 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
 
 
-        this.execute {
-
-            shareEglEnv.makeCurrent();
-
-            this.setup2();
+        this.executeSync {
+            this.setup2(videoEglEnv);
         }
     }
 
-    fun setup2() {
+    fun setup2(videoEglEnv: EglEnv) {
+
+        this.videoFramesFrameDecoder = VideoFrameDecoder(this.filePath!!, renderWidth, renderHeight);
 
         this.openGLProgram = OpenGLProgram();
 
@@ -187,10 +189,18 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         calcVideoInfo();
 
 
+        videoEglEnv.makeCurrent();
+        glViewport(0, 0, width, height);
+
+
         this.createSurfaceAndTexture();
 
 
         initVideoDecoder();
+
+
+
+
 
         setupFBO();
         setupVBO1();
@@ -205,7 +215,6 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
         ready = true;
     }
-
 
 
     fun initVideoDecoder() {
@@ -267,12 +276,12 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var nw = _width;
         var nh = _height;
 
-        if(degrees == 90 || degrees == 270) {
+        if (degrees == 90 || degrees == 270) {
             nw = _height;
             nh = _width;
         }
 
-        println(" calcVideoInfo width: ${nw} height: ${nh} degrees: ${degrees}  ");
+        println("1 calcVideoInfo width: ${nw} height: ${nh} degrees: ${degrees}  ");
         println("filePath: ${filePath}");
 
         this.width = nw.toInt();
@@ -280,7 +289,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     }
 
     fun getAllKeyframeTimes() {
-        while(true) {
+        while (true) {
             if (mediaExtractor!!.sampleFlags == MediaExtractor.SAMPLE_FLAG_SYNC)
                 syncSampleTimes.push(mediaExtractor!!.sampleTime)
 
@@ -307,20 +316,19 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         glGenTextures(1, textureIds, 0)
 
 
-
-        if(EGL14.eglGetCurrentContext().equals(EGL14.EGL_NO_CONTEXT)) {
+        if (EGL14.eglGetCurrentContext().equals(EGL14.EGL_NO_CONTEXT)) {
             println(" ------------------- EGL_NO_CONTEXT ---------------------- ")
         }
 
 
-        if(textureIds[0] <= 0) {
+        if (textureIds[0] <= 0) {
             val error: Int = glGetError();
             val info = gluErrorString(error);
 
             println(" glGenTextures error ${info} ")
 
             glGenTextures(1, textureIds, 0)
-            println(" createSurfaceAndTexture2: ${ textureIds[0]} ");
+            println(" createSurfaceAndTexture2: ${textureIds[0]} ");
             return;
         }
 
@@ -328,19 +336,21 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         textureId = textureIds[0]
 
         glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId!!)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+
 
         glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
         // 创建SurfaceTexture、Surface，并绑定到MediaPlayer上，接收画面驱动回调
         surfaceTexture = SurfaceTexture(textureId!!)
+        surfaceTexture.setDefaultBufferSize(width, height);
 
-//        surfaceTexture.setDefaultBufferSize(textureWidth, textureHeight);
+        println("surfaceTexture.setDefaultBufferSize width: ${width} ${height}  ")
 
         surfaceTexture.setOnFrameAvailableListener(this)
         surface = Surface(surfaceTexture)
     }
-
 
 
     fun playVideo(time: Double, status: String) {
@@ -358,7 +368,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     fun seek(time: Double) {
 //        println(" seeking.... ");
 
-        if(!ready) {
+        if (!ready) {
             return;
         }
 
@@ -371,10 +381,10 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
     fun getPrevTime(time: Long): Long {
         var _t = time;
-        if(_t > lastTime) {
+        if (_t > lastTime) {
             _t = lastTime;
         }
-        if(_t < 0) {
+        if (_t < 0) {
             _t = 0;
         }
 
@@ -387,37 +397,38 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     }
 
     fun getTextureAt(time: Double): Int? {
-        if(!ready) {
+
+        println("getTextureAt: ${time} ready: ${ready} ");
+
+        if (!ready) {
             return null;
         }
         var lastTextures = convertTexture();
+
+        println(" lastTextures: ${lastTextures} ")
+
         return lastTextures?.get(0);
     }
 
     fun videoRunner(time: Long) {
-        var _start = System.currentTimeMillis();
-
-        println(" time: ${time} videoRunner d: ${_start - lastRenderTime} ");
-
-
         var _tf = ((time / 1000.0 / 1000.0) * videoFps).roundToInt();
         var _vf = ((currentVideoTime / 1000.0 / 1000.0) * videoFps).roundToInt();
 
-        if(_tf == _vf) {
+        if (_tf == _vf) {
             return;
         }
 
         var targetTime = (_tf * (1000 * 1000.0 / videoFps)).toLong();
 
-        if(renderToVideo) {
+        if (renderToVideo) {
             this.executeSync {
                 decodeVideo(targetTime);
             }
         } else {
-            if(!running) {
+            if (!running) {
                 // 播放时 异步 拖拽时 同步？？？
                 //TODO
-                if(playing) {
+                if (playing) {
                     this.executeSync {
                         decodeVideo(targetTime);
                     }
@@ -437,7 +448,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
         running = true;
 
-        if(readEnd) {
+        if (readEnd) {
             videoDecoder.flush();
             currentVideoTime = -99999;
             readEnd = false;
@@ -447,13 +458,13 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
 
 
-        if(currentVideoTime >= _prevTime && currentVideoTime < time) {
+        if (currentVideoTime >= _prevTime && currentVideoTime < time) {
             // 不需要seek 直接向前解码
+            mediaExtractor.seekTo(_prevTime, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
         } else {
             videoDecoder.flush();
             mediaExtractor.seekTo(_prevTime, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
         }
-
 
 
         var _start = System.currentTimeMillis();
@@ -461,12 +472,14 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var doRender = false
         var isTimeout = false;
         var timeOutCount = 0;
-//        println("seekto: ${time}  _prevTime: ${_prevTime} ");
-//        println("mediaExtractor time: ${mediaExtractor.sampleTime}  ")
 
 
-        while(running) {
-            if(disposed) {
+        println("seekto: ${time}  _prevTime: ${_prevTime} ");
+        println("mediaExtractor time: ${mediaExtractor.sampleTime}  ")
+
+
+        while (running) {
+            if (disposed) {
                 break;
             }
 
@@ -475,7 +488,7 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
             var _start1 = System.currentTimeMillis();
             var _cost = _start1 - _start;
 
-            if(_cost > 2000) {
+            if (_cost > 2000) {
                 println(" decode time: ${time} cost: ${_cost} time out mt: ${mt} ")
                 break;
             }
@@ -498,10 +511,9 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
             val outputBufferIndex = videoDecoder.dequeueOutputBuffer(videoBufferInfo, TIMEOUT_US)
 
 
-
 //            println("dequeueOutputBuffer t: ${time}  sampleTime: ${mt}   ")
 
-            if(outputBufferIndex >= 0) {
+            if (outputBufferIndex >= 0) {
                 if (videoBufferInfo.size > 0) {
                     val currentSampleTime = videoBufferInfo.presentationTimeUs
 
@@ -509,11 +521,11 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
                     val diffTime = time - currentSampleTime;
 
-                    if(isTimeout) {
+                    if (isTimeout) {
 //                        println(" dorendertime: ${time} currentSampleTime: ${currentSampleTime} diffTime: ${diffTime}")
                     }
 
-                    if(diffTime <= videoFrameDuration * 0.5) {
+                    if (diffTime <= videoFrameDuration * 0.5) {
                         doRender = true;
                     } else {
                         doRender = false;
@@ -523,9 +535,9 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
                 //渲染 释放缓冲区
                 videoDecoder.releaseOutputBuffer(outputBufferIndex, doRender)
 
-                if(doRender) {
+                if (doRender) {
                     var _start1 = System.currentTimeMillis();
-                    if(VERBOSE) println("time: ${time} doRender true: ${_start1 - _start}  ");
+                    if (VERBOSE) println("time: ${time} doRender true: ${_start1 - _start}  ");
                     break;
                 }
 
@@ -550,7 +562,6 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 
         running = false;
     }
-
 
 
     /**
@@ -608,13 +619,18 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         disposed = true;
     }
 
-
+    fun getFrameFileAtTime(time: Double, framePath: String) {
+        decoderFrameThreadHandler!!.post {
+            this.videoFramesFrameDecoder!!.getFrameFileAtTime(time, framePath);
+        }
+    }
 
 
     // convert GL_TEXTURE_EXTERNAL_OES to GL_TEXTURE
     fun convertTexture(): IntArray? {
         // 纹理ID
         var textureID0 = textureId!!;
+
 
         var _tmpProgram = OpenGLProgram().getProgramOES();
 
@@ -648,37 +664,44 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
 //        println(" convertTexture rotate ${degrees} ")
 
         //TODO
-        if(degrees == 90) {
-            vertexBuffer90.position(0);
-            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer90);
-            textureBuffer90.position(0);
-            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer90);
-        } else if(degrees == 180) {
-          vertexBuffer180.position(0);
-            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer1);
-            textureBuffer180.position(0);
-            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer1);
-        } else if(degrees == 270) {
-            vertexBuffer270.position(0);
-            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer270);
-            textureBuffer270.position(0);
-            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer270);
-        } else {
-            vertexBuffer2.position(0);
-            textureBuffer2.position(0);
+//        if (degrees == 90) {
+//            vertexBuffer90.position(0);
+//            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer90);
+//            textureBuffer90.position(0);
+//            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer90);
+//        } else if (degrees == 180) {
+//            vertexBuffer180.position(0);
+//            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer1);
+//            textureBuffer180.position(0);
+//            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer1);
+//        } else if (degrees == 270) {
+//            vertexBuffer270.position(0);
+//            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer270);
+//            textureBuffer270.position(0);
+//            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer270);
+//        } else {
 
-            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer2);
-            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer2);
-        }
+//            vertexBuffer2.position(0);
+//            textureBuffer2.position(0);
+//
+//            glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer2);
+//            glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer2);
+//        }
+
+        vertexBuffer270.position(0);
+        textureBuffer270.position(0);
+
+        glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, false, 0, vertexBuffer270);
+        glVertexAttribPointer(_textureSlot, 2, GL_FLOAT, false, 0, textureBuffer270);
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glFinish();
 
 //        if(seekingTo < 10 * 1000 * 1000L) {
 //            saveFrame();
 //        }
 
-
-
+//        saveFrame();
 
         return tmpTextures;
     }
@@ -694,10 +717,16 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         mPixelBuf.rewind()
         glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, mPixelBuf)
 
+        println(" mPixelBuf ------------------------------------------------ ")
+
+
+
+        println(" ${mPixelBuf.get(0)} ${mPixelBuf.get(1)} ${mPixelBuf.get(2)} ${mPixelBuf.get(3)} ${mPixelBuf.get(4)} ")
+
         var bos: BufferedOutputStream? = null;
 
         try {
-            var path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+            var path = FlutterGlPlugin.context.getExternalFilesDir(null)!!.getAbsolutePath();
             bos = BufferedOutputStream(FileOutputStream("${path}${filename}"))
             val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             mPixelBuf.rewind()
@@ -731,14 +760,13 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     }
 
 
-
     fun setupFBO() {
         glGenFramebuffers(1, tmpFrameBuffer, 0);
         glGenTextures(1, tmpTextures, 0);
 
 
-        var glWidth = (renderWidth * screenScale).toInt();
-        var glHeight = (renderHeight * screenScale).toInt();
+        var glWidth = this.width;
+        var glHeight = this.height;
 
         glActiveTexture(GL_TEXTURE10);
         glBindTexture(GL_TEXTURE_2D, tmpTextures[0]);
@@ -766,8 +794,8 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
     fun setupVBO1() {
         var w: Float = 1.0f;
         var h: Float = 1.0f;
-        var verticesPoints = floatArrayOf(-w,h,0.0f, -w,-h,0.0f, w,h,0.0f, w,-h,0.0f);
-        var texturesPoints = floatArrayOf(0.0f,0.0f, 0.0f,1.0f, 1.0f,0.0f, 1.0f,1.0f);
+        var verticesPoints = floatArrayOf(-w, h, 0.0f, -w, -h, 0.0f, w, h, 0.0f, w, -h, 0.0f);
+        var texturesPoints = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 
 
         // 创建顶点缓存
@@ -781,8 +809,8 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var w: Float = 1.0f;
         var h: Float = 1.0f;
 
-        var verticesPoints = floatArrayOf( -w,-h,0.0f, w,-h,0.0f, -w,h,0.0f, w,h,0.0f);
-        var texturesPoints = floatArrayOf(0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f);
+        var verticesPoints = floatArrayOf(-w, -h, 0.0f, w, -h, 0.0f, -w, h, 0.0f, w, h, 0.0f);
+        var texturesPoints = floatArrayOf(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
 
         // 创建顶点缓存
@@ -796,8 +824,8 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var w: Float = 1.0f;
         var h: Float = 1.0f;
 
-        var verticesPoints = floatArrayOf( w,-h,0.0f, w,h,0.0f, -w,-h,0.0f, -w,h,0.0f);
-        var texturesPoints = floatArrayOf(0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f);
+        var verticesPoints = floatArrayOf(w, -h, 0.0f, w, h, 0.0f, -w, -h, 0.0f, -w, h, 0.0f);
+        var texturesPoints = floatArrayOf(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
         // 创建顶点缓存
         vertexBuffer90 = BufferUtils.createFloatBuffer(verticesPoints);
@@ -810,8 +838,8 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var w: Float = 1.0f;
         var h: Float = 1.0f;
 
-        var verticesPoints = floatArrayOf( w,h,0.0f, -w,h,0.0f, w,-h,0.0f, -w,-h,0.0f);
-        var texturesPoints = floatArrayOf(0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f);
+        var verticesPoints = floatArrayOf(w, h, 0.0f, -w, h, 0.0f, w, -h, 0.0f, -w, -h, 0.0f);
+        var texturesPoints = floatArrayOf(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
         // 创建顶点缓存
         vertexBuffer180 = BufferUtils.createFloatBuffer(verticesPoints);
@@ -824,8 +852,32 @@ class VideoOutput : SurfaceTexture.OnFrameAvailableListener {
         var w: Float = 1.0f;
         var h: Float = 1.0f;
 
-        var verticesPoints = floatArrayOf( -w,h,0.0f, -w,-h,0.0f, w,h,0.0f, w,-h,0.0f);
-        var texturesPoints = floatArrayOf(0.0f,0.0f, 1.0f,0.0f, 0.0f,1.0f, 1.0f,1.0f);
+//        var verticesPoints = floatArrayOf(
+//                -w, h, 0.0f,
+//                -w, -h, 0.0f,
+//                w, h, 0.0f,
+//                w, -h, 0.0f
+//        );
+//        var texturesPoints = floatArrayOf(
+//                0.0f, 0.0f,
+//                1.0f, 0.0f,
+//                0.0f, 1.0f,
+//                1.0f, 1.0f
+//        );
+
+        var verticesPoints = floatArrayOf(
+                w, h, 0.0f,
+                w, -h, 0.0f,
+                -w, h, 0.0f,
+                -w, -h, 0.0f
+
+        );
+        var texturesPoints = floatArrayOf(
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f
+        );
 
         // 创建顶点缓存
         vertexBuffer270 = BufferUtils.createFloatBuffer(verticesPoints);

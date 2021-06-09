@@ -56,6 +56,28 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return _result;
   }
 
+  getFrameAt(String filePath, num time) async {
+    final _args = {
+      'textureId': textureId, 
+      'filePath': filePath, 
+      'time': time
+    };
+
+    final _result = await _channel.invokeMethod('getFrameAt', _args);
+
+    return _result;
+  }
+
+  getFrameFileAt(String filePath, num time, String framePath) async {
+    final _args = {
+      'textureId': textureId, 
+      'filePath': filePath, 
+      'time': time, 
+      'framePath': framePath
+    };
+    _channel.invokeMethod('getFrameFileAt', _args);
+  }
+
   dispose() {
 
     this.isDisposed = true;

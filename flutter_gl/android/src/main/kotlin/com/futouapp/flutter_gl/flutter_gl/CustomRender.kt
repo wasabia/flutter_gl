@@ -2,15 +2,14 @@ package com.futouapp.flutter_gl.flutter_gl
 
 
 import android.content.Context
-
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
-
+import android.opengl.GLES32.*
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import android.opengl.GLES32.*
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import com.futouapp.threeegl.ThreeEgl
+import java.util.concurrent.Semaphore
 
 
 class CustomRender {
@@ -41,6 +40,7 @@ class CustomRender {
     lateinit var eglEnv: EglEnv;
     lateinit var dartEglEnv: EglEnv;
     lateinit var shareEglEnv: EglEnv;
+    lateinit var videoEglEnv: EglEnv;
 
     var maxTextureSize = 4096;
 
@@ -48,8 +48,9 @@ class CustomRender {
 
     var frameBuffer = IntArray(1);
     var frameBufferTexture = IntArray(1)
-    var videoOutputs = mutableMapOf<String,VideoOutput>();
 
+    var renderThread: HandlerThread = HandlerThread("flutterGlCustomRender");
+    private var renderHandler : Handler
 
     constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int, renderToVideo: Boolean = false) {
         this.options = options;
@@ -57,10 +58,12 @@ class CustomRender {
         this.height = options["height"] as Int;
         this.surfaceTexture = surfaceTexture;
         this.textureId = textureId;
-
-
-
         this.context = FlutterGlPlugin.context;
+
+        renderThread.start()
+        renderHandler = Handler(renderThread.looper)
+
+
         setup();
     }
 
@@ -75,12 +78,10 @@ class CustomRender {
         val density = dm.density;
         screenScale = density;
 
-
         glWidth = (width * screenScale).toInt()
         glHeight = (height * screenScale).toInt()
 
         this.initEGL();
-
 
         this.worker = RenderWorker();
 
@@ -88,13 +89,10 @@ class CustomRender {
 
     }
 
-
-
-
     fun updateTexture(sourceTexture: Int): Boolean {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
 
 
@@ -110,70 +108,46 @@ class CustomRender {
 
     fun initEGL() {
 
-        var shareEglEnv = EglEnv(glWidth, glHeight);
+        shareEglEnv = EglEnv(glWidth, glHeight);
         shareEglEnv.setupRender();
-//        shareEglEnv.buildOffScreenSurface();
-//        CustomRender.sharedEglEnv = shareEglEnv;
+
+        ThreeEgl.setContext("shareContext", shareEglEnv.eglContext);
+        println(" flutter gl set shareContext: ${shareEglEnv.eglContext} ....  ")
 
         eglEnv = EglEnv(glWidth, glHeight);
         dartEglEnv = EglEnv(glWidth, glHeight);
+        videoEglEnv = EglEnv(glWidth, glHeight);
 
         eglEnv.setupRender(shareEglEnv.eglContext);
         dartEglEnv.setupRender(shareEglEnv.eglContext);
+        videoEglEnv.setupRender(shareEglEnv.eglContext);
 
         // TODO DEBUG
         surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
+
         eglEnv.buildWindowSurface(surfaceTexture);
 
         dartEglEnv.buildOffScreenSurface();
 
-
+        videoEglEnv.buildOffScreenSurface();
 
         eglEnv.makeCurrent();
-
-//        this.initOpenGL();
     }
 
-    fun initOpenGL() {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-
-        glGenFramebuffers(1, frameBuffer, 0)
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
-
-        glGenRenderbuffers(1, renderBuffer, 0);
-        glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer[0]);
-
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, glWidth, glHeight);
-        var error = glGetError();
-        if (error != GL_NO_ERROR) {
-            println("GlError while allocating Renderbuffer ${error}");
+    fun executeSync(task: () -> Unit) {
+        val semaphore = Semaphore(0)
+        renderHandler.post {
+            task.invoke()
+            semaphore.release()
         }
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderBuffer[0]);
-
-        var frameBufferCheck = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (frameBufferCheck != GL_FRAMEBUFFER_COMPLETE) {
-            println("glCheckFramebufferStatus is not success ....  ")
-        }
-
-        glViewport(0, 0, glWidth, glHeight);
+        semaphore.acquire()
     }
 
-    fun initVideo(args: Map<String, Any>) : Map<String, Any> {
-        val filePath = args["file_path"] as String;
-        var _output = videoOutputs[filePath];
-        if(_output == null) {
-            _output = VideoOutput(filePath, width, height, renderToVideo);
-            videoOutputs[filePath] = _output;
-            _output.setup(this.shareEglEnv);
+    fun execute(task: () -> Unit) {
+        renderHandler.post {
+            task.invoke()
         }
-
-        _output!!.playVideo(1.0, "running");
-
-        return _output.getInfo();
     }
 
     fun getEgl() : List<Long> {

@@ -66,6 +66,15 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
 
+  getFrameAt(String filePath, num time) async {
+    return FlutterGlPlatform.instance.getFrameAt(filePath, time);
+  }
+
+  getFrameFileAt(String filePath, num time, String framePath) async {
+    return FlutterGlPlatform.instance.getFrameFileAt(filePath, time, framePath);
+  }
+
+
   dispose() {
     return FlutterGlPlatform.instance.dispose();
   }

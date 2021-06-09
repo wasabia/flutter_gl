@@ -35,9 +35,9 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   getExtension(String key) {
-    print("OpenGLES getExtension key: ${key}");
     Pointer _v = gl.glGetString(EXTENSIONS);
-    print("OpenGLES getExtension _v: ${_v} ");
+    print("OpenGLES getExtension key: ${key} _v: ${_v} ");
+    
     String _vstr = _v.cast<Utf8>().toDartString();
     calloc.free(_v);
     List<String> _extensions = _vstr.split(" ");

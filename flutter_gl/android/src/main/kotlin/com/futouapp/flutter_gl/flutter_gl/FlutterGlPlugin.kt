@@ -29,9 +29,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
     lateinit var assets: FlutterPlugin.FlutterAssets;
   }
 
-
-
-
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_gl")
     channel.setMethodCallHandler(this)
@@ -54,7 +51,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
 
       val renderToVideo = args["renderToVideo"] as Boolean;
 
-      registry.createSurfaceTexture();
 
       if(textureID != null) {
         println("already initialized ........... ")
@@ -103,6 +99,25 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       val resp = render!!.initVideo(args);
 
       result.success(resp);
+    } else if(call.method == "getFrameFileAt") {
+      val args = call.arguments as Map<String, Any>;
+      val textureId = args["textureId"] as Int;
+      val filePath = args["filePath"] as String;
+      val framePath = args["framePath"] as String;
+      val time = args["time"] as Double;
+
+      val render = this.renders[textureId];
+      render?.getFrameFileAt(filePath, time, framePath);
+      result.success(null);
+    } else if(call.method == "getVideoTextureAt") {
+      val args = call.arguments as Map<String, Any>;
+      val textureId = args["textureId"] as Int;
+      val filePath = args["filePath"] as String;
+      val time = args["time"] as Double;
+
+      val render = this.renders[textureId];
+      var _videoTexture = render?.getVideoTextureAt(filePath, time);
+      result.success(_videoTexture);
     } else if(call.method == "dispose") {
       val args = call.arguments as Map<String, Any>;
       val textureId = args["textureId"] as? Int;
