@@ -33,26 +33,19 @@ class CustomRender {
 
     var surfaceTexture: SurfaceTexture;
     var textureId: Int;
-    var renderToVideo: Boolean = false;
     var screenScale = 1.0f;
     var context: Context;
 
     lateinit var eglEnv: EglEnv;
     lateinit var dartEglEnv: EglEnv;
     lateinit var shareEglEnv: EglEnv;
-    lateinit var videoEglEnv: EglEnv;
 
     var maxTextureSize = 4096;
-
-    var renderBuffer = IntArray(1);
-
-    var frameBuffer = IntArray(1);
-    var frameBufferTexture = IntArray(1)
 
     var renderThread: HandlerThread = HandlerThread("flutterGlCustomRender");
     private var renderHandler : Handler
 
-    constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int, renderToVideo: Boolean = false) {
+    constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int) {
         this.options = options;
         this.width = options["width"] as Int;
         this.height = options["height"] as Int;
@@ -116,20 +109,15 @@ class CustomRender {
 
         eglEnv = EglEnv(glWidth, glHeight);
         dartEglEnv = EglEnv(glWidth, glHeight);
-        videoEglEnv = EglEnv(glWidth, glHeight);
 
         eglEnv.setupRender(shareEglEnv.eglContext);
         dartEglEnv.setupRender(shareEglEnv.eglContext);
-        videoEglEnv.setupRender(shareEglEnv.eglContext);
 
         // TODO DEBUG
         surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
-
         eglEnv.buildWindowSurface(surfaceTexture);
 
         dartEglEnv.buildOffScreenSurface();
-
-        videoEglEnv.buildOffScreenSurface();
 
         eglEnv.makeCurrent();
     }

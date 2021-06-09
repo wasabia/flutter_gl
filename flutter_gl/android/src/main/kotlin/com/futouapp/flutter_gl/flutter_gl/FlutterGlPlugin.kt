@@ -49,8 +49,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
 
       var options = args["options"] as Map<String, Any>;
 
-      val renderToVideo = args["renderToVideo"] as Boolean;
-
 
       if(textureID != null) {
         println("already initialized ........... ")
@@ -60,7 +58,7 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       val surfaceTexture = entry.surfaceTexture();
       textureID = entry.id().toInt();
 
-      var render = CustomRender(options, surfaceTexture, textureID, renderToVideo);
+      var render = CustomRender(options, surfaceTexture, textureID);
       renders[textureID] = render;
 
       println("initialize textureID: ${textureID}  render.screenScale: ${render.screenScale} ")
@@ -90,34 +88,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       val resp = render!!.updateTexture(sourceTexture);
 
       result.success(resp);
-    } else if(call.method == "initVideo") {
-      val args = call.arguments as Map<String, Any>;
-      val textureId = args["textureId"] as Int;
-
-      val render = this.renders[textureId];
-
-      val resp = render!!.initVideo(args);
-
-      result.success(resp);
-    } else if(call.method == "getFrameFileAt") {
-      val args = call.arguments as Map<String, Any>;
-      val textureId = args["textureId"] as Int;
-      val filePath = args["filePath"] as String;
-      val framePath = args["framePath"] as String;
-      val time = args["time"] as Double;
-
-      val render = this.renders[textureId];
-      render?.getFrameFileAt(filePath, time, framePath);
-      result.success(null);
-    } else if(call.method == "getVideoTextureAt") {
-      val args = call.arguments as Map<String, Any>;
-      val textureId = args["textureId"] as Int;
-      val filePath = args["filePath"] as String;
-      val time = args["time"] as Double;
-
-      val render = this.renders[textureId];
-      var _videoTexture = render?.getVideoTextureAt(filePath, time);
-      result.success(_videoTexture);
     } else if(call.method == "dispose") {
       val args = call.arguments as Map<String, Any>;
       val textureId = args["textureId"] as? Int;
