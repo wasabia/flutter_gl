@@ -462,8 +462,17 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
   }
 
-  bufferSubData(v0, v1, v2, v3) {
-    print(" OpenGL bufferSubData ...  ");
+
+  // different with WebGL
+  bufferSubData(target, offset, List<num> data, srcOffset, length) {
+    var _data = data.sublist(srcOffset, srcOffset + length);
+    List<double> _dataDouble = List<double>.from(data);
+    var _dataPtr = floatListToArrayPointer(_dataDouble);
+
+    // float 4 bytes per element
+    int size = length * 4;
+    gl.glBufferSubData(target, offset, size, _dataPtr.cast<Void>());
+    calloc.free(_dataPtr);
   }
 
   createVertexArray() {
