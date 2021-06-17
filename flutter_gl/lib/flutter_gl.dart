@@ -66,6 +66,11 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
 
+  updateSize(Map<String, dynamic> options) async {
+    await FlutterGlPlatform.instance.updateSize(options);
+    return;
+  }
+
   getFrameAt(String filePath, num time) async {
     return FlutterGlPlatform.instance.getFrameAt(filePath, time);
   }

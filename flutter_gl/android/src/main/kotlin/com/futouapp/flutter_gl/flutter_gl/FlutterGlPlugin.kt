@@ -61,7 +61,7 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       var render = CustomRender(options, surfaceTexture, textureID);
       renders[textureID] = render;
 
-      println("initialize textureID: ${textureID}  render.screenScale: ${render.screenScale} ")
+//      println("initialize textureID: ${textureID}  render.screenScale: ${render.screenScale} ")
 
       var resp = mapOf(
         "textureId" to textureID,
@@ -88,6 +88,14 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       val resp = render!!.updateTexture(sourceTexture);
 
       result.success(resp);
+    } else if(call.method == "updateSize") {
+      val args = call.arguments as Map<String, Any>;
+      val textureId = args["textureId"] as Int;
+      var render = this.renders[textureId];
+
+      render?.updateSize(args);
+
+      result.success(null);
     } else if(call.method == "dispose") {
       val args = call.arguments as Map<String, Any>;
       val textureId = args["textureId"] as? Int;

@@ -2,8 +2,10 @@ package com.futouapp.flutter_gl.flutter_gl
 
 
 import android.graphics.SurfaceTexture
-import android.opengl.*
-
+import android.opengl.EGL14
+import android.opengl.EGLConfig
+import android.opengl.EGLContext
+import android.opengl.EGLExt
 import android.opengl.GLU.gluErrorString
 import android.util.Log
 import android.view.Surface
@@ -17,13 +19,8 @@ class EglEnv {
     var eglSurface = EGL14.EGL_NO_SURFACE
     private var eglConfig: EGLConfig? = null
 
-    var width: Int;
-    var height: Int;
 
-    constructor(width: Int, height: Int) {
-        this.width = width;
-        this.height = height;
-    }
+    constructor() {}
 
     fun setupFBO(shareContext: EGLContext = EGL14.EGL_NO_CONTEXT) {
         var attribs = intArrayOf(
@@ -100,7 +97,7 @@ class EglEnv {
         }
     }
 
-    fun buildOffScreenSurface() {
+    fun buildOffScreenSurface(width: Int, height: Int) {
 
         val pbufferAttributes = intArrayOf(
                 EGL14.EGL_WIDTH, width,

@@ -101,14 +101,14 @@ class CustomRender {
 
     fun initEGL() {
 
-        shareEglEnv = EglEnv(glWidth, glHeight);
+        shareEglEnv = EglEnv();
         shareEglEnv.setupRender();
 
         ThreeEgl.setContext("shareContext", shareEglEnv.eglContext);
         println(" flutter gl set shareContext: ${shareEglEnv.eglContext} ....  ")
 
-        eglEnv = EglEnv(glWidth, glHeight);
-        dartEglEnv = EglEnv(glWidth, glHeight);
+        eglEnv = EglEnv();
+        dartEglEnv = EglEnv();
 
         eglEnv.setupRender(shareEglEnv.eglContext);
         dartEglEnv.setupRender(shareEglEnv.eglContext);
@@ -117,7 +117,7 @@ class CustomRender {
         surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
         eglEnv.buildWindowSurface(surfaceTexture);
 
-        dartEglEnv.buildOffScreenSurface();
+        dartEglEnv.buildOffScreenSurface(glWidth, glHeight);
 
         eglEnv.makeCurrent();
     }
@@ -143,6 +143,12 @@ class CustomRender {
         _res.addAll(this.eglEnv.getEgl());
         _res.addAll(this.dartEglEnv.getEgl());
         return _res;
+    }
+
+    fun updateSize(args: Map<String, Any>) {
+        var _width = args["width"] as Int;
+        var _height = args["height"] as Int;
+        surfaceTexture.setDefaultBufferSize(_width, _height)
     }
     
 
