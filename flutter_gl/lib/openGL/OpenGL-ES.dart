@@ -43,8 +43,6 @@ class OpenGLES extends OpenGLBase {
 
     _libOpenGLES = LibOpenGLES(libGLESv3!);
     _libEGL = LibEGL(libEGL!);
-    
-    print(" init OpenGLES 123 ");
   }
 
 
@@ -73,6 +71,8 @@ class OpenGLES extends OpenGLBase {
       /// bind context to this thread. All following OpenGL calls from this thread will use this context
       eglMakeCurrent(_display, _surface, _surface, _context);
     } else if(Platform.isIOS) {
+      var _d = egl.eglTest();
+      print("makeCurrent egl test ${_d} ");
       egl.makeCurrent(_context);
     }
   

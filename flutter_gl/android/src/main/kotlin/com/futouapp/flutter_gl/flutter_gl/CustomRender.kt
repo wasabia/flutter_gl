@@ -89,7 +89,9 @@ class CustomRender {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
 
 
-        this.worker.renderTexture(sourceTexture, null);
+//        this.worker.renderTexture(sourceTexture, null);
+        this.worker.renderWithFXAA(sourceTexture, glWidth, glHeight);
+
         glFinish();
 
         checkGlError("update texture 01");
@@ -148,7 +150,7 @@ class CustomRender {
     fun updateSize(args: Map<String, Any>) {
         var _width = args["width"] as Int;
         var _height = args["height"] as Int;
-        surfaceTexture.setDefaultBufferSize(_width, _height)
+//        surfaceTexture.setDefaultBufferSize(_width, _height)
     }
     
 

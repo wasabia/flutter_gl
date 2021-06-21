@@ -361,6 +361,9 @@ class OpenGLContextES extends OpenGL30Constant {
     } else if (data is Uint16List) {
       nativeData = uInt16ListToArrayPointer(data).cast();
       size = data.length * sizeOf<Uint16>();
+    } else if (data is Uint32List) {
+      nativeData = uInt32ListToArrayPointer(data).cast();
+      size = data.length * sizeOf<Uint32>();  
     } else {
       throw ('bufferData: unsupported native type ${data.runtimeType}');
     }
@@ -792,6 +795,12 @@ Pointer<Int32> int32ListToArrayPointer(List<int> list) {
 
 Pointer<Uint16> uInt16ListToArrayPointer(List<int> list) {
   final ptr = calloc<Uint16>(list.length);
+  ptr.asTypedList(list.length).setAll(0, list);
+  return ptr;
+}
+
+Pointer<Uint32> uInt32ListToArrayPointer(List<int> list) {
+  final ptr = calloc<Uint32>(list.length);
   ptr.asTypedList(list.length).setAll(0, list);
   return ptr;
 }

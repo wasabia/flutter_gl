@@ -68,11 +68,7 @@ public class OpenGLRender: NSObject, FlutterTexture {
 //    _egls[4] = Int64(self.dartEglEnv!.getSurface());
     _egls[5] = self.dartEglEnv!.getContext();
     
-    
-    print(" get egl ")
-    print(_egls);
-    
-
+  
     return _egls;
   }
   
