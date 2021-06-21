@@ -70,6 +70,10 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 
+  updateSize(Map<String, dynamic> options) async {
+    throw UnimplementedError('updateSize() has not been implemented.');
+  }
+
   dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }

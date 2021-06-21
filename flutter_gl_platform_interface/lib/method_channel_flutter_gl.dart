@@ -78,6 +78,18 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     _channel.invokeMethod('getFrameFileAt', _args);
   }
 
+  updateSize(Map<String, dynamic> options) async {
+    final _args = {
+      "textureId": textureId,
+      "width": options["width"],
+      "height": options["height"],
+    };
+
+    final _result = await _channel.invokeMethod('updateSize', _args);
+
+    return _result;
+  }
+
   dispose() {
 
     this.isDisposed = true;

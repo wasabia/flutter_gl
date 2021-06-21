@@ -52,6 +52,10 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return Future.sync(() => true);
   }
 
+  updateSize(Map<String, dynamic> options) async {
+    return;
+  }
+
   @override
   dispose() {
     // TODO: implement dispose
