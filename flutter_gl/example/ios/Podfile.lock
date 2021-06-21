@@ -2,10 +2,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_gl (0.0.3):
     - Flutter
-    - three3d_egl
+    - three3d_egl (~> 0.1.2)
   - path_provider (0.0.1):
     - Flutter
-  - three3d_egl (0.1.0)
+  - three3d_egl (0.1.2)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -26,10 +26,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  flutter_gl: 7817e87166236ace3f403437c5b204ff7d7c7a83
+  flutter_gl: e0239762450887b3fd64f79c9947ce7279874716
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  three3d_egl: 717745bf7ffb05be0e466a66513a6ecc1278bb1a
+  three3d_egl: 20dfae150a4ce95d94b61ebab2e3b6fea2089471
 
-PODFILE CHECKSUM: 81af436a2f4bce19f519fb3a3fa422ca90803344
+PODFILE CHECKSUM: 8baa96de485bcb0aea5a26510e6a7160d93feee8
 
 COCOAPODS: 1.10.1
