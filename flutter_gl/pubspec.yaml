@@ -1,6 +1,6 @@
 name: flutter_gl
 description: Call OpenGL ES by Dart ffi, Support iOS, Android, Web.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/wasabia/flutter_gl
 
 environment:

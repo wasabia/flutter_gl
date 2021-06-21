@@ -51,7 +51,9 @@ public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
       
       self.textureId = self.registry.register(render);
       
-      print(" initinalize textureId \(self.textureId) ")
+      
+      
+      print(" initinalize textureId \(self.textureId) \(Thread.current) ")
       
       self.renders[textureId!] = render;
       

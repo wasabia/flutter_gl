@@ -19,8 +19,7 @@ A new flutter plugin project.
   s.swift_version = "5.0"
   s.ios.deployment_target = "8.0"
   
-  s.dependency "three3d_egl"
-
+  s.dependency "three3d_egl", '~> 0.1.2'
   # s.vendored_frameworks = "Frameworks/three3d_egl.framework"
   # s.preserve_path = "Frameworks/*"
 

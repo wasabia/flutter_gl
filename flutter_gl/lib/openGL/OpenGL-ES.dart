@@ -88,8 +88,7 @@ class OpenGLES extends OpenGLBase {
 
     var _v = egl.eglMakeCurrent(display, draw, read, context);
 
-    print(" OpenGLES eglMakeCurrent _v: ${_v} ");
-
+  
     final nativeCallResult = _v == 1;
 
     if (nativeCallResult) {
@@ -104,7 +103,7 @@ class OpenGLES extends OpenGLBase {
     // 切出当前的上下文
     eglMakeCurrent(_display, 0, 0, 0);
 
-    print(" OpenGL-ES dispose .... ");
+    print(" OpenGLES dispose .... ");
   }
 
 }

@@ -43,7 +43,7 @@ public class OpenGLRender: NSObject, FlutterTexture {
     
     super.init();
     
-    self.setup();    
+    self.setup();
   }
   
   

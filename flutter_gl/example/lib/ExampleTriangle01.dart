@@ -63,6 +63,8 @@ class _MyAppState extends State<ExampleTriangle01> {
     
     await flutterGlPlugin.initialize(options: _options);
 
+    print(" flutterGlPlugin: textureid: ${flutterGlPlugin.textureId} ");
+
     setState(() { });
 
     // web need wait dom ok!!!
@@ -83,7 +85,7 @@ class _MyAppState extends State<ExampleTriangle01> {
     }
     
 
-    prepare();
+    // prepare();
 
     animate();
   }
@@ -99,8 +101,11 @@ class _MyAppState extends State<ExampleTriangle01> {
     dpr = mq.devicePixelRatio;
 
     print(" screenSize: ${screenSize} dpr: ${dpr} ");
+    
 
-    initPlatformState();
+    Future.delayed(Duration(milliseconds: 300), () {
+      initPlatformState();
+    });
   }
 
   @override
@@ -184,7 +189,7 @@ class _MyAppState extends State<ExampleTriangle01> {
     _gl.clearColor(0.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-    _gl.drawArrays(_gl.TRIANGLES, 0, n);
+    // _gl.drawArrays(_gl.TRIANGLES, 0, n);
     
     _gl.finish();
 
@@ -199,14 +204,15 @@ class _MyAppState extends State<ExampleTriangle01> {
   prepare() {
     final _gl = flutterGlPlugin.gl;
 
-    var vs = """
+    var vs = """#version 300 es
     attribute vec4 a_Position;
     void main() {
         gl_Position = a_Position;
     }
     """;
 
-    var fs = """
+    var fs = """#version 300 es
+    out vec4 gl_FragColor;
     void main() {
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
@@ -287,7 +293,7 @@ class _MyAppState extends State<ExampleTriangle01> {
         gl.compileShader(shader);
         var _res = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
         if (_res == 0 || _res == false) {
-            print("Error compiling shader: " + gl.getShaderInfoLog(shader));
+            print("Error compiling shader: ${gl.getShaderInfoLog(shader)}");
             return;
         }
         return shader;
