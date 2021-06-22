@@ -75,9 +75,8 @@ class _MyAppState extends State<ExampleTriangle01> {
   }
 
   setup() async {
-
+    // web no need use fbo
     if(!kIsWeb) {
-      // web no need use fbo
       await flutterGlPlugin.prepareContext();
 
       setupDefaultFBO();
@@ -85,7 +84,7 @@ class _MyAppState extends State<ExampleTriangle01> {
     }
     
 
-    // prepare();
+    prepare();
 
     animate();
   }
@@ -186,10 +185,10 @@ class _MyAppState extends State<ExampleTriangle01> {
     num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    _gl.clearColor(0.0, 0.0, _blue, 1.0);
+    _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-    // _gl.drawArrays(_gl.TRIANGLES, 0, n);
+    _gl.drawArrays(_gl.TRIANGLES, 0, n);
     
     _gl.finish();
 
@@ -204,17 +203,16 @@ class _MyAppState extends State<ExampleTriangle01> {
   prepare() {
     final _gl = flutterGlPlugin.gl;
 
-    var vs = """#version 300 es
+    var vs = """
     attribute vec4 a_Position;
     void main() {
         gl_Position = a_Position;
     }
     """;
 
-    var fs = """#version 300 es
-    out vec4 gl_FragColor;
+    var fs = """
     void main() {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
     }
     """;
 

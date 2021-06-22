@@ -25,8 +25,6 @@ public class RenderWorker: NSObject {
   var vertexBuffer4FBO: GLuint = 0;
   
 
-  var frameBuffer: GLuint?;
-  
   var openGLProgram: OpenGLProgram;
   var program: GLuint?;
   

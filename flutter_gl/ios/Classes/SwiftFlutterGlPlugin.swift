@@ -3,7 +3,7 @@ import UIKit
 
 public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
   
-  var renders: [Int64: OpenGLRender];
+  var renders: [Int64: CustomRender];
 
   var registry: FlutterTextureRegistry;
   var textureId: Int64?;
@@ -18,7 +18,7 @@ public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
   }
   
   init(textureRegistry: FlutterTextureRegistry) {
-    self.renders = [Int64: OpenGLRender]();
+    self.renders = [Int64: CustomRender]();
     self.registry = textureRegistry;
   }
   
@@ -40,7 +40,7 @@ public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
       let options = args["options"] as! Dictionary<String, Any>;
        let renderToVideo = args["renderToVideo"] as! Bool;
       
-      let render = OpenGLRender(
+      let render = CustomRender(
         options: options,
         renderToVideo: renderToVideo,
         onNewFrame: {() -> Void in
@@ -51,9 +51,6 @@ public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
       
       self.textureId = self.registry.register(render);
       
-      
-      
-      print(" initinalize textureId \(self.textureId) \(Thread.current) ")
       
       self.renders[textureId!] = render;
       
@@ -102,8 +99,6 @@ public class SwiftFlutterGlPlugin: NSObject, FlutterPlugin {
 
       let textureId = args["textureId"] as? Int64;
       let sourceTexture = args["sourceTexture"] as? Int64;
-
-      print("updateTexture textureId: \(textureId) sourceTexture: \(sourceTexture)  ");
 
       let render = self.renders[textureId!];
 

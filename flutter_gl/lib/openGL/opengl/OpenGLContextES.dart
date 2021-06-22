@@ -39,8 +39,11 @@ class OpenGLContextES extends OpenGL30Constant {
     print("OpenGLES getExtension key: ${key} _v: ${_v} ");
     
     String _vstr = _v.cast<Utf8>().toDartString();
-    calloc.free(_v);
     List<String> _extensions = _vstr.split(" ");
+
+    // on iOS crash ... 
+    // calloc.free(_v);
+   
     return _extensions;
   }
 

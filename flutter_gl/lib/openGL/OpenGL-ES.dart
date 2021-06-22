@@ -63,17 +63,18 @@ class OpenGLES extends OpenGLBase {
   }
 
   makeCurrent(List<int> egls) {
+    _display = egls[3];
+    _surface = egls[4];
+    _context = egls[5];
 
     if(Platform.isAndroid) {
-      _display = egls[3];
-      _surface = egls[4];
-      _context = egls[5];
       /// bind context to this thread. All following OpenGL calls from this thread will use this context
       eglMakeCurrent(_display, _surface, _surface, _context);
     } else if(Platform.isIOS) {
       var _d = egl.eglTest();
-      print("makeCurrent egl test ${_d} ");
-      egl.makeCurrent(_context);
+      // print("makeCurrent egl test ${_d} ");
+      var _result = egl.makeCurrent(_context);
+      // print("ios makeCurrent _result: ${_result} ");
     }
   
   }

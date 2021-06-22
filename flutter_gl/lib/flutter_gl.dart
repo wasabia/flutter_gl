@@ -50,8 +50,6 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   prepareContext() async {
     egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
 
-    print("prepareContext egls: ${egls}  ");
-
     openGL.makeCurrent(egls);
   }
 
