@@ -2091,7 +2091,7 @@ class LibOpenGLES {
   void glUniform4fv(
     int location,
     int count,
-    ffi.Pointer<ffi.Float> value,
+    ffi.Pointer value,
   ) {
     return _glUniform4fv(
       location,
@@ -13307,13 +13307,13 @@ typedef _dart_glUniform4f = void Function(
 typedef _c_glUniform4fv = ffi.Void Function(
   ffi.Int32 location,
   ffi.Int32 count,
-  ffi.Pointer<ffi.Float> value,
+  ffi.Pointer value,
 );
 
 typedef _dart_glUniform4fv = void Function(
   int location,
   int count,
-  ffi.Pointer<ffi.Float> value,
+  ffi.Pointer value,
 );
 
 typedef _c_glUniform4i = ffi.Void Function(

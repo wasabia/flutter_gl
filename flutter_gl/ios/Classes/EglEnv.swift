@@ -38,7 +38,7 @@ public class EglEnv : NSObject {
   }
   
   func dispose() {
-    
+    self.context = nil;
   }
   
 }

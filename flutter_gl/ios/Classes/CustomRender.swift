@@ -20,7 +20,7 @@ public class CustomRender: NSObject, FlutterTexture {
   var textureCache: CVOpenGLESTextureCache?;
   var texture: CVOpenGLESTexture? = nil;
 
-
+  var eAGLShareContext: EAGLContext?;
   var eglEnv: EglEnv?;
   var dartEglEnv: EglEnv?;
 
@@ -44,6 +44,8 @@ public class CustomRender: NSObject, FlutterTexture {
     self.screenScale = UIScreen.main.scale;
     
     super.init();
+
+    self.eAGLShareContext = EAGLContext.init(api: EAGLRenderingAPI.openGLES3);
     
     self.setup();
   }
@@ -103,7 +105,7 @@ public class CustomRender: NSObject, FlutterTexture {
     let glWidth = width * Double(self.screenScale);
     let glHeight = height * Double(self.screenScale);
 
-    var eAGLShareContext = EAGLContext.init(api: EAGLRenderingAPI.openGLES3);
+    
     
     self.eglEnv = EglEnv();
     self.dartEglEnv = EglEnv();
@@ -117,24 +119,25 @@ public class CustomRender: NSObject, FlutterTexture {
   
     ThreeEgl.setContext(key: 3, context: eAGLShareContext!);
 
+    
 //    var size: GLint = 0;
 //    glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &size);
 //    print("GL_MAX_TEXTURE_SIZE: \(size) ")
     
-    initGL();
+    initGL(context: self.eglEnv!.context!);
  
   }
   
-  func initGL() {
+  func initGL(context: EAGLContext) {
     
     let glWidth = width * Double(self.screenScale);
     let glHeight = height * Double(self.screenScale);
     
-    print("initGL  glWidth \(glWidth) glHeight: \(glHeight)   ");
-    
+    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)   ");
+
     self.createCVBufferWithSize(
       size: CGSize(width: glWidth, height: glHeight),
-      context: self.eglEnv!.context!
+      context: context
     );
     
     checkGlError(op: "EglEnv initGL 11...")
@@ -224,9 +227,17 @@ public class CustomRender: NSObject, FlutterTexture {
     
     ThreeEgl.remove(key: self.eglEnv!.getContext());
     ThreeEgl.remove(key: self.dartEglEnv!.getContext());
+    ThreeEgl.remove(key: 3);
+
+    self.eAGLShareContext = nil;
     
     self.eglEnv!.dispose();
     self.dartEglEnv!.dispose();
+    
+    self.eglEnv = nil;
+    self.dartEglEnv = nil;
+    
+    EAGLContext.setCurrent(nil);
   }
   
 }

@@ -13,13 +13,6 @@ import java.util.concurrent.Semaphore
 
 
 class CustomRender {
-    // Make sure to initialize Filament first
-    // This loads the JNI library needed by most API calls
-
-    companion object {
-        lateinit var sharedEglEnv: EglEnv;
-    }
-
 
     var disposed = false;
 
@@ -56,12 +49,6 @@ class CustomRender {
         renderThread.start()
         renderHandler = Handler(renderThread.looper)
 
-
-        setup();
-    }
-
-
-    fun setup() {
         val wm = this.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager;
         val display = wm.getDefaultDisplay()
 
@@ -70,6 +57,16 @@ class CustomRender {
 
         val density = dm.density;
         screenScale = density;
+
+        this.executeSync {
+            setup();
+        }
+
+    }
+
+
+    fun setup() {
+
 
         glWidth = (width * screenScale).toInt()
         glHeight = (height * screenScale).toInt()
@@ -83,19 +80,25 @@ class CustomRender {
     }
 
     fun updateTexture(sourceTexture: Int): Boolean {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
 
 
-//        this.worker.renderTexture(sourceTexture, null);
-        this.worker.renderWithFXAA(sourceTexture, glWidth, glHeight);
+        this.execute {
 
-        glFinish();
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        checkGlError("update texture 01");
-        eglEnv.swapBuffers();
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
+
+
+            this.worker.renderTexture(sourceTexture, null);
+//        this.worker.renderWithFXAA(sourceTexture, glWidth, glHeight);
+
+            glFinish();
+
+            checkGlError("update texture 01");
+            eglEnv.swapBuffers();
+
+        }
 
         return true;
     }
@@ -107,7 +110,6 @@ class CustomRender {
         shareEglEnv.setupRender();
 
         ThreeEgl.setContext("shareContext", shareEglEnv.eglContext);
-        println(" flutter gl set shareContext: ${shareEglEnv.eglContext} ....  ")
 
         eglEnv = EglEnv();
         dartEglEnv = EglEnv();
@@ -156,6 +158,7 @@ class CustomRender {
 
     fun dispose() {
         disposed = true;
+        this.shareEglEnv.dispose();
         this.eglEnv.dispose();
         this.dartEglEnv.dispose();
         this.worker.dispose();

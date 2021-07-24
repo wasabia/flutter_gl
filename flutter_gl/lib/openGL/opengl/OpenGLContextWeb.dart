@@ -70,6 +70,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texImage3D(target, level, internalformat, width, height, depth, border,
       format, type, data) {
+
+    print(" flutter gl texImage3D: target: ${target} type: ${type} format: ${format}   ");
+
+
     return gl.texImage3D(target, level, internalformat, width, height, depth, border,
       format, type, data);
   }

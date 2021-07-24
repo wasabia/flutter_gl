@@ -125,12 +125,14 @@ class OpenGLContextES extends OpenGL30Constant {
   texImage3D(int target, int level, int internalformat, int width, int height, int depth, int border,
       int format, int type, data) {
 
+    print(" flutter gl texImage3D: target: ${target} type: ${type} format: ${format}   ");
+
     Pointer<Int8> nativeBuffer;
     if (data != null) {
       nativeBuffer = calloc<Int8>(data.length);
       nativeBuffer.asTypedList(data.length).setAll(0, data);
       gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
-      format, type, nativeBuffer.cast());
+      format, type, nativeBuffer.cast<Void>());
       calloc.free(nativeBuffer);
     } else {
       gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
@@ -721,8 +723,15 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glUniform4iv(v0, v1);
   }
 
-  uniform4fv(v0, v1) {
-    return gl.glUniform4fv(v0, v1);
+  uniform4fv(location, List<num> value) {
+    int count = value.length;
+    final valuePtr = calloc<Float>(count);
+    List<double> _values = value.map((e) => e.toDouble()).toList().cast();
+    valuePtr.asTypedList(count).setAll(0, _values);
+
+    print("uniform4fv location: ${location} value: ${value} ");
+
+    return gl.glUniform4fv(location, count, valuePtr.cast<Void>());
   }
 
   uniform4f(location, num v0, num v1, num v2, num v3) {
