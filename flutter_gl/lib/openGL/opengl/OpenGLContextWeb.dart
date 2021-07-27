@@ -220,7 +220,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.bindBuffer(v0, v1);
   }
 
-  bufferData(int target, data, int usage) {
+  bufferData(int target, int size, data, int usage) {
     return gl.bufferData(target, data, usage);
   }
 
