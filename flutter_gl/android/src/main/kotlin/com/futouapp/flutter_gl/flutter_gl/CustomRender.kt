@@ -6,8 +6,6 @@ import android.graphics.SurfaceTexture
 import android.opengl.GLES32.*
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import com.futouapp.threeegl.ThreeEgl
 import java.util.concurrent.Semaphore
 
@@ -21,12 +19,12 @@ class CustomRender {
     var width: Int;
     var height: Int;
 
-    var glWidth: Int = 0;
-    var glHeight: Int = 0;
+    var glWidth: Int = 1;
+    var glHeight: Int = 1;
 
     var surfaceTexture: SurfaceTexture;
     var textureId: Int;
-    var screenScale = 1.0f;
+    var screenScale: Double = 1.0;
     var context: Context;
 
     lateinit var eglEnv: EglEnv;
@@ -42,21 +40,14 @@ class CustomRender {
         this.options = options;
         this.width = options["width"] as Int;
         this.height = options["height"] as Int;
+        screenScale = options["dpr"] as Double;
+
         this.surfaceTexture = surfaceTexture;
         this.textureId = textureId;
         this.context = FlutterGlPlugin.context;
 
         renderThread.start()
         renderHandler = Handler(renderThread.looper)
-
-        val wm = this.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager;
-        val display = wm.getDefaultDisplay()
-
-        var dm = DisplayMetrics()
-        display.getMetrics(dm);
-
-        val density = dm.density;
-        screenScale = density;
 
         this.executeSync {
             setup();
@@ -66,15 +57,12 @@ class CustomRender {
 
 
     fun setup() {
-
-
         glWidth = (width * screenScale).toInt()
         glHeight = (height * screenScale).toInt()
 
         this.initEGL();
 
         this.worker = RenderWorker();
-
         this.worker.setup();
 
     }
@@ -91,7 +79,6 @@ class CustomRender {
 
 
             this.worker.renderTexture(sourceTexture, null);
-//        this.worker.renderWithFXAA(sourceTexture, glWidth, glHeight);
 
             glFinish();
 
@@ -123,6 +110,7 @@ class CustomRender {
 
         dartEglEnv.buildOffScreenSurface(glWidth, glHeight);
 
+        eglEnv.makeCurrent();
         eglEnv.makeCurrent();
     }
 

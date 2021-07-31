@@ -25,6 +25,7 @@ class OpenGLWeb extends OpenGLBase {
     _gl ??= getContext({
       "gl": element.getContext("webgl2", {"alpha": _alpha, "antialias": _antialias})
     });
+    
     return _gl;
   }
 

@@ -49,11 +49,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
 
       var options = args["options"] as Map<String, Any>;
 
-
-      if(textureID != null) {
-        println("already initialized ........... ")
-      }
-
       val entry = registry.createSurfaceTexture();
       val surfaceTexture = entry.surfaceTexture();
       textureID = entry.id().toInt();
