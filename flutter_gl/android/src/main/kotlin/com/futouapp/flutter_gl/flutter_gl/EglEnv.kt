@@ -179,7 +179,7 @@ class EglEnv {
 
             var errorInfo = gluErrorString(error);
 
-            throw RuntimeException(msg + ": EGL error: 0x" + Integer.toHexString(error) + "errorInfo: ${errorInfo}")
+//            throw RuntimeException(msg + ": EGL error: 0x" + Integer.toHexString(error) + "errorInfo: ${errorInfo}")
         }
     }
 
