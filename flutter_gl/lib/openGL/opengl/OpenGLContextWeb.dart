@@ -384,6 +384,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.drawElements(mode, count, type, offset);
   }
 
+  drawBuffers(buffers) {
+    return gl.drawBuffers(buffers);
+  }
+
   createShader(type) {
     return gl.createShader(type);
   }

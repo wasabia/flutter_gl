@@ -2,10 +2,8 @@ package com.futouapp.flutter_gl.flutter_gl
 
 
 import android.graphics.SurfaceTexture
-import android.opengl.EGL14
-import android.opengl.EGLConfig
-import android.opengl.EGLContext
-import android.opengl.EGLExt
+import android.opengl.*
+import android.opengl.EGL14.eglChooseConfig
 import android.opengl.GLU.gluErrorString
 import android.util.Log
 import android.view.Surface
@@ -28,6 +26,8 @@ class EglEnv {
                 EGL14.EGL_GREEN_SIZE, 8,
                 EGL14.EGL_BLUE_SIZE, 8,
                 EGL14.EGL_ALPHA_SIZE, 8,
+                EGL14.EGL_DEPTH_SIZE, 16,
+                EGL14.EGL_STENCIL_SIZE, 8,
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_SURFACE_TYPE, EGL14.EGL_PBUFFER_BIT,
                 EGL14.EGL_SAMPLE_BUFFERS, 1,

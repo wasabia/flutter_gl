@@ -61,10 +61,12 @@ class OpenGLContextES extends OpenGL30Constant {
       MAX_FRAGMENT_UNIFORM_VECTORS,
       MAX_SAMPLES,
       MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+      GL_SCISSOR_BOX,
+      GL_VIEWPORT
     ];
 
     if (_intValues.indexOf(key) >= 0) {
-      final v = calloc<Int32>();
+      final v = calloc<Int32>(4);
       gl.glGetIntegerv(key, v);
       return v.value;
     } else {
@@ -368,7 +370,6 @@ class OpenGLContextES extends OpenGL30Constant {
   vertexAttribPointer(int index, int size, int type, bool normalized, int stride, int offset) {
     var offsetPointer = Pointer<Void>.fromAddress(offset);
     gl.glVertexAttribPointer(index, size, type, normalized ? 1 : 0, stride, offsetPointer.cast<Void>());
-    calloc.free(offsetPointer);
   }
 
   drawArrays(v0, v1, v2) {
@@ -585,6 +586,16 @@ class OpenGLContextES extends OpenGL30Constant {
     var offSetPointer = Pointer<Void>.fromAddress(offset);
     gl.glDrawElements(mode, count, type, offSetPointer.cast<Void>());
     calloc.free(offSetPointer);
+    return;
+  }
+
+  drawBuffers(buffers) {
+     final ptr = calloc<Uint32>(buffers.length);
+    ptr.asTypedList(buffers.length).setAll(0, List<int>.from(buffers));
+
+    gl.glDrawBuffers(buffers.length, ptr);
+
+    calloc.free(ptr);
     return;
   }
 
