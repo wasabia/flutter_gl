@@ -716,7 +716,7 @@ class OpenGLContextES extends OpenGL30Constant {
     List<double> _values = value.map((e) => e.toDouble()).toList().cast();
     valuePtr.asTypedList(count).setAll(0, _values);
 
-    print("uniform4fv location: ${location} value: ${value} ");
+    // print("uniform4fv location: ${location} value: ${value} ");
 
     return gl.glUniform4fv(location, count, valuePtr.cast<Void>());
   }
