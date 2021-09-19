@@ -75,6 +75,7 @@ class _MyAppState extends State<ExampleDemoTest> {
 
     animate();
 
+    setState(() {});
     print(" setup done.... ");
   }
 
@@ -173,7 +174,7 @@ class _MyAppState extends State<ExampleDemoTest> {
 
   }
 
-  render() async {  
+  render() {  
     final _gl = flutterGlPlugin.gl;
 
     int _current = DateTime.now().millisecondsSinceEpoch;
@@ -182,22 +183,18 @@ class _MyAppState extends State<ExampleDemoTest> {
 
     // Clear canvas
     // _gl.clearColor(1.0, 0.0, _blue, 1.0);
-    // _gl.clear(_gl.COLOR_BUFFER_BIT);
+    _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-    var error = _gl.getError();
+     
+    var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
+    print(" colorLocation: ${colorLocation} ");
 
-    print(" error: ${error} ");
+    var u_color = List<num>.from([1.0, _blue, 0.0, 1.0]);
 
-    // var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
-    // _gl.uniform4fv(colorLocation, [1.0, 0.0, 1.0, 1.0]);
+    _gl.uniform4fv(colorLocation, u_color);
 
-    _gl.drawArrays(_gl.POINTS, 0, n);
 
-    var error2 = _gl.getError();
-
-    print(" error2: ${error2} ");
-    
-    // print(" render n: ${n} colorLocation: ${colorLocation} ");
+    _gl.drawArrays(_gl.TRIANGLES, 0, n);
 
     _gl.finish();
 
@@ -205,8 +202,8 @@ class _MyAppState extends State<ExampleDemoTest> {
     if(!kIsWeb) {
       flutterGlPlugin.updateTexture(sourceTexture);
     }
-    var error3 = _gl.getError();
-    print(" error3: ${error3} ");
+
+
   }
 
 
@@ -222,22 +219,22 @@ class _MyAppState extends State<ExampleDemoTest> {
 
     var fs = """
     precision mediump float;
-
+    uniform vec4 u_color;
     void main() {
-      gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+      gl_FragColor = u_color;
     }
     """;
 
     if (!initShaders(_gl, vs, fs)) {
-        print('Failed to intialize shaders.');
-        return;
+        throw('Failed to intialize shaders.');
+ 
     }
 
     // Write the positions of vertices to a vertex shader
     n = initVertexBuffers(_gl);
     if (n < 0) {
-        print('Failed to set the positions of the vertices');
-        return;
+        throw('Failed to set the positions of the vertices');
+ 
     }
   }
 
@@ -246,9 +243,9 @@ class _MyAppState extends State<ExampleDemoTest> {
       // Vertices
       var dim = 3;
       var vertices = new Float32List.fromList([
-          0, 0.5, 0,  // Vertice #1
-          -0.5, -0.5, 0, // Vertice #2
-          0.5, -0.5, 0 // Vertice #3
+          0.0, 0.5, 0.0,  // Vertice #1
+          -0.5, -0.5, 0.0, // Vertice #2
+          0.5, -0.5, 0.0 // Vertice #3
       ]);
 
       // Create a buffer object
@@ -264,7 +261,7 @@ class _MyAppState extends State<ExampleDemoTest> {
       final verticesPtr = calloc<Float>(vertices.length);
       verticesPtr.asTypedList(vertices.length).setAll(0, vertices);
 
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, verticesPtr, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.length * Float32List.bytesPerElement, verticesPtr, gl.STATIC_DRAW);
 
       // Assign the vertices in buffer object to a_Position variable
       var a_Position = gl.getAttribLocation(glProgram, 'a_Position');
@@ -275,6 +272,7 @@ class _MyAppState extends State<ExampleDemoTest> {
       gl.vertexAttribPointer(a_Position, dim, gl.FLOAT, false, Float32List.bytesPerElement * 3, 0);
       gl.enableVertexAttribArray(a_Position);
 
+     
       // Return number of vertices
       return (vertices.length / dim).toInt();
     }

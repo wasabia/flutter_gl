@@ -718,7 +718,7 @@ class OpenGLContextES extends OpenGL30Constant {
 
     // print("uniform4fv location: ${location} value: ${value} ");
 
-    return gl.glUniform4fv(location, count, valuePtr.cast<Void>());
+    return gl.glUniform4fv(location, count ~/ 4, valuePtr.cast<Void>());
   }
 
   uniform4f(location, num v0, num v1, num v2, num v3) {
