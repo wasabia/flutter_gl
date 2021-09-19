@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'dart:ui' as ui;
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-
-import 'dart:ui' as ui;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +15,11 @@ import 'package:flutter_gl/flutter_gl.dart';
 
 
 
-class ExampleTriangle01 extends StatefulWidget {
+class ExampleDemoTest extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<ExampleTriangle01> {
+class _MyAppState extends State<ExampleDemoTest> {
   
   late FlutterGlPlugin flutterGlPlugin;
 
@@ -49,8 +47,7 @@ class _MyAppState extends State<ExampleTriangle01> {
   @override
   void initState() {
     super.initState();
-
-    print(" init state..... ");
+  
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -66,31 +63,19 @@ class _MyAppState extends State<ExampleTriangle01> {
     };
     
     await flutterGlPlugin.initialize(options: _options);
+    await flutterGlPlugin.prepareContext();
+    setupDefaultFBO();
+    sourceTexture = defaultFramebufferTexture;
 
-    print(" flutterGlPlugin: textureid: ${flutterGlPlugin.textureId} ");
-
-    setState(() { });
-
-    // web need wait dom ok!!!
-    Future.delayed(Duration(milliseconds: 100), () {
-      setup();
-    });
-  
+    setup();
   }
 
   setup() async {
-    // web no need use fbo
-    if(!kIsWeb) {
-      await flutterGlPlugin.prepareContext();
-
-      setupDefaultFBO();
-      sourceTexture = defaultFramebufferTexture;
-    }
-    
-
     prepare();
 
     animate();
+
+    print(" setup done.... ");
   }
 
   initSize(BuildContext context) {
@@ -106,9 +91,7 @@ class _MyAppState extends State<ExampleTriangle01> {
     print(" screenSize: ${screenSize} dpr: ${dpr} ");
     
 
-    Future.delayed(Duration(milliseconds: 300), () {
-      initPlatformState();
-    });
+    initPlatformState();
   }
 
   @override
@@ -147,7 +130,16 @@ class _MyAppState extends State<ExampleTriangle01> {
             }
           )
         ),
-        
+        Row(
+          children: [
+            TextButton(
+              onPressed: () {
+                render();
+              }, 
+              child: Text("Render")
+            )
+          ],
+        )
       ],
     );
   }
@@ -155,10 +147,10 @@ class _MyAppState extends State<ExampleTriangle01> {
   animate() {
     render();
     
-    Future.delayed(Duration(milliseconds: 40), () {
+    // Future.delayed(Duration(milliseconds: 40), () {
       
-      animate();
-    });
+    //   animate();
+    // });
 
   }
 
@@ -189,18 +181,32 @@ class _MyAppState extends State<ExampleTriangle01> {
     num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    _gl.clearColor(1.0, 0.0, _blue, 1.0);
-    _gl.clear(_gl.COLOR_BUFFER_BIT);
+    // _gl.clearColor(1.0, 0.0, _blue, 1.0);
+    // _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-    _gl.drawArrays(_gl.TRIANGLES, 0, n);
+    var error = _gl.getError();
+
+    print(" error: ${error} ");
+
+    // var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
+    // _gl.uniform4fv(colorLocation, [1.0, 0.0, 1.0, 1.0]);
+
+    _gl.drawArrays(_gl.POINTS, 0, n);
+
+    var error2 = _gl.getError();
+
+    print(" error2: ${error2} ");
     
+    // print(" render n: ${n} colorLocation: ${colorLocation} ");
+
     _gl.finish();
 
 
     if(!kIsWeb) {
       flutterGlPlugin.updateTexture(sourceTexture);
     }
-    
+    var error3 = _gl.getError();
+    print(" error3: ${error3} ");
   }
 
 
@@ -210,13 +216,15 @@ class _MyAppState extends State<ExampleTriangle01> {
     var vs = """
     attribute vec4 a_Position;
     void main() {
-        gl_Position = a_Position;
+      gl_Position = a_Position;
     }
     """;
 
     var fs = """
+    precision mediump float;
+
     void main() {
-        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+      gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
     }
     """;
 
@@ -255,9 +263,8 @@ class _MyAppState extends State<ExampleTriangle01> {
  
       final verticesPtr = calloc<Float>(vertices.length);
       verticesPtr.asTypedList(vertices.length).setAll(0, vertices);
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, verticesPtr, gl.STATIC_DRAW);
 
-      // gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, verticesPtr, gl.STATIC_DRAW);
 
       // Assign the vertices in buffer object to a_Position variable
       var a_Position = gl.getAttribLocation(glProgram, 'a_Position');
@@ -285,6 +292,7 @@ class _MyAppState extends State<ExampleTriangle01> {
       gl.attachShader(glProgram, fragmentShader);
       gl.linkProgram(glProgram);
       var _res = gl.getProgramParameter(glProgram, gl.LINK_STATUS);
+      print("getProgramParameter: ${_res}  ");
       if (_res == false || _res == 0) {
           print("Unable to initialize the shader program");
           return false;
@@ -301,6 +309,9 @@ class _MyAppState extends State<ExampleTriangle01> {
         gl.shaderSource(shader, src);
         gl.compileShader(shader);
         var _res = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+
+        print("makeShader getShaderParameter: ${_res}");
+
         if (_res == 0 || _res == false) {
             print("Error compiling shader: ${gl.getShaderInfoLog(shader)}");
             return;
