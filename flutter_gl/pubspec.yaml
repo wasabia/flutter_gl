@@ -12,11 +12,8 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_gl_platform_interface:
-    path: ../flutter_gl_platform_interface
-  flutter_gl_web:
-    path: ../flutter_gl_web
-    
+  flutter_gl_platform_interface: ^0.0.1
+  flutter_gl_web: ^0.0.1
   http: ^0.13.1
   universal_html: ^2.0.7
   ffi:
