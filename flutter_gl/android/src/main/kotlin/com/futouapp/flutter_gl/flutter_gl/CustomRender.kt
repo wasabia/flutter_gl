@@ -137,13 +137,6 @@ class CustomRender {
         return _res;
     }
 
-    fun updateSize(args: Map<String, Any>) {
-        var _width = args["width"] as Int;
-        var _height = args["height"] as Int;
-//        surfaceTexture.setDefaultBufferSize(_width, _height)
-    }
-    
-
     fun dispose() {
         disposed = true;
         this.shareEglEnv.dispose();

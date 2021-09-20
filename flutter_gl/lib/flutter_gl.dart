@@ -28,7 +28,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     this.dpr = dpr;
   }
 
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
+  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
     Map<String, dynamic> _options = {
       "width": width,
       "height": height,
@@ -37,7 +37,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     
     _options.addAll(options ?? {});
 
-    final resp = await FlutterGlPlatform.instance.initialize(options: _options, renderToVideo: renderToVideo);
+    final resp = await FlutterGlPlatform.instance.initialize(options: _options);
     textureId = resp["textureId"];
 
     // used for web
@@ -58,28 +58,9 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return result;
   }
   
-  Future<Map<String, dynamic>> initVideo(Map<String, dynamic> info) async {
-    var result = Map<String, dynamic>.from(await FlutterGlPlatform.instance.initVideo(info));
-    return result;
-  }
-
   Future<bool> updateTexture(sourceTexture) {
     return FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
-
-  updateSize(Map<String, dynamic> options) async {
-    await FlutterGlPlatform.instance.updateSize(options);
-    return;
-  }
-
-  getFrameAt(String filePath, num time) async {
-    return FlutterGlPlatform.instance.getFrameAt(filePath, time);
-  }
-
-  getFrameFileAt(String filePath, num time, String framePath) async {
-    return FlutterGlPlatform.instance.getFrameFileAt(filePath, time, framePath);
-  }
-
 
   dispose() {
     return FlutterGlPlatform.instance.dispose();

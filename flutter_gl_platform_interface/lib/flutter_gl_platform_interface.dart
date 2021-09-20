@@ -46,7 +46,7 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion has not been implemented.');
   }
 
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
+  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 
@@ -54,25 +54,10 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('getEgl() has not been implemented.');
   }
 
-  Future<Map<String, dynamic>> initVideo(Map<String, dynamic> info) async {
-    throw UnimplementedError('getEgl() has not been implemented.');
-  }
-
-  getFrameAt(String filePath, num time) async {
-    throw UnimplementedError('getFrameAt() has not been implemented.');
-  }
-
-  getFrameFileAt(String filePath, num time, String framePath) async {
-    throw UnimplementedError('getFrameFileAt() has not been implemented.');
-  }
-
   Future<bool> updateTexture(sourceTexture) {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 
-  updateSize(Map<String, dynamic> options) async {
-    throw UnimplementedError('updateSize() has not been implemented.');
-  }
 
   dispose() {
     throw UnimplementedError('dispose() has not been implemented.');

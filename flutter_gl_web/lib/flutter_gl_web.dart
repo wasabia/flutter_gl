@@ -28,7 +28,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
 
 
 
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
+  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
     _divId = DateTime.now().microsecondsSinceEpoch;
     this.textureId = _divId;
 
@@ -50,16 +50,6 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   Future<bool> updateTexture(sourceTexture) {
     // web no need do something
     return Future.sync(() => true);
-  }
-
-  updateSize(Map<String, dynamic> options) async {
-    return;
-  }
-
-  @override
-  dispose() {
-    // TODO: implement dispose
-    return super.dispose();
   }
 
 }

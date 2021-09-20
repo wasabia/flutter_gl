@@ -33,18 +33,6 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return List<int>.from(_result);
   }
 
-  Future<Map<String, dynamic>> initVideo(Map<String, dynamic> info) async {
-    final Map<String, dynamic> _args = {
-      "textureId": textureId
-    };
-
-    _args.addAll(info);
-
-    final _result = await _channel.invokeMethod('initVideo', _args);
-
-    return Map<String, dynamic>.from(_result);
-  }
-
   Future<bool> updateTexture(sourceTexture) async {
     final _args = {
       "textureId": textureId,
@@ -54,28 +42,6 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     final _result = await _channel.invokeMethod('updateTexture', _args);
 
     return _result;
-  }
-
-  getFrameAt(String filePath, num time) async {
-    final _args = {
-      'textureId': textureId, 
-      'filePath': filePath, 
-      'time': time
-    };
-
-    final _result = await _channel.invokeMethod('getFrameAt', _args);
-
-    return _result;
-  }
-
-  getFrameFileAt(String filePath, num time, String framePath) async {
-    final _args = {
-      'textureId': textureId, 
-      'filePath': filePath, 
-      'time': time, 
-      'framePath': framePath
-    };
-    _channel.invokeMethod('getFrameFileAt', _args);
   }
 
   updateSize(Map<String, dynamic> options) async {
