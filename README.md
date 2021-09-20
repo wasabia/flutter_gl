@@ -62,6 +62,13 @@ flutter run
 
 ![screen1](https://user-images.githubusercontent.com/1768228/118112813-176a7680-b418-11eb-8ff9-877b941048e1.png)
 
+## Android
+
+check the example project
+copy the example/android/app/libs/aars/threeegl.aar
+to your app android project same path
+
+
 ## Issues
 
 File any issues, bugs, or feature requests.
