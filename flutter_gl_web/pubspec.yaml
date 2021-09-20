@@ -15,8 +15,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_gl_platform_interface:
-    path: ../flutter_gl_platform_interface
+  flutter_gl_platform_interface: ^0.0.1
  
 dev_dependencies:
   flutter_test:
