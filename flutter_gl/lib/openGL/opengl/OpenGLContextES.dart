@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
+import 'package:flutter_gl/native-array/index.dart';
 
 import 'OpenGL30Constant.dart';
 import 'opengl_es_bindings/src/gles_bindings.dart';
@@ -103,17 +104,14 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glTexParameteri(v0, v1, v2);
   }
 
-  texImage2D(target, level, internalformat, width, height, border, format, type,
-      data) {
-    Pointer<Int8> nativeBuffer;
-
-
+  texImage2D(target, level, internalformat, width, height, border, format, type, NativeArray? data) {
+    // Pointer<Int8> nativeBuffer;
     if (data != null) {
-      nativeBuffer = calloc<Int8>(data.length);
-      nativeBuffer.asTypedList(data.length).setAll(0, data);
+      // nativeBuffer = calloc<Int8>(data.length);
+      // nativeBuffer.asTypedList(data.length).setAll(0, data);
       gl.glTexImage2D(target, level, internalformat, width, height,
-        border, format, type, nativeBuffer.cast<Void>());
-      calloc.free(nativeBuffer);
+        border, format, type, data.data.cast<Void>());
+      // calloc.free(nativeBuffer);
     } else {
       gl.glTexImage2D(target, level, internalformat, width, height,
         border, format, type, nullptr);
