@@ -1,6 +1,8 @@
 
 import 'dart:typed_data';
 
+import 'package:flutter_gl/flutter_gl.dart';
+
 import 'OpenGL30Constant.dart';
 
 getContext(Map<String, dynamic> parameters) {
@@ -60,22 +62,38 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
+    var _data;
+    if(data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
+
     return gl.texImage2D(target, level, internalformat, width, height, border,
-        format, type, data);
+        format, type, _data);
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    return gl.texImage2D(target, level, internalformat, format, type, data);
+    var _data;
+    if(data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
+
+    return gl.texImage2D(target, level, internalformat, format, type, _data);
   }
 
   texImage3D(target, level, internalformat, width, height, depth, border,
       format, type, data) {
-
-    print(" flutter gl texImage3D: target: ${target} type: ${type} format: ${format}   ");
-
-
+    var _data;
+    if(data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
     return gl.texImage3D(target, level, internalformat, width, height, depth, border,
-      format, type, data);
+      format, type, _data);
   }
 
   depthFunc(v0) {
@@ -111,7 +129,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   blendEquationSeparate(var0, var1) {
-    print(" OpenGL blendEquationSeparate ...  ");
+    print(" OpenGL WEB context blendEquationSeparate TODO ...  ");
   }
 
   frontFace(v0) {
@@ -247,8 +265,14 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.framebufferTexture2D(v0, v1, v2, v3, v4);
   }
 
-  readPixels(v0, v1, v2, v3, v4, v5, v6) {
-    print(" OpenGL readPixels ...  ");
+  readPixels(int x, int y, int width, int height, int format, int type, data) {
+    var _data;
+    if(data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
+    gl.readPixels(x, y, width, height, format, type, _data);
   }
 
   isProgram(v0) {
@@ -256,15 +280,15 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   copyTexImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL copyTexImage2D ...  ");
+    print(" OpenGL context Web copyTexImage2D TODO...  ");
   }
 
   texSubImage2D(v0, v1, v2, v3, v4, v5, v6, v7, v8) {
-    print(" OpenGL texSubImage2D ...  ");
+    print(" OpenGL context Web texSubImage2D TODO...  ");
   }
 
   compressedTexSubImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL compressedTexSubImage2D ...  ");
+    print(" OpenGL context Web compressedTexSubImage2D TODO...  ");
   }
 
   bindRenderbuffer(v0, v1) {

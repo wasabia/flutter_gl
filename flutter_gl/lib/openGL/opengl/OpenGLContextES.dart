@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
-import 'package:flutter_gl/native-array/index.dart';
+import 'package:flutter_gl/flutter_gl.dart';
 
 import 'OpenGL30Constant.dart';
 import 'opengl_es_bindings/src/gles_bindings.dart';
@@ -104,29 +104,86 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glTexParameteri(v0, v1, v2);
   }
 
-  texImage2D(target, level, internalformat, width, height, border, format, type, NativeArray? data) {
-    // Pointer<Int8> nativeBuffer;
+  texImage2D(target, level, internalformat, width, height, border, format, type,
+      data) {
+    if(data is NativeArray) {
+      textImage2DNative(target, level, internalformat, width, height, border, format, type,
+      data);
+    } else {
+      textImage2DNormal(target, level, internalformat, width, height, border, format, type,
+      data);
+    }
+  }
+
+  textImage2DNative(target, level, internalformat, width, height, border, format, type,
+      NativeArray data) {
+    var nativeBuffer = data.data;
+    gl.glTexImage2D(target, level, internalformat, width, height,
+      border, format, type, nativeBuffer.cast<Void>());
+  }
+
+  textImage2DNormal(target, level, internalformat, width, height, border, format, type,
+      data) {
+    Pointer<Int8> nativeBuffer;
     if (data != null) {
-      // nativeBuffer = calloc<Int8>(data.length);
-      // nativeBuffer.asTypedList(data.length).setAll(0, data);
+      nativeBuffer = calloc<Int8>(data.length);
+      nativeBuffer.asTypedList(data.length).setAll(0, data);
       gl.glTexImage2D(target, level, internalformat, width, height,
-        border, format, type, data.data.cast<Void>());
-      // calloc.free(nativeBuffer);
+        border, format, type, nativeBuffer.cast<Void>());
+      calloc.free(nativeBuffer);
     } else {
       gl.glTexImage2D(target, level, internalformat, width, height,
         border, format, type, nullptr);
     }
   }
 
+
+
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    return gl.texImage2D(target, level, internalformat, format, type, data);
+    if(data is NativeArray) {
+      texImage2D_NOSIZENative(target, level, internalformat, format, type, data);
+    } else {
+      texImage2D_NOSIZENormal(target, level, internalformat, format, type, data);
+    }
+  }
+
+  texImage2D_NOSIZENormal(target, level, internalformat, format, type, data) {
+    Pointer<Int8> nativeBuffer;
+    if (data != null) {
+      nativeBuffer = calloc<Int8>(data.length);
+      nativeBuffer.asTypedList(data.length).setAll(0, data);
+      gl.texImage2D(target, level, internalformat, format, type, nativeBuffer.cast<Void>());
+      calloc.free(nativeBuffer);
+    } else {
+      gl.texImage2D(target, level, internalformat, format, type, nullptr);
+    }
+
+    return ;
+  }
+
+  texImage2D_NOSIZENative(target, level, internalformat, format, type, data) {
+    var nativeBuffer = data.data;
+    return gl.texImage2D(target, level, internalformat, format, type, nativeBuffer.cast<Void>());
   }
 
   texImage3D(int target, int level, int internalformat, int width, int height, int depth, int border,
       int format, int type, data) {
+    if(data is NativeArray) {
+      texImage3DNative(target, level, internalformat, width, height, depth, border, format, type, data);
+    } else {
+      texImage3DNormal(target, level, internalformat, width, height, depth, border, format, type, data);
+    }
+  }
 
-    print(" flutter gl texImage3D: target: ${target} type: ${type} format: ${format}   ");
+  texImage3DNative(int target, int level, int internalformat, int width, int height, int depth, int border,
+      int format, int type, NativeArray data) {
+    var nativeBuffer = data.data;
+    gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
+    format, type, nativeBuffer.cast<Void>());
+  }
 
+  texImage3DNormal(int target, int level, int internalformat, int width, int height, int depth, int border,
+      int format, int type, data) {
     Pointer<Int8> nativeBuffer;
     if (data != null) {
       nativeBuffer = calloc<Int8>(data.length);
@@ -173,7 +230,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   blendEquationSeparate(var0, var1) {
-    print(" OpenGL blendEquationSeparate ...  ");
+    print(" OpenGL ES Context blendEquationSeparate TODO ...  ");
   }
 
   frontFace(v0) {
@@ -386,7 +443,20 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glFramebufferTexture2D(v0, v1, v2, v3, v4);
   }
 
-  readPixels(int x, int y, int width, int height, int format, int type, Uint8List data) {
+  readPixels(int x, int y, int width, int height, int format, int type, data) {
+    if(data is NativeArray)  {
+      readPixelsNative(x, y, width, height, format, type, data);
+    } else {
+      readPixelsNormal(x, y, width, height, format, type, data);
+    }
+  }
+
+  readPixelsNative(int x, int y, int width, int height, int format, int type, NativeArray data) {
+    final dataPtr = data.data;
+    gl.glReadPixels(x, y, width, height, format, type, dataPtr);
+  }
+
+  readPixelsNormal(int x, int y, int width, int height, int format, int type, Uint8List data) {
     final dataPtr = uint8ListToArrayPointer(data);
     gl.glReadPixels(x, y, width, height, format, type, dataPtr);
     Uint8List _data = dataPtr.asTypedList(data.length);
@@ -395,7 +465,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   copyTexImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL copyTexImage2D ...  ");
+    print(" OpenGL copyTexImage2D TODO...  ");
   }
 
   texSubImage2D(target, level, x, y, width, height, format, type, Uint8List data) {
