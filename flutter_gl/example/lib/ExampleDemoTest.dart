@@ -3,8 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'dart:ui' as ui;
-import 'dart:ffi';
-import 'package:ffi/ffi.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -63,14 +62,33 @@ class _MyAppState extends State<ExampleDemoTest> {
     };
     
     await flutterGlPlugin.initialize(options: _options);
-    await flutterGlPlugin.prepareContext();
-    setupDefaultFBO();
-    sourceTexture = defaultFramebufferTexture;
+    // await flutterGlPlugin.prepareContext();
+    // setupDefaultFBO();
+    // sourceTexture = defaultFramebufferTexture;
 
-    setup();
+    // setup();
+
+    print(" flutterGlPlugin: textureid: ${flutterGlPlugin.textureId} ");
+
+    setState(() { });
+
+    // web need wait dom ok!!!
+    Future.delayed(Duration(milliseconds: 100), () {
+      setup();
+    });
+  
   }
 
   setup() async {
+    // web no need use fbo
+    if(!kIsWeb) {
+      await flutterGlPlugin.prepareContext();
+
+      setupDefaultFBO();
+      sourceTexture = defaultFramebufferTexture;
+    }
+    
+    
     prepare();
 
     animate();
@@ -242,11 +260,23 @@ class _MyAppState extends State<ExampleDemoTest> {
   initVertexBuffers(gl) {
       // Vertices
       var dim = 3;
-      var vertices = new Float32List.fromList([
+
+      // 1. Use Float32Array
+      var vertices0 = new Float32List.fromList([
           0.0, 0.5, 0.0,  // Vertice #1
           -0.5, -0.5, 0.0, // Vertice #2
           0.5, -0.5, 0.0 // Vertice #3
       ]);
+
+      var vertices = Float32Array.from(vertices0);
+
+      // 2. Use Float32List direct
+      // var vertices = new Float32List.fromList([
+      //   0.0, 0.5, 0.0,  // Vertice #1
+      //   -0.5, -0.5, 0.0, // Vertice #2
+      //   0.5, -0.5, 0.0 // Vertice #3
+      // ]);
+
 
       // Create a buffer object
       var vertexBuffer = gl.createBuffer();
@@ -256,12 +286,7 @@ class _MyAppState extends State<ExampleDemoTest> {
       }
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
-
- 
-      final verticesPtr = calloc<Float>(vertices.length);
-      verticesPtr.asTypedList(vertices.length).setAll(0, vertices);
-
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length * Float32List.bytesPerElement, verticesPtr, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.length * Float32List.bytesPerElement, vertices, gl.STATIC_DRAW);
 
       // Assign the vertices in buffer object to a_Position variable
       var a_Position = gl.getAttribLocation(glProgram, 'a_Position');

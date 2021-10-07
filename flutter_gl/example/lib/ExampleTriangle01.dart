@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'dart:ffi';
-import 'package:ffi/ffi.dart';
+
 
 import 'dart:ui' as ui;
 
@@ -252,10 +251,8 @@ class _MyAppState extends State<ExampleTriangle01> {
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
 
- 
-      final verticesPtr = calloc<Float>(vertices.length);
-      verticesPtr.asTypedList(vertices.length).setAll(0, vertices);
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, verticesPtr, gl.STATIC_DRAW);
+
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, vertices, gl.STATIC_DRAW);
 
       // gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 

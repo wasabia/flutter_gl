@@ -412,9 +412,23 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   bufferData(int target, int size, data, int usage) {
-    gl.glBufferData(target, size, data.cast<Void>(), usage);
+    if(data is NativeArray) {
+      bufferDataNative(target, size, data, usage);
+    } else {
+      bufferDataNormal(target, size, data, usage);
+    }
   }
 
+  bufferDataNative(int target, int size, NativeArray data, int usage) {
+    var dataPtr = data.data;
+    gl.glBufferData(target, size, dataPtr.cast<Void>(), usage);
+  }
+
+  bufferDataNormal(int target, int size, data, int usage) {
+    var nativeBuffer = toPointer(data);
+    gl.glBufferData(target, size, nativeBuffer.cast<Void>(), usage);
+    calloc.free(nativeBuffer);
+  }
 
   bufferSubData(target, offset, data, srcOffset, length) {
     // int size = length * 4;
@@ -846,6 +860,17 @@ class ActiveInfo {
   int size;
   int type;
   ActiveInfo(this.type, this.name, this.size);
+}
+
+
+toPointer(data) {
+  if(data is Float32List) {
+    final ptr = calloc<Float>(data.length);
+    ptr.asTypedList(data.length).setAll(0, data.toList());
+    return ptr;
+  } else {
+    throw(" flutter_gl OpenGLContextES.dart toPointer ${data.runtimeType} TODO ");
+  }
 }
 
 Pointer<Float> floatListToArrayPointer(List<double> list) {

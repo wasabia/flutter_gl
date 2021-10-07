@@ -239,7 +239,13 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   bufferData(int target, int size, data, int usage) {
-    return gl.bufferData(target, data, usage);
+    var _data;
+    if(data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
+    return gl.bufferData(target, _data, usage);
   }
 
   vertexAttribPointer(
