@@ -5,10 +5,6 @@ import 'index.dart';
 
 class PlatformNativeArray extends NativeArray {
 
-  late int _size;
-  late int oneByteSize;
-  int get length => _size;
-  int get bytesLength => length * oneByteSize;
 
   get data {
 
@@ -22,12 +18,10 @@ class PlatformNativeArray extends NativeArray {
     
   }
 
-  PlatformNativeArray(int size) {
-    _size = size;
+  PlatformNativeArray(int size) : super(size) {
   }
 
-  PlatformNativeArray.from(List listData) {
-    _size = listData.length;
+  PlatformNativeArray.from(List listData) : super(listData.length) {
   }
 
   sublist(int len) {
@@ -44,7 +38,7 @@ class PlatformNativeArray extends NativeArray {
   }
 
   clone() {
-    print(" ThreeArray clone need implement ");
+    print(" NativeArray clone need implement ");
   }
 
 }

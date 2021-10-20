@@ -326,8 +326,13 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   bufferSubData(target, dstByteOffset, srcData, srcOffset, length) {
-    // return gl.bufferSubData(target, dstByteOffset, srcData, srcOffset, length);
-    return gl.bufferSubData(target, dstByteOffset, srcData);
+    var _data;
+    if(srcData is NativeArray) {
+      _data = srcData.data;
+    } else {
+      _data = srcData;
+    }
+    return gl.bufferSubData(target, dstByteOffset, _data);
   }
 
   createVertexArray() {
@@ -414,7 +419,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.drawElements(mode, count, type, offset);
   }
 
-  drawBuffers(buffers) {
+  drawBuffers(List<int> buffers) {
     return gl.drawBuffers(buffers);
   }
 

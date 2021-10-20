@@ -3,9 +3,6 @@ import 'index.dart';
 
 class PlatformNativeArray extends NativeArray {
   late dynamic list;
-  late int _size;
-  late int oneByteSize;
-  int get length => _size;
 
   get data => list;
 
@@ -13,12 +10,12 @@ class PlatformNativeArray extends NativeArray {
 
   get buffer => list.buffer;
 
-  PlatformNativeArray(int size) {
-    _size = size;
+  PlatformNativeArray(int size) : super(size) {
+   
   }
 
-  PlatformNativeArray.from(listData) {
-    _size = listData.length;
+  PlatformNativeArray.from(listData) : super(listData.length) {
+    
   }
 
   operator [](int index) {

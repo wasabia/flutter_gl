@@ -42,9 +42,6 @@ class OpenGLContextES extends OpenGL30Constant {
     String _vstr = _v.cast<Utf8>().toDartString();
     List<String> _extensions = _vstr.split(" ");
 
-    // on iOS crash ... 
-    // calloc.free(_v);
-   
     return _extensions;
   }
 
@@ -431,9 +428,22 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   bufferSubData(target, offset, data, srcOffset, length) {
-    // int size = length * 4;
+    if(data is NativeArray) {
+      bufferSubDataNative(target, offset, data, srcOffset, length);
+    } else {
+      bufferSubDataNormal(target, offset, data, srcOffset, length);
+    }
+  }
+
+  bufferSubDataNormal(target, offset, data, srcOffset, length) {
     int size = length;
-    gl.glBufferSubData(target, offset, size, data.cast<Void>());
+    var dataPtr = toPointer(data);
+    gl.glBufferSubData(target, offset, size, dataPtr.cast<Void>());
+  }
+
+  bufferSubDataNative(target, offset, NativeArray data, srcOffset, length) {
+    int size = length;
+    gl.glBufferSubData(target, offset, size, data.data.cast<Void>());
   }
 
   vertexAttribPointer(int index, int size, int type, bool normalized, int stride, int offset) {
@@ -471,7 +481,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   readPixelsNormal(int x, int y, int width, int height, int format, int type, Uint8List data) {
-    final dataPtr = uint8ListToArrayPointer(data);
+    final dataPtr = toPointer(data);
     gl.glReadPixels(x, y, width, height, format, type, dataPtr);
     Uint8List _data = dataPtr.asTypedList(data.length);
     data.setAll(0, _data);
@@ -483,13 +493,13 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   texSubImage2D(target, level, x, y, width, height, format, type, Uint8List data) {
-    final dataPtr = uint8ListToArrayPointer(data);
+    final dataPtr = toPointer(data);
     gl.glTexSubImage2D(target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
     calloc.free(dataPtr);
   }
 
   texSubImage2D2(x, y, width, height, Uint8List data) {
-    final dataPtr = uint8ListToArrayPointer(data);
+    final dataPtr = toPointer(data);
     gl.glTexSubImage2D(TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
     calloc.free(dataPtr);
   }
@@ -672,7 +682,8 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   drawBuffers(buffers) {
-     final ptr = calloc<Uint32>(buffers.length);
+    print("OpenGLContextES drawBuffers .......... ");
+    final ptr = calloc<Uint32>(buffers.length);
     ptr.asTypedList(buffers.length).setAll(0, List<int>.from(buffers));
 
     gl.glDrawBuffers(buffers.length, ptr);
@@ -719,11 +730,24 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glGetShaderSource(v0);
   }
 
-  uniformMatrix4fv(location, bool transpose, List<num> value) {
-    var arrayPointer = floatListToArrayPointer(value.map((e) => e.toDouble()).toList());
+  uniformMatrix4fv(location, bool transpose, value) {
+    if(value is NativeArray) {
+      uniformMatrix4fvNative(location, transpose, value);
+    } else {
+      uniformMatrix4fvNormal(location, transpose, value);
+    }
+  }
+
+  uniformMatrix4fvNormal(location, bool transpose, value) {
+    var arrayPointer = toPointer(value);
     gl.glUniformMatrix4fv(location, value.length ~/ 16, transpose ? 1 : 0, arrayPointer);
     calloc.free(arrayPointer);
   }
+
+  uniformMatrix4fvNative(location, bool transpose, NativeArray value) {
+    gl.glUniformMatrix4fv(location, value.length ~/ 16, transpose ? 1 : 0, value.data);
+  }
+
 
   uniform1i(v0, v1) {
     return gl.glUniform1i(v0, v1);
@@ -734,32 +758,57 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform1fv(location, List<num> value) {
-    List<double> _list = value.map((e) => e.toDouble()).toList();
-    var arrayPointer = floatListToArrayPointer(_list);
+    print("OpenGLContextES uniform1fv value: ${value} ");
+    var arrayPointer = toPointer(value);
     gl.glUniform1fv(location, value.length ~/ 1, arrayPointer);
     calloc.free(arrayPointer);
     return;
   }
 
-  uniform3fv(location, List<num> value) {
-    List<double> _list = value.map((e) => e.toDouble()).toList();
-    var arrayPointer = floatListToArrayPointer(_list);
+  uniform3fv(location, value) {
+    if(value is NativeArray) {
+      uniform3fvNative(location, value);
+    } else {
+      uniform3fvNormal(location, value);
+    }
+  }
+
+  uniform3fvNormal(location, List<num> value) {
+    print("OpenGLContextES uniform3fvNormal ");
+    var arrayPointer = toPointer(value);
     gl.glUniform3fv(location, value.length ~/ 3, arrayPointer);
     calloc.free(arrayPointer);
     return;
+  }
+
+  uniform3fvNative(location, NativeArray value) {
+    gl.glUniform3fv(location, value.length ~/ 3, value.data);
   }
 
   uniform1f(v0, num v1) {
     return gl.glUniform1f(v0, v1.toDouble());
   }
 
-  uniformMatrix3fv(location, bool transpose, List<num> value) {
-    List<double> _list = value.map((e) => e.toDouble()).toList();
-    var arrayPointer = floatListToArrayPointer(_list);
+  uniformMatrix3fv(location, bool transpose, value) {
+    if(value is NativeArray) {
+      uniformMatrix3fvNative(location, transpose, value);
+    } else {
+      uniformMatrix3fvNormal(location, transpose, value);
+    }
+  }
+
+  uniformMatrix3fvNormal(location, bool transpose, List<num> value) {
+    var arrayPointer = toPointer(value);
     gl.glUniformMatrix3fv(
         location, value.length ~/ 9, transpose ? 1 : 0, arrayPointer);
     calloc.free(arrayPointer);
     return;
+  }
+
+  uniformMatrix3fvNative(location, bool transpose, NativeArray value) {
+    
+    gl.glUniformMatrix3fv(
+        location, value.length ~/ 9, transpose ? 1 : 0, value.data);
   }
 
   getAttribLocation(program, String name) {
@@ -774,6 +823,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform1iv(location, value) {
+    print("OpenGLContextES uniform1iv");
     int count = value.length;
     final valuePtr = calloc<Int32>(count);
     valuePtr.asTypedList(count).setAll(0, value);
@@ -798,7 +848,7 @@ class OpenGLContextES extends OpenGL30Constant {
     List<double> _values = value.map((e) => e.toDouble()).toList().cast();
     valuePtr.asTypedList(count).setAll(0, _values);
 
-    // print("uniform4fv location: ${location} value: ${value} ");
+    print("uniform4fv location: ${location} value: ${value} ");
 
     return gl.glUniform4fv(location, count ~/ 4, valuePtr.cast<Void>());
   }
@@ -864,41 +914,15 @@ class ActiveInfo {
 
 
 toPointer(data) {
-  if(data is Float32List) {
+  if(data is Float32List || data.runtimeType.toString() == "List<double>") {
     final ptr = calloc<Float>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.toList());
+    return ptr;
+  } else if(data is Uint8List) {
+    final ptr = calloc<Uint8>(data.length);
+    ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
     return ptr;
   } else {
     throw(" flutter_gl OpenGLContextES.dart toPointer ${data.runtimeType} TODO ");
   }
-}
-
-Pointer<Float> floatListToArrayPointer(List<double> list) {
-  final ptr = calloc<Float>(list.length);
-  ptr.asTypedList(list.length).setAll(0, list);
-  return ptr;
-}
-
-Pointer<Int32> int32ListToArrayPointer(List<int> list) {
-  final ptr = calloc<Int32>(list.length);
-  ptr.asTypedList(list.length).setAll(0, list);
-  return ptr;
-}
-
-Pointer<Uint16> uInt16ListToArrayPointer(List<int> list) {
-  final ptr = calloc<Uint16>(list.length);
-  ptr.asTypedList(list.length).setAll(0, list);
-  return ptr;
-}
-
-Pointer<Uint32> uInt32ListToArrayPointer(List<int> list) {
-  final ptr = calloc<Uint32>(list.length);
-  ptr.asTypedList(list.length).setAll(0, list);
-  return ptr;
-}
-
-Pointer<Uint8> uint8ListToArrayPointer(Uint8List list) {
-  final ptr = calloc<Uint8>(list.length);
-  ptr.asTypedList(list.length).setAll(0, list.map((e) => e));
-  return ptr;
 }
