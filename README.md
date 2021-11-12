@@ -4,6 +4,9 @@ Flutter GL can call OpenGL ES API with Dart
 
 Support iOS,Android,Web
 
+Used by [three_dart](https://github.com/wasabia/three_dart)
+
+
 ## OpenGL ES API
 Now the api is similar to WebGL
 
