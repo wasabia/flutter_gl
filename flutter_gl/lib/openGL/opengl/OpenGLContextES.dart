@@ -227,7 +227,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   blendEquationSeparate(var0, var1) {
-    print(" OpenGL ES Context blendEquationSeparate TODO ...  ");
+    return gl.glBlendEquationSeparate(var0, var1);
   }
 
   frontFace(v0) {
@@ -483,7 +483,7 @@ class OpenGLContextES extends OpenGL30Constant {
   readPixelsNormal(int x, int y, int width, int height, int format, int type, Uint8List data) {
     final dataPtr = toPointer(data);
     gl.glReadPixels(x, y, width, height, format, type, dataPtr);
-    Uint8List _data = dataPtr.asTypedList(data.length);
+    Uint8List _data = (dataPtr as Pointer<Uint8>).asTypedList(data.length);
     data.setAll(0, _data);
     calloc.free(dataPtr);
   }
@@ -682,7 +682,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   drawBuffers(buffers) {
-    print("OpenGLContextES drawBuffers .......... ");
+   
     final ptr = calloc<Uint32>(buffers.length);
     ptr.asTypedList(buffers.length).setAll(0, List<int>.from(buffers));
 
@@ -774,10 +774,12 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform3fvNormal(location, List<num> value) {
-    print("OpenGLContextES uniform3fvNormal ");
+    // print("OpenGLContextES 1 uniform3fvNormal ${DateTime.now().millisecondsSinceEpoch} ");
     var arrayPointer = toPointer(value);
     gl.glUniform3fv(location, value.length ~/ 3, arrayPointer);
     calloc.free(arrayPointer);
+
+    // print("OpenGLContextES 2 uniform3fvNormal ${DateTime.now().millisecondsSinceEpoch} ");
     return;
   }
 

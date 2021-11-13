@@ -129,7 +129,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   blendEquationSeparate(var0, var1) {
-    print(" OpenGL WEB context blendEquationSeparate TODO ...  ");
+    return gl.blendEquationSeparate(var0, var1);
   }
 
   frontFace(v0) {
