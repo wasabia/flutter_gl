@@ -443,8 +443,12 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.getShaderSource(v0);
   }
 
-  uniformMatrix4fv(location, bool transpose, List<num> value) {
-    return gl.uniformMatrix4fv(location, transpose, value);
+  uniformMatrix4fv(location, bool transpose, value) {
+    if(value is NativeArray) {
+      return gl.uniformMatrix4fv(location, transpose, value.data);
+    } else {
+      return gl.uniformMatrix4fv(location, transpose, value);
+    }
   }
 
   uniform1i(v0, v1) {
@@ -472,8 +476,13 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform1f(v0, v1);
   }
 
-  uniformMatrix3fv(location, bool transpose, List<num> value) {
-    return gl.uniformMatrix3fv(location, transpose, value);
+  uniformMatrix3fv(location, bool transpose, value) {
+    if(value is NativeArray) {
+      return gl.uniformMatrix3fv(location, transpose, value.data);
+    } else {
+      return gl.uniformMatrix3fv(location, transpose, value);
+    }
+    
   }
 
   getAttribLocation(program, String name) {
