@@ -59,17 +59,20 @@ cd flutter_gl/flutter_gl/example
 flutter run
 ```
 
-## Screenshot
-
-![screen0](https://user-images.githubusercontent.com/1768228/118112805-15a0b300-b418-11eb-81c0-c693cfca95aa.png)
-
-![screen1](https://user-images.githubusercontent.com/1768228/118112813-176a7680-b418-11eb-8ff9-877b941048e1.png)
-
 ## Android
 
 check the example project
 copy the example/android/app/libs/aars/threeegl.aar
 to your app android project same path
+
+change minSdkVersion 24
+
+
+## Screenshot
+
+![screen0](https://user-images.githubusercontent.com/1768228/118112805-15a0b300-b418-11eb-81c0-c693cfca95aa.png)
+
+![screen1](https://user-images.githubusercontent.com/1768228/118112813-176a7680-b418-11eb-8ff9-877b941048e1.png)
 
 
 ## Issues
