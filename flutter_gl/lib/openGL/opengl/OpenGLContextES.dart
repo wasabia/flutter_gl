@@ -774,7 +774,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform3fvNormal(location, List<num> value) {
-    print("OpenGLContextES uniform3fvNormal ${value} ");
     var arrayPointer = toPointer(value);
     gl.glUniform3fv(location, value.length ~/ 3, arrayPointer);
     calloc.free(arrayPointer);
