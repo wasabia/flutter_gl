@@ -774,13 +774,10 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform3fvNormal(location, List<num> value) {
-    // print("OpenGLContextES 1 uniform3fvNormal ${DateTime.now().millisecondsSinceEpoch} ");
+    print("OpenGLContextES uniform3fvNormal ${value} ");
     var arrayPointer = toPointer(value);
     gl.glUniform3fv(location, value.length ~/ 3, arrayPointer);
     calloc.free(arrayPointer);
-
-    // print("OpenGLContextES 2 uniform3fvNormal ${DateTime.now().millisecondsSinceEpoch} ");
-    return;
   }
 
   uniform3fvNative(location, NativeArray value) {
@@ -916,9 +913,9 @@ class ActiveInfo {
 
 
 toPointer(data) {
-  if(data is Float32List || data.runtimeType.toString() == "List<double>") {
+  if(data is Float32List || data.runtimeType.toString() == "List<double>" || data.runtimeType.toString() == "_GrowableList<double>") {
     final ptr = calloc<Float>(data.length);
-    ptr.asTypedList(data.length).setAll(0, data.toList() as List<double>);
+    ptr.asTypedList(data.length).setAll(0, data.toList());
     return ptr;
 
   } else if(data is Uint8List) {
