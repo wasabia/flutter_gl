@@ -918,8 +918,9 @@ class ActiveInfo {
 toPointer(data) {
   if(data is Float32List || data.runtimeType.toString() == "List<double>") {
     final ptr = calloc<Float>(data.length);
-    ptr.asTypedList(data.length).setAll(0, data.toList());
+    ptr.asTypedList(data.length).setAll(0, data.toList() as List<double>);
     return ptr;
+
   } else if(data is Uint8List) {
     final ptr = calloc<Uint8>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
