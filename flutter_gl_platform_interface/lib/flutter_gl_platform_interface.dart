@@ -28,9 +28,7 @@ abstract class FlutterGlPlatform extends PlatformInterface {
   bool get isInitialized => this.textureId != null;
 
   late dynamic openGL;
-  late int width;
-  late int height;
-  late num dpr;
+
   late List<int> egls;
 
   dynamic get gl => openGL.gl;

@@ -57,11 +57,14 @@ class _MyAppState extends State<ExampleTriangle01> {
     width = screenSize!.width;
     height = width;
 
-    flutterGlPlugin = FlutterGlPlugin(width.toInt(), height.toInt(), dpr: dpr);
+    flutterGlPlugin = FlutterGlPlugin();
 
     Map<String, dynamic> _options = {
       "antialias": true,
-      "alpha": false
+      "alpha": false,
+      "width": width.toInt(), 
+      "height": height.toInt(),
+      "dpr": dpr
     };
     
     await flutterGlPlugin.initialize(options: _options);

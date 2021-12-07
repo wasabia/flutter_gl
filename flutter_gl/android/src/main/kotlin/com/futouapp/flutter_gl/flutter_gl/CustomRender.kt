@@ -111,7 +111,6 @@ class CustomRender {
         dartEglEnv.buildOffScreenSurface(glWidth, glHeight);
 
         eglEnv.makeCurrent();
-        eglEnv.makeCurrent();
     }
 
 

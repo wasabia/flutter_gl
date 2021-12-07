@@ -31,7 +31,7 @@ public class CustomRender: NSObject, FlutterTexture {
 
   var frameTexture: GLuint = 0;
 
-  var screenScale: CGFloat;
+  var screenScale: Double;
   
   var options: Dictionary<String, Any>;
   
@@ -41,7 +41,7 @@ public class CustomRender: NSObject, FlutterTexture {
     self.height = options["height"] as! Double;
     self.onNewFrame = onNewFrame;
     
-    self.screenScale = UIScreen.main.scale;
+    self.screenScale = options["dpr"] as! Double;
     
     super.init();
 
@@ -73,10 +73,8 @@ public class CustomRender: NSObject, FlutterTexture {
   }
   
   func updateTexture(sourceTexture: Int64) -> Bool {
-    
-
+ 
     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
-  
     
     self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
 
@@ -133,7 +131,7 @@ public class CustomRender: NSObject, FlutterTexture {
     let glWidth = width * Double(self.screenScale);
     let glHeight = height * Double(self.screenScale);
     
-    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)   ");
+    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
 
     self.createCVBufferWithSize(
       size: CGSize(width: glWidth, height: glHeight),

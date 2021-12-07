@@ -10,9 +10,7 @@ export './native-array/index.dart';
 
 class FlutterGlPlugin extends FlutterGlPlatform {
   late dynamic openGL;
-  late int width;
-  late int height;
-  late num dpr;
+
   late List<int> egls;
 
   dynamic get gl => openGL.gl;
@@ -20,18 +18,12 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   // for web
   dynamic get element => openGL.element;
 
-  FlutterGlPlugin(int width, int height, {num dpr = 1.0}) {
-    this.width = width;
-    this.height = height;
-    this.dpr = dpr;
+  FlutterGlPlugin() {
+
   }
 
   Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
-    Map<String, dynamic> _options = {
-      "width": width,
-      "height": height,
-      "dpr": dpr
-    };
+    Map<String, dynamic> _options = {};
     
     _options.addAll(options ?? {});
 
