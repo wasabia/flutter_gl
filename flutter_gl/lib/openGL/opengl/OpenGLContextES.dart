@@ -821,7 +821,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform1iv(location, value) {
-    print("OpenGLContextES uniform1iv");
     int count = value.length;
     final valuePtr = calloc<Int32>(count);
     valuePtr.asTypedList(count).setAll(0, value);
@@ -846,7 +845,7 @@ class OpenGLContextES extends OpenGL30Constant {
     List<double> _values = value.map((e) => e.toDouble()).toList().cast();
     valuePtr.asTypedList(count).setAll(0, _values);
 
-    print("uniform4fv location: ${location} value: ${value} ");
+    // print("uniform4fv location: ${location} value: ${value} ");
 
     return gl.glUniform4fv(location, count ~/ 4, valuePtr.cast<Void>());
   }

@@ -71,6 +71,11 @@ class NativeFloat32Array extends PlatformNativeArray {
     return this;
   }
 
+  setAt(newList, int index) {
+    this.toDartList().setAll( index, List<double>.from(newList.map((e) => e.toDouble())) );
+    return this;
+  }
+
 }
 
 
