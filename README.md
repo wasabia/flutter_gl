@@ -26,9 +26,12 @@ int width = 200;
 int height = 200;
 num dpr = 1.0;
 
-flutterGlPlugin = FlutterGlPlugin(width, height, dpr: dpr);
+flutterGlPlugin = FlutterGlPlugin();
 
 Map<String, dynamic> _options = {
+    "width": width, 
+    "height": height, 
+    "dpr": dpr,
     "antialias": true,
     "alpha": false
 };    
