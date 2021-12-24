@@ -40,6 +40,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.getParameter(key);
   }
 
+  getString(String key) {
+    return gl.getParameter(key);;
+  }
+
   createTexture() {
     return gl.createTexture();
   }

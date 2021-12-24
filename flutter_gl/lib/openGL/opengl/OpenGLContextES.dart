@@ -45,6 +45,11 @@ class OpenGLContextES extends OpenGL30Constant {
     return _extensions;
   }
 
+  getString(int key) {
+    Pointer _v = gl.glGetString(key);
+    return _v.cast<Utf8>().toDartString();
+  }
+
   getParameter(key) {
     // print("OpenGL getParameter key: ${key} ");
 
