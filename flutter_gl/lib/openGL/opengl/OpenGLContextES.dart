@@ -763,7 +763,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform1fv(location, List<num> value) {
-    print("OpenGLContextES uniform1fv value: ${value} ");
     var arrayPointer = toPointer(value);
     gl.glUniform1fv(location, value.length ~/ 1, arrayPointer);
     calloc.free(arrayPointer);
@@ -916,11 +915,10 @@ class ActiveInfo {
 
 
 toPointer(data) {
-  if(data is Float32List || data.runtimeType.toString() == "List<double>" || data.runtimeType.toString() == "_GrowableList<double>") {
+  if(data is Float32List || data.runtimeType.toString() == "List<double>" || data.runtimeType.toString() == "List<num>" || data.runtimeType.toString() == "_GrowableList<double>") {
     final ptr = calloc<Float>(data.length);
-    ptr.asTypedList(data.length).setAll(0, data.toList());
+    ptr.asTypedList(data.length).setAll(0, List<double>.from(data));
     return ptr;
-
   } else if(data is Uint8List) {
     final ptr = calloc<Uint8>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
