@@ -228,6 +228,11 @@ class _MyAppState extends State<ExampleDemoTest> {
     _gl.finish();
 
 
+    // var pixels = _gl.readCurrentPixels(0, 0, 100, 100);
+    // print(" --------------pixels............. ");
+    // print(pixels);
+
+
     if(!kIsWeb) {
       flutterGlPlugin.updateTexture(sourceTexture);
     }
