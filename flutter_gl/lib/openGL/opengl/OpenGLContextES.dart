@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_gl/flutter_gl.dart';
@@ -36,13 +37,33 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   getExtension(String key) {
+    print("OpenGLES getExtension key: ${key}  EXTENSIONS: ${EXTENSIONS}");
+
+    if(Platform.isMacOS) {
+      return getExtensionMacos(key);
+    }
+
     Pointer _v = gl.glGetString(EXTENSIONS);
-    print("OpenGLES getExtension key: ${key} _v: ${_v} ");
     
     String _vstr = _v.cast<Utf8>().toDartString();
     List<String> _extensions = _vstr.split(" ");
 
     return _extensions;
+  }
+
+  getExtensionMacos(String key) {
+    List<String> _extensions = [];
+    var nExtension = getIntegerv(NUM_EXTENSIONS);
+    for (int i = 0; i < nExtension; i++) {
+      _extensions.add( getStringi(GL_EXTENSIONS, i) );
+    }
+
+    return _extensions;
+  }
+
+  getStringi(int key, int index) {
+    Pointer _v = gl.glGetStringi(key, index);
+    return _v.cast<Utf8>().toDartString();
   }
 
   getString(int key) {
