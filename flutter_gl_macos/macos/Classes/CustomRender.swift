@@ -1,6 +1,7 @@
 import FlutterMacOS
 
 import OpenGL
+import OpenGL.GL
 import GLKit
 
 
@@ -36,7 +37,6 @@ public class CustomRender: NSObject, FlutterTexture {
   var options: Dictionary<String, Any>;
   
   
-  var cglPixelFormat: CGLPixelFormatObj;
   
   init(options: Dictionary<String, Any>, renderToVideo: Bool, onNewFrame: @escaping newFrameBlock) {
     self.options = options;
@@ -62,7 +62,6 @@ public class CustomRender: NSObject, FlutterTexture {
     let format = NSOpenGLPixelFormat(attributes: attr)
     self.eAGLShareContext = NSOpenGLContext(format: format!, share: nil)
   
-    self.cglPixelFormat = self.eAGLShareContext!.pixelFormat.cglPixelFormatObj!
     
     super.init();
     
@@ -94,8 +93,11 @@ public class CustomRender: NSObject, FlutterTexture {
   }
   
   func updateTexture(sourceTexture: Int64) -> Bool {
+    
+    print(" Render.updateTexture sourceTexture: \(sourceTexture)  ")
  
-    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
+//    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
+    glBindFramebufferEXT(GLenum(GL_FRAMEBUFFER_EXT), frameBuffer);
     
 //    self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
 
@@ -157,19 +159,15 @@ public class CustomRender: NSObject, FlutterTexture {
     
     print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
 
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("00110 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
+    
     self.createCVBufferWithSize(
       size: CGSize(width: glWidth, height: glHeight),
       context: context
     );
     
-    checkGlError(op: "EglEnv initGL 11...")
-    
-    
-    glBindTexture(CVOpenGLTextureGetTarget(texture!), CVOpenGLTextureGetName(texture!));
-      
-    checkGlError(op: "EglEnv initGL 21...")
-      
-    //s开启混合
     glEnable(GLenum(GL_BLEND));
     glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA));
     
@@ -177,38 +175,59 @@ public class CustomRender: NSObject, FlutterTexture {
     
     glViewport(0, 0, GLsizei(glWidth), GLsizei(glHeight));
     
-
-    checkGlError(op: "EglEnv initGL 10...")
-    // s多重采样
-    //    glEnable(GLenum(GL_MULTISAMPLE));
-    
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("0010 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
+   
     var colorRenderBuffer: GLuint = GLuint();
-    
-    glGenRenderbuffers(1, &colorRenderBuffer);
-    glBindRenderbuffer(GLenum(GL_RENDERBUFFER), colorRenderBuffer);
-    
-    glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH24_STENCIL8), GLsizei(glWidth), GLsizei(glHeight));
+    glGenRenderbuffersEXT(1, &colorRenderBuffer);
+    glBindRenderbufferEXT(GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
+    glRenderbufferStorageEXT(GLenum(GL_RENDERBUFFER_EXT), GLenum(GL_DEPTH24_STENCIL8_EXT), GLsizei(glWidth), GLsizei(glHeight));
     
     checkGlError(op: "EglEnv initGL 201...")
-
-    glGenFramebuffers(1, &frameBuffer);
     
-    checkGlError(op: "EglEnv initGL 202...")
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("001 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
     
-    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
+    glGenFramebuffersEXT(1, &frameBuffer);
     
-    checkGlError(op: "EglEnv initGL 2031...")
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("001112 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
     
-    glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(GL_TEXTURE_2D), CVOpenGLTextureGetName(texture!), 0);
+    
+    glBindFramebufferEXT(GLenum(GL_FRAMEBUFFER_EXT), frameBuffer);
+    
+    
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("001111 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
+    
+    glBindTexture(CVOpenGLTextureGetTarget(texture!), CVOpenGLTextureGetName(texture!));
+      
+    checkGlError(op: "EglEnv initGL 21...")
+    
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("000 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
+    
+    glFramebufferTexture2DEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_COLOR_ATTACHMENT0_EXT), GLenum(GL_TEXTURE_2D), CVOpenGLTextureGetName(texture!), 0);
+    
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
+    }
+    
+    print(" CVOpenGLTextureGetName(texture!) \(CVOpenGLTextureGetName(texture!))  texture: \(texture)")
     
     checkGlError(op: "EglEnv initGL 203...")
     
-    glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), colorRenderBuffer);
     
-    glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), colorRenderBuffer);
+    glFramebufferRenderbufferEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_DEPTH_ATTACHMENT_EXT), GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
+    glFramebufferRenderbufferEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_STENCIL_ATTACHMENT_EXT), GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
     
-    if(glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-      print("failed to make complete framebuffer object \(glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER)))");
+    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      print("failed to make complete framebuffer object \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
     }
     
     checkGlError(op: "EglEnv initGL 20...")
@@ -223,12 +242,15 @@ public class CustomRender: NSObject, FlutterTexture {
   }
   
   func createCVBufferWithSize(size: CGSize, context: NSOpenGLContext) {
-    let err: CVReturn = CVOpenGLTextureCacheCreate(kCFAllocatorDefault, nil, context.cglContextObj!, self.cglPixelFormat, nil, &textureCache);
+    let err: CVReturn = CVOpenGLTextureCacheCreate(kCFAllocatorDefault, nil, context.cglContextObj!, context.pixelFormat.cglPixelFormatObj!, nil, &textureCache);
       
     let attrs = [
       kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_32BGRA),
       kCVPixelBufferOpenGLCompatibilityKey: true,
-      kCVPixelBufferMetalCompatibilityKey: true
+      kCVPixelBufferMetalCompatibilityKey: true,
+      kCVPixelBufferIOSurfacePropertiesKey: [:],
+      kCVPixelBufferIOSurfaceOpenGLFBOCompatibilityKey: true,
+      kCVPixelBufferOpenGLTextureCacheCompatibilityKey: true
     ] as CFDictionary
     
     let cv2: CVReturn = CVPixelBufferCreate(kCFAllocatorDefault, Int(size.width), Int(size.height),
@@ -240,6 +262,11 @@ public class CustomRender: NSObject, FlutterTexture {
                                                                      targetPixelBuffer!,
                                                                      nil,
                                                                      &texture);
+    
+    
+    glBindTexture(CVOpenGLTextureGetTarget(texture!), CVOpenGLTextureGetName(texture!));
+    glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR);
+    glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR);
     
     assert(cvr == kCVReturnSuccess, "创建 CVOpenGLTextureCacheCreateTextureFromImage 失败")
     

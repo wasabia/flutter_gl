@@ -17,6 +17,8 @@ dependencies:
   http: ^0.13.1
   universal_html: ^2.0.7
   ffi: ^1.1.2
+  flutter_gl_macos:
+    path: ../flutter_gl_macos
 
 dev_dependencies:
   flutter_test:
@@ -39,8 +41,8 @@ flutter:
         pluginClass: FlutterGlPlugin
       ios:
         pluginClass: FlutterGlPlugin
-      # macos:
-      #   pluginClass: FlutterGlPlugin  
+      macos:
+        default_package: flutter_gl_macos  
       web:
         default_package: flutter_gl_web
 

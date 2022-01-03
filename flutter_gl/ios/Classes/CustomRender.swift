@@ -139,6 +139,11 @@ public class CustomRender: NSObject, FlutterTexture {
     );
     
     checkGlError(op: "EglEnv initGL 11...")
+
+    if(glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+      print("failed to make complete framebuffer object \(glCheckFramebufferStatus(GLenum(GL_FRAMEBUFFER)))");
+    }
+    
     
     
     glBindTexture(CVOpenGLESTextureGetTarget(texture!), CVOpenGLESTextureGetName(texture!));

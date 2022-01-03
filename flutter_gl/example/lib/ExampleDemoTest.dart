@@ -87,12 +87,17 @@ class _MyAppState extends State<ExampleDemoTest> {
     if(!kIsWeb) {
       await flutterGlPlugin.prepareContext();
 
+      var _gl = flutterGlPlugin.gl;
+      var _size = _gl.getParameter(_gl.MAX_TEXTURE_SIZE);
+
+      print(" setup MAX_TEXTURE_SIZE: ${_size}  ");
+
       setupDefaultFBO();
       sourceTexture = defaultFramebufferTexture;
     }
     
     
-    prepare();
+    // prepare();
 
     animate();
 
@@ -181,7 +186,12 @@ class _MyAppState extends State<ExampleDemoTest> {
     int glWidth = (width * dpr).toInt();
     int glHeight = (height * dpr).toInt();
 
+    print(" setupDefaultFBO ..... ");
+
     defaultFramebuffer = _gl.createFramebuffer();
+
+    print(" setupDefaultFBO 1 ...... ");
+
     defaultFramebufferTexture = _gl.createTexture();
     _gl.activeTexture(_gl.TEXTURE0);
 
@@ -203,19 +213,17 @@ class _MyAppState extends State<ExampleDemoTest> {
     num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    // _gl.clearColor(1.0, 0.0, _blue, 1.0);
+    _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
      
-    var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
-    print(" colorLocation: ${colorLocation} ");
+    // var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
+    // print(" colorLocation: ${colorLocation} ");
 
-    var u_color = List<num>.from([1.0, _blue, 0.0, 1.0]);
+    // var u_color = List<num>.from([1.0, _blue, 0.0, 1.0]);
 
-    _gl.uniform4fv(colorLocation, u_color);
-
-
-    _gl.drawArrays(_gl.TRIANGLES, 0, n);
+    // _gl.uniform4fv(colorLocation, u_color);
+    // _gl.drawArrays(_gl.TRIANGLES, 0, n);
 
     _gl.finish();
 
