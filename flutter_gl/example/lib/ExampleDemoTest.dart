@@ -186,12 +186,8 @@ class _MyAppState extends State<ExampleDemoTest> {
     int glWidth = (width * dpr).toInt();
     int glHeight = (height * dpr).toInt();
 
-    print(" setupDefaultFBO ..... ");
 
     defaultFramebuffer = _gl.createFramebuffer();
-
-    print(" setupDefaultFBO 1 ...... ");
-
     defaultFramebufferTexture = _gl.createTexture();
     _gl.activeTexture(_gl.TEXTURE0);
 
@@ -213,7 +209,7 @@ class _MyAppState extends State<ExampleDemoTest> {
     num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    _gl.clearColor(1.0, 0.0, _blue, 1.0);
+    _gl.clearColor(1.0, 0.5, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
      

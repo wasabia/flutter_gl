@@ -27,16 +27,29 @@ public class EglEnv : NSObject {
 //    }
 //
     
+//    let attr = [
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
+//        0
+//    ]
+    
     let attr = [
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMinimumPolicy),
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
+        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion4_1Core),
         0
     ]
 
@@ -47,6 +60,7 @@ public class EglEnv : NSObject {
   
   func makeCurrent() {
     self.context!.makeCurrentContext();
+    self.context!.update();
   }
   
   func getContext() -> Int64 {

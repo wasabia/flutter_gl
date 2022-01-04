@@ -3,6 +3,7 @@ import FlutterMacOS
 import OpenGL
 import OpenGL.GL
 import GLKit
+import Cocoa
 
 
 import three3d_egl_osx
@@ -19,8 +20,11 @@ public class CustomRender: NSObject, FlutterTexture {
   var onNewFrame: newFrameBlock;
   var targetPixelBuffer: CVPixelBuffer?;
   var textureCache: CVOpenGLTextureCache?;
-  var texture: CVOpenGLTexture? = nil;
-
+  var textureRef: CVOpenGLTexture? = nil;
+  var texture: GLuint = 0;
+    
+  var textureTarget = GL_TEXTURE_RECTANGLE;
+  
   var eAGLShareContext: NSOpenGLContext?;
   var eglEnv: EglEnv?;
   var dartEglEnv: EglEnv?;
@@ -46,22 +50,35 @@ public class CustomRender: NSObject, FlutterTexture {
     
     self.screenScale = options["dpr"] as! Double;
     
+//    let attr = [
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
+//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
+//        0
+//    ]
+
     let attr = [
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMinimumPolicy),
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
+        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion4_1Core),
         0
     ]
-
+    
     let format = NSOpenGLPixelFormat(attributes: attr)
     self.eAGLShareContext = NSOpenGLContext(format: format!, share: nil)
-  
+    
     
     super.init();
     
@@ -96,15 +113,22 @@ public class CustomRender: NSObject, FlutterTexture {
     
     print(" Render.updateTexture sourceTexture: \(sourceTexture)  ")
  
-//    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
-    glBindFramebufferEXT(GLenum(GL_FRAMEBUFFER_EXT), frameBuffer);
+    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
     
-//    self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
-
-    glClearColor( GLclampf(1.0), GLclampf(0.0), GLclampf(1.0), GLclampf(1.0) );
+    glClearColor( GLclampf(1.0), GLclampf(0.5), GLclampf(0.5), GLclampf(1.0) );
     glClear(GLbitfield(GL_COLOR_BUFFER_BIT));
+
+    self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
+
+//    var screenBottomRowBuffer = [UInt8](repeating: 0, count: Int(100 * 100 * 4));
+//    glReadPixels(0, 0, GLsizei(100), GLsizei(100), GLenum(GL_RGBA), GLenum(GL_UNSIGNED_BYTE), &screenBottomRowBuffer);
+//    print(" screenBottomRowBuffer \(screenBottomRowBuffer) ");
+  
     
     glFinish();
+    
+
+    
     self.onNewFrame();
     
     return true;
@@ -158,15 +182,29 @@ public class CustomRender: NSObject, FlutterTexture {
     let glHeight = height * Double(self.screenScale);
     
     print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
-
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("00110 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
     
+    
+    glGenFramebuffers(1, &frameBuffer);
+    glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
+    
+
     self.createCVBufferWithSize(
       size: CGSize(width: glWidth, height: glHeight),
       context: context
     );
+    texture = CVOpenGLTextureGetName(self.textureRef!);
+    
+//    glGenTextures(1, &texture);
+//    textureTarget = GL_TEXTURE_2D;
+    
+
+    checkGlError(op: "glBindFramebuffer 2..")
+
+    glBindTexture(GLenum(textureTarget), texture);
+    glTexParameteri(GLenum(textureTarget), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR);
+    glTexParameteri(GLenum(textureTarget), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR);
+    
+    checkGlError(op: "glBindFramebuffer 201..")
     
     glEnable(GLenum(GL_BLEND));
     glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA));
@@ -175,63 +213,21 @@ public class CustomRender: NSObject, FlutterTexture {
     
     glViewport(0, 0, GLsizei(glWidth), GLsizei(glHeight));
     
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("0010 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-   
     var colorRenderBuffer: GLuint = GLuint();
-    glGenRenderbuffersEXT(1, &colorRenderBuffer);
-    glBindRenderbufferEXT(GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
-    glRenderbufferStorageEXT(GLenum(GL_RENDERBUFFER_EXT), GLenum(GL_DEPTH24_STENCIL8_EXT), GLsizei(glWidth), GLsizei(glHeight));
+    glGenRenderbuffers(1, &colorRenderBuffer);
+    glBindRenderbuffer(GLenum(GL_RENDERBUFFER), colorRenderBuffer);
+    glRenderbufferStorage(GLenum(GL_RENDERBUFFER), GLenum(GL_DEPTH24_STENCIL8), GLsizei(glWidth), GLsizei(glHeight));
     
-    checkGlError(op: "EglEnv initGL 201...")
+    glFramebufferTexture2D(GLenum(GL_FRAMEBUFFER), GLenum(GL_COLOR_ATTACHMENT0), GLenum(textureTarget), texture, 0);
     
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("001 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
+    glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_DEPTH_ATTACHMENT), GLenum(GL_RENDERBUFFER), colorRenderBuffer);
+    glFramebufferRenderbuffer(GLenum(GL_FRAMEBUFFER), GLenum(GL_STENCIL_ATTACHMENT), GLenum(GL_RENDERBUFFER), colorRenderBuffer);
     
-    glGenFramebuffersEXT(1, &frameBuffer);
+    checkGlError(op: "glBindFramebuffer 3..")
     
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("001112 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-    
-    
-    glBindFramebufferEXT(GLenum(GL_FRAMEBUFFER_EXT), frameBuffer);
-    
-    
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("001111 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-    
-    glBindTexture(CVOpenGLTextureGetTarget(texture!), CVOpenGLTextureGetName(texture!));
-      
-    checkGlError(op: "EglEnv initGL 21...")
-    
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("000 failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-    
-    glFramebufferTexture2DEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_COLOR_ATTACHMENT0_EXT), GLenum(GL_TEXTURE_2D), CVOpenGLTextureGetName(texture!), 0);
-    
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("failed to make complete framebuffer object glFramebufferTexture2DEXT \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-    
-    print(" CVOpenGLTextureGetName(texture!) \(CVOpenGLTextureGetName(texture!))  texture: \(texture)")
-    
-    checkGlError(op: "EglEnv initGL 203...")
-    
-    
-    glFramebufferRenderbufferEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_DEPTH_ATTACHMENT_EXT), GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
-    glFramebufferRenderbufferEXT(GLenum(GL_FRAMEBUFFER_EXT), GLenum(GL_STENCIL_ATTACHMENT_EXT), GLenum(GL_RENDERBUFFER_EXT), colorRenderBuffer);
-    
-    if(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)) != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      print("failed to make complete framebuffer object \(glCheckFramebufferStatusEXT(GLenum(GL_FRAMEBUFFER_EXT)))");
-    }
-    
-    checkGlError(op: "EglEnv initGL 20...")
   }
+  
+  
   
   //检查每一步操作是否有错误的方法
   func checkGlError(op: String) {
@@ -243,34 +239,19 @@ public class CustomRender: NSObject, FlutterTexture {
   
   func createCVBufferWithSize(size: CGSize, context: NSOpenGLContext) {
     let err: CVReturn = CVOpenGLTextureCacheCreate(kCFAllocatorDefault, nil, context.cglContextObj!, context.pixelFormat.cglPixelFormatObj!, nil, &textureCache);
-      
+
     let attrs = [
-      kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_32BGRA),
       kCVPixelBufferOpenGLCompatibilityKey: true,
-      kCVPixelBufferMetalCompatibilityKey: true,
-      kCVPixelBufferIOSurfacePropertiesKey: [:],
-      kCVPixelBufferIOSurfaceOpenGLFBOCompatibilityKey: true,
-      kCVPixelBufferOpenGLTextureCacheCompatibilityKey: true
+      kCVPixelBufferMetalCompatibilityKey: true
     ] as CFDictionary
-    
-    let cv2: CVReturn = CVPixelBufferCreate(kCFAllocatorDefault, Int(size.width), Int(size.height),
-                                            kCVPixelFormatType_32BGRA, attrs, &targetPixelBuffer);
-    assert(cv2 == kCVReturnSuccess, "创建CVPixelBuffer失败")
-    
-    let cvr: CVReturn = CVOpenGLTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                                     textureCache!,
-                                                                     targetPixelBuffer!,
-                                                                     nil,
-                                                                     &texture);
-    
-    
-    glBindTexture(CVOpenGLTextureGetTarget(texture!), CVOpenGLTextureGetName(texture!));
-    glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MAG_FILTER), GL_LINEAR);
-    glTexParameteri(GLenum(GL_TEXTURE_2D), GLenum(GL_TEXTURE_MIN_FILTER), GL_LINEAR);
-    
-    assert(cvr == kCVReturnSuccess, "创建 CVOpenGLTextureCacheCreateTextureFromImage 失败")
-    
-      
+
+    let cvret = CVPixelBufferCreate(kCFAllocatorDefault, Int(size.width), Int(size.height), kCVPixelFormatType_32BGRA, attrs, &targetPixelBuffer);
+    assert(cvret == kCVReturnSuccess, "创建CVPixelBuffer失败")
+
+    let cvret2 = CVOpenGLTextureCacheCreateTextureFromImage(kCFAllocatorDefault, textureCache!, targetPixelBuffer!,
+                                                                     nil, &textureRef);
+
+    assert(cvret2 == kCVReturnSuccess, "创建 CVOpenGLTextureCacheCreateTextureFromImage 失败")
   }
 
   

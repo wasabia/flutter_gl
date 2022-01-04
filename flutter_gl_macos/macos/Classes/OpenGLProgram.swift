@@ -16,7 +16,7 @@ public class OpenGLProgram {
   func getProgram() -> GLuint {
     
     var vertex_shader = """
-    #version 400
+    #version 410
     precision mediump float;
 
     layout (location = 0) in vec4 Position;
@@ -33,7 +33,7 @@ public class OpenGLProgram {
     """;
     
     var fragment_shader = """
-    #version 400
+    #version 410
     precision mediump float;
 
     uniform sampler2D Texture0;
