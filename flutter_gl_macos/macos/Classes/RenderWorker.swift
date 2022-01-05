@@ -139,6 +139,10 @@ public class RenderWorker: NSObject {
     // 开始绘制
     glDrawArrays(GLenum(GL_TRIANGLE_STRIP), 0, 4);
     
+    
+    glDeleteVertexArrays(1, &vao);
+    
+    
     checkGlError(op: "drawTexture 11");
   }
   

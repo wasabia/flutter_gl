@@ -209,7 +209,7 @@ class _MyAppState extends State<ExampleDemoTest> {
     num _blue = sin((_current - t) / 500);
 
     // Clear canvas
-    _gl.clearColor(0.0, 0.0, _blue, 1.0);
+    _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
      
