@@ -20,26 +20,7 @@ public class EglEnv : NSObject {
   }
   
   func setUpEnv(shareContext: NSOpenGLContext?) {
-//    if(shareContext == nil) {
-//      self.context = EAGLContext.init(api: EAGLRenderingAPI.openGLES3);
-//    } else {
-//      self.context = EAGLContext.init(api: shareContext!.api, sharegroup: shareContext!.sharegroup);
-//    }
-//
-    
-//    let attr = [
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
-//        0
-//    ]
-    
+
     let attr = [
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),

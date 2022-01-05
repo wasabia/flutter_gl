@@ -62,9 +62,7 @@ public class RenderWorker: NSObject {
   
   
   func drawTexture(texture: GLuint, vertexBuffer: GLuint, matrix: GLKMatrix4?) {
-    
-    print(" FlutterGLMacos drawTexture \(texture) ")
-    
+   
     checkGlError(op: "drawTexture 01");
     
     var _program = getProgram();
@@ -72,8 +70,8 @@ public class RenderWorker: NSObject {
     
     checkGlError(op: "drawTexture 02");
     
-    var _positionSlot = GLuint(0)
-    var _textureSlot = GLuint(1)
+    var _positionSlot = GLuint(glGetAttribLocation(_program, "Position"))
+    var _textureSlot = GLuint(glGetAttribLocation(_program, "TextureCoords"))
     
     
     var _texture0Uniform = GLuint(glGetUniformLocation(_program, "Texture0"))

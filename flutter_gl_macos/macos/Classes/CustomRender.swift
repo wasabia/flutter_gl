@@ -49,20 +49,7 @@ public class CustomRender: NSObject, FlutterTexture {
     self.onNewFrame = onNewFrame;
     
     self.screenScale = options["dpr"] as! Double;
-    
-//    let attr = [
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 32,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFAMultisample),
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASampleBuffers), 1,
-//        NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
-//        0
-//    ]
-
+  
     let attr = [
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
@@ -111,17 +98,9 @@ public class CustomRender: NSObject, FlutterTexture {
   
   func updateTexture(sourceTexture: Int64) -> Bool {
     
-    var _context = self.eglEnv!.context!;
-    
-    CGLLockContext(_context.cglContextObj!);
-    _context.makeCurrentContext();
-    
-    
-    print(" Render.updateTexture sourceTexture: \(sourceTexture)  ")
- 
     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
     
-    glClearColor( GLclampf(1.0), GLclampf(0.0), GLclampf(0.0), GLclampf(1.0) );
+    glClearColor( GLclampf(0.0), GLclampf(0.0), GLclampf(0.0), GLclampf(0.0) );
     glClear(GLbitfield(GL_COLOR_BUFFER_BIT));
 
     self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
@@ -133,9 +112,7 @@ public class CustomRender: NSObject, FlutterTexture {
     
     glFinish();
     
-    _context.flushBuffer();
-    CGLUnlockContext(_context.cglContextObj!)
-    
+
     self.onNewFrame();
     
     return true;
@@ -174,27 +151,6 @@ public class CustomRender: NSObject, FlutterTexture {
   
     ThreeEgl.setContext(key: 3, context: eAGLShareContext!);
     
-
-    // Enable the multithreading
-    var err =  CGLEnable( eAGLShareContext!.cglContextObj!, kCGLCEMPEngine);
-    if (err != kCGLNoError )
-    {
-      print(" CGLEnable  error 01 ");
-    }
-    
-    err =  CGLEnable( self.eglEnv!.context!.cglContextObj!, kCGLCEMPEngine);
-    if (err != kCGLNoError )
-    {
-      print(" CGLEnable  error 02 ");
-    }
-    
-    err =  CGLEnable( self.dartEglEnv!.context!.cglContextObj!, kCGLCEMPEngine);
-    if (err != kCGLNoError )
-    {
-      print(" CGLEnable  error 03 ");
-    }
-
-    
     var size: GLint = 0;
     glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &size);
     print("GL_MAX_TEXTURE_SIZE: \(size) ")
@@ -208,7 +164,7 @@ public class CustomRender: NSObject, FlutterTexture {
     let glWidth = width * Double(self.screenScale);
     let glHeight = height * Double(self.screenScale);
     
-    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
+//    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
     
     
     glGenFramebuffers(1, &frameBuffer);

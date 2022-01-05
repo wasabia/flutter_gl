@@ -92,13 +92,9 @@ public class FlutterGlMacosPlugin: NSObject, FlutterPlugin {
         result(" arguments error.... ")
         return
       }
-      
-      
 
       let textureId = args["textureId"] as? Int64;
       let sourceTexture = args["sourceTexture"] as? Int64;
-      
-      print(" plugins updateTexture textureId: \(textureId) sourceTexture: \(sourceTexture) ");
 
       let render = self.renders[textureId!];
 

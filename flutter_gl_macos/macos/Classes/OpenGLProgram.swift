@@ -17,11 +17,6 @@ public class OpenGLProgram {
     
     var vertex_shader = """
     #version 140
-    
-    #define attribute in
-    #define varying out
-    #define texture2D texture
-    
     precision mediump float;
 
     in vec4 Position;
