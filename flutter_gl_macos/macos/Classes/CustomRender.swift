@@ -72,7 +72,7 @@ public class CustomRender: NSObject, FlutterTexture {
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAMinimumPolicy),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion4_1Core),
+        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
         0
     ]
     

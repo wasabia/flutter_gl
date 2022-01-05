@@ -16,11 +16,16 @@ public class OpenGLProgram {
   func getProgram() -> GLuint {
     
     var vertex_shader = """
-    #version 410
+    #version 140
+    
+    #define attribute in
+    #define varying out
+    #define texture2D texture
+    
     precision mediump float;
 
-    layout (location = 0) in vec4 Position;
-    layout (location = 1) in vec2 TextureCoords;
+    in vec4 Position;
+    in vec2 TextureCoords;
     out vec2 TextureCoordsVarying;
 
     uniform mat4 matrix;
@@ -33,7 +38,7 @@ public class OpenGLProgram {
     """;
     
     var fragment_shader = """
-    #version 410
+    #version 140
     precision mediump float;
 
     uniform sampler2D Texture0;
