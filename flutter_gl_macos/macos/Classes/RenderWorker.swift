@@ -65,8 +65,12 @@ public class RenderWorker: NSObject {
     
     print(" FlutterGLMacos drawTexture \(texture) ")
     
+    checkGlError(op: "drawTexture 01");
+    
     var _program = getProgram();
     glUseProgram(_program)
+    
+    checkGlError(op: "drawTexture 02");
     
     var _positionSlot = GLuint(0)
     var _textureSlot = GLuint(1)
@@ -81,6 +85,7 @@ public class RenderWorker: NSObject {
     glUniform1i(GLint(_texture0Uniform), 8);
     // 将 textureSlot 赋值为 0，而 0 与 GL_TEXTURE0 对应，这里如果写 1，上面也要改成 GL_TEXTURE1
     
+    checkGlError(op: "drawTexture 03");
     
     var _matrix = GLKMatrix4Make(
       1.0, 0.0, 0.0, 0.0,
@@ -99,24 +104,42 @@ public class RenderWorker: NSObject {
       }
     }
     
+    checkGlError(op: "drawTexture 04");
     
     
     glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexBuffer);
     
-    let step: GLsizei = GLsizei(MemoryLayout<CFloat>.size * 5);
+    checkGlError(op: "drawTexture 041");
     
-    // 设置顶点数据
-    glEnableVertexAttribArray(_positionSlot);
+    let step: GLsizei = GLsizei(MemoryLayout<CFloat>.size * 5);
+ 
+    var vao = GLuint(0);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
+    
+    
     let positionSlotFirstComponent = UnsafeRawPointer(bitPattern: 0)
     glVertexAttribPointer(_positionSlot, 3, GLenum(GL_FLOAT), GLboolean(GL_FALSE), step, positionSlotFirstComponent);
+    checkGlError(op: "drawTexture 042");
+    // 设置顶点数据
+    glEnableVertexAttribArray(_positionSlot);
+    
+    checkGlError(op: "drawTexture 05");
     
     // 设置纹理数据
-    glEnableVertexAttribArray(_textureSlot);
     let textureSlotFirstComponent = UnsafeRawPointer(bitPattern: MemoryLayout<CFloat>.size * 3)
     glVertexAttribPointer(_textureSlot, 2, GLenum(GL_FLOAT), GLboolean(GL_FALSE), step, textureSlotFirstComponent);
     
+    glEnableVertexAttribArray(_textureSlot);
+    
+    
+    checkGlError(op: "drawTexture 06");
+    
     // 开始绘制
     glDrawArrays(GLenum(GL_TRIANGLE_STRIP), 0, 4);
+    
+    checkGlError(op: "drawTexture 11");
   }
   
   
@@ -178,7 +201,7 @@ public class RenderWorker: NSObject {
   func checkGlError(op: String) {
     let error = glGetError();
     if (error != GL_NO_ERROR) {
-      print("worker ES30_ERROR", "\(op): glError \(error)")
+      print("RenderWorker GL_ERROR", "\(op): glError \(error)")
     }
   }
   

@@ -111,11 +111,17 @@ public class CustomRender: NSObject, FlutterTexture {
   
   func updateTexture(sourceTexture: Int64) -> Bool {
     
+    var _context = self.eglEnv!.context!;
+    
+    CGLLockContext(_context.cglContextObj!);
+    _context.makeCurrentContext();
+    
+    
     print(" Render.updateTexture sourceTexture: \(sourceTexture)  ")
  
     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
     
-    glClearColor( GLclampf(1.0), GLclampf(0.5), GLclampf(0.5), GLclampf(1.0) );
+    glClearColor( GLclampf(1.0), GLclampf(0.0), GLclampf(0.0), GLclampf(1.0) );
     glClear(GLbitfield(GL_COLOR_BUFFER_BIT));
 
     self.worker!.renderTexture(texture: GLuint(sourceTexture), matrix: nil, isFBO: false);
@@ -127,7 +133,8 @@ public class CustomRender: NSObject, FlutterTexture {
     
     glFinish();
     
-
+    _context.flushBuffer();
+    CGLUnlockContext(_context.cglContextObj!)
     
     self.onNewFrame();
     
@@ -166,6 +173,26 @@ public class CustomRender: NSObject, FlutterTexture {
     ThreeEgl.setContext(key: self.dartEglEnv!.getContext(), context: self.dartEglEnv!.context!);
   
     ThreeEgl.setContext(key: 3, context: eAGLShareContext!);
+    
+
+    // Enable the multithreading
+    var err =  CGLEnable( eAGLShareContext!.cglContextObj!, kCGLCEMPEngine);
+    if (err != kCGLNoError )
+    {
+      print(" CGLEnable  error 01 ");
+    }
+    
+    err =  CGLEnable( self.eglEnv!.context!.cglContextObj!, kCGLCEMPEngine);
+    if (err != kCGLNoError )
+    {
+      print(" CGLEnable  error 02 ");
+    }
+    
+    err =  CGLEnable( self.dartEglEnv!.context!.cglContextObj!, kCGLCEMPEngine);
+    if (err != kCGLNoError )
+    {
+      print(" CGLEnable  error 03 ");
+    }
 
     
     var size: GLint = 0;
@@ -206,10 +233,9 @@ public class CustomRender: NSObject, FlutterTexture {
     
     checkGlError(op: "glBindFramebuffer 201..")
     
-    glEnable(GLenum(GL_BLEND));
-    glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA));
-    
-    glEnable(GLenum(GL_CULL_FACE));
+//    glEnable(GLenum(GL_BLEND));
+//    glBlendFunc(GLenum(GL_ONE), GLenum(GL_ONE_MINUS_SRC_ALPHA));
+//    glEnable(GLenum(GL_CULL_FACE));
     
     glViewport(0, 0, GLsizei(glWidth), GLsizei(glHeight));
     
