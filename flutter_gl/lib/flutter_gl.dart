@@ -1,6 +1,4 @@
-
 import 'dart:async';
-
 
 import 'package:flutter_gl_platform_interface/flutter_gl_platform_interface.dart';
 
@@ -18,17 +16,18 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   // for web
   dynamic get element => openGL.element;
 
-  FlutterGlPlugin() {
+  FlutterGlPlugin() {}
 
-  }
-
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
+  Future<Map<String, dynamic>> initialize(
+      {Map<String, dynamic>? options}) async {
     Map<String, dynamic> _options = {};
-    
+
     _options.addAll(options ?? {});
 
     final resp = await FlutterGlPlatform.instance.initialize(options: _options);
     textureId = resp["textureId"];
+
+    print(" flutter_gl initialize textureId ${textureId} ");
 
     // used for web
     _options["divId"] = textureId.toString();
@@ -40,21 +39,22 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   prepareContext() async {
     egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
 
+    print("prepareContext egls: ${egls} ");
+
     openGL.makeCurrent(egls);
   }
 
   Future<List<int>> getEgl(int textureId) async {
-    var result = List<int>.from(await FlutterGlPlatform.instance.getEgl(textureId));
+    var result =
+        List<int>.from(await FlutterGlPlatform.instance.getEgl(textureId));
     return result;
   }
-  
-  Future<bool> updateTexture(sourceTexture) {
-    return FlutterGlPlatform.instance.updateTexture(sourceTexture);
+
+  Future updateTexture(sourceTexture) async {
+    return await FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
 
   dispose() {
     return FlutterGlPlatform.instance.dispose();
   }
-
-
 }

@@ -34,7 +34,7 @@ public class FlutterGlMacosPlugin: NSObject, FlutterPlugin {
       }
       
       let options = args["options"] as! Dictionary<String, Any>;
-       let renderToVideo = args["renderToVideo"] as! Bool;
+      let renderToVideo = args["renderToVideo"] as! Bool;
       
       let render = CustomRender(
         options: options,

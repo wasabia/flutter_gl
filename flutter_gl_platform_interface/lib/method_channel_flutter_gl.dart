@@ -33,7 +33,7 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return List<int>.from(_result);
   }
 
-  Future<bool> updateTexture(sourceTexture) async {
+  Future updateTexture(sourceTexture) async {
     final _args = {
       "textureId": textureId,
       "sourceTexture": sourceTexture

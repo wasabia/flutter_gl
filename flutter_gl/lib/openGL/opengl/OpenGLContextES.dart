@@ -3,18 +3,20 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_gl/flutter_gl.dart';
+import 'package:flutter_gl/openGL/opengl/OpenGLContextDesktop.dart';
 
 import 'OpenGL30Constant.dart';
 import 'opengl_es_bindings/src/gles_bindings.dart';
 
 getContext(Map<String, dynamic> parameters) {
-  return OpenGLContextES(parameters);
+  if (Platform.isWindows) {
+    return OpenGLContextDesktop(parameters);
+  } else {
+    return OpenGLContextES(parameters);
+  }
 }
 
 class OpenGLContextES extends OpenGL30Constant {
-  // TODO need free memory
-  List<Pointer<Uint32>> _uint32pointers = [];
-
   late dynamic gl;
 
   OpenGLContextES(Map<String, dynamic> parameters) {
@@ -39,12 +41,12 @@ class OpenGLContextES extends OpenGL30Constant {
   getExtension(String key) {
     print("OpenGLES getExtension key: ${key}  EXTENSIONS: ${EXTENSIONS}");
 
-    if(Platform.isMacOS) {
+    if (Platform.isMacOS) {
       return getExtensionMacos(key);
     }
 
     Pointer _v = gl.glGetString(EXTENSIONS);
-    
+
     String _vstr = _v.cast<Utf8>().toDartString();
     List<String> _extensions = _vstr.split(" ");
 
@@ -55,7 +57,7 @@ class OpenGLContextES extends OpenGL30Constant {
     List<String> _extensions = [];
     var nExtension = getIntegerv(NUM_EXTENSIONS);
     for (int i = 0; i < nExtension; i++) {
-      _extensions.add( getStringi(GL_EXTENSIONS, i) );
+      _extensions.add(getStringi(GL_EXTENSIONS, i));
     }
 
     return _extensions;
@@ -118,7 +120,6 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glBindTexture(TEXTURE_2D, texture);
   }
 
-
   activeTexture(v0) {
     return gl.glActiveTexture(v0);
   }
@@ -129,44 +130,44 @@ class OpenGLContextES extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
-    if(data is NativeArray) {
-      textImage2DNative(target, level, internalformat, width, height, border, format, type,
-      data);
+    if (data is NativeArray) {
+      textImage2DNative(target, level, internalformat, width, height, border,
+          format, type, data);
     } else {
-      textImage2DNormal(target, level, internalformat, width, height, border, format, type,
-      data);
+      textImage2DNormal(target, level, internalformat, width, height, border,
+          format, type, data);
     }
   }
 
-  textImage2DNative(target, level, internalformat, width, height, border, format, type,
-      NativeArray data) {
+  textImage2DNative(target, level, internalformat, width, height, border,
+      format, type, NativeArray data) {
     var nativeBuffer = data.data;
-    gl.glTexImage2D(target, level, internalformat, width, height,
-      border, format, type, nativeBuffer.cast<Void>());
+    gl.glTexImage2D(target, level, internalformat, width, height, border,
+        format, type, nativeBuffer.cast<Void>());
   }
 
-  textImage2DNormal(target, level, internalformat, width, height, border, format, type,
-      data) {
+  textImage2DNormal(target, level, internalformat, width, height, border,
+      format, type, data) {
     Pointer<Int8> nativeBuffer;
     if (data != null) {
       nativeBuffer = calloc<Int8>(data.length);
       nativeBuffer.asTypedList(data.length).setAll(0, data);
-      gl.glTexImage2D(target, level, internalformat, width, height,
-        border, format, type, nativeBuffer.cast<Void>());
+      gl.glTexImage2D(target, level, internalformat, width, height, border,
+          format, type, nativeBuffer.cast<Void>());
       calloc.free(nativeBuffer);
     } else {
-      gl.glTexImage2D(target, level, internalformat, width, height,
-        border, format, type, nullptr);
+      gl.glTexImage2D(target, level, internalformat, width, height, border,
+          format, type, nullptr);
     }
   }
 
-
-
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    if(data is NativeArray) {
-      texImage2D_NOSIZENative(target, level, internalformat, format, type, data);
+    if (data is NativeArray) {
+      texImage2D_NOSIZENative(
+          target, level, internalformat, format, type, data);
     } else {
-      texImage2D_NOSIZENormal(target, level, internalformat, format, type, data);
+      texImage2D_NOSIZENormal(
+          target, level, internalformat, format, type, data);
     }
   }
 
@@ -175,48 +176,61 @@ class OpenGLContextES extends OpenGL30Constant {
     if (data != null) {
       nativeBuffer = calloc<Int8>(data.length);
       nativeBuffer.asTypedList(data.length).setAll(0, data);
-      gl.texImage2D(target, level, internalformat, format, type, nativeBuffer.cast<Void>());
+      gl.texImage2D(target, level, internalformat, format, type,
+          nativeBuffer.cast<Void>());
       calloc.free(nativeBuffer);
     } else {
       gl.texImage2D(target, level, internalformat, format, type, nullptr);
     }
 
-    return ;
+    return;
   }
 
   texImage2D_NOSIZENative(target, level, internalformat, format, type, data) {
     var nativeBuffer = data.data;
-    return gl.texImage2D(target, level, internalformat, format, type, nativeBuffer.cast<Void>());
+    return gl.texImage2D(
+        target, level, internalformat, format, type, nativeBuffer.cast<Void>());
   }
 
-  texImage3D(int target, int level, int internalformat, int width, int height, int depth, int border,
-      int format, int type, data) {
-    if(data is NativeArray) {
-      texImage3DNative(target, level, internalformat, width, height, depth, border, format, type, data);
+  texImage3D(int target, int level, int internalformat, int width, int height,
+      int depth, int border, int format, int type, data) {
+    if (data is NativeArray) {
+      texImage3DNative(target, level, internalformat, width, height, depth,
+          border, format, type, data);
     } else {
-      texImage3DNormal(target, level, internalformat, width, height, depth, border, format, type, data);
+      texImage3DNormal(target, level, internalformat, width, height, depth,
+          border, format, type, data);
     }
   }
 
-  texImage3DNative(int target, int level, int internalformat, int width, int height, int depth, int border,
-      int format, int type, NativeArray data) {
+  texImage3DNative(
+      int target,
+      int level,
+      int internalformat,
+      int width,
+      int height,
+      int depth,
+      int border,
+      int format,
+      int type,
+      NativeArray data) {
     var nativeBuffer = data.data;
     gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
-    format, type, nativeBuffer.cast<Void>());
+        format, type, nativeBuffer.cast<Void>());
   }
 
-  texImage3DNormal(int target, int level, int internalformat, int width, int height, int depth, int border,
-      int format, int type, data) {
+  texImage3DNormal(int target, int level, int internalformat, int width,
+      int height, int depth, int border, int format, int type, data) {
     Pointer<Int8> nativeBuffer;
     if (data != null) {
       nativeBuffer = calloc<Int8>(data.length);
       nativeBuffer.asTypedList(data.length).setAll(0, data);
-      gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
-      format, type, nativeBuffer.cast<Void>());
+      gl.glTexImage3D(target, level, internalformat, width, height, depth,
+          border, format, type, nativeBuffer.cast<Void>());
       calloc.free(nativeBuffer);
     } else {
-      gl.glTexImage3D(target, level, internalformat, width, height, depth, border,
-      format, type, nullptr);
+      gl.glTexImage3D(target, level, internalformat, width, height, depth,
+          border, format, type, nullptr);
     }
   }
 
@@ -312,7 +326,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   deleteTexture(int v0) {
-
     var _texturesList = [v0];
     final ptr = calloc<Int32>(_texturesList.length);
     ptr.asTypedList(1).setAll(0, _texturesList);
@@ -364,7 +377,6 @@ class OpenGLContextES extends OpenGL30Constant {
 
     gl.glGetActiveUniform(v0, v1, 99, length, size, type, name);
 
-
     int _type = type.value;
     String _name = name.cast<Utf8>().toDartString();
     int _size = size.value;
@@ -379,14 +391,12 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   getActiveAttrib(v0, v1) {
-   
     var length = calloc<Int32>();
     var size = calloc<Int32>();
     var type = calloc<Uint32>();
     var name = calloc<Int8>(100);
 
     gl.glGetActiveAttrib(v0, v1, 99, length, size, type, name);
-
 
     int _type = type.value;
     String _name = name.cast<Utf8>().toDartString();
@@ -420,7 +430,6 @@ class OpenGLContextES extends OpenGL30Constant {
     return Buffer._create(_v);
   }
 
-
   deleteBuffer(Buffer v0) {
     var _buffersList = [v0.bufferId];
     final ptr = calloc<Uint32>(_buffersList.length);
@@ -429,13 +438,12 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-
   bindBuffer(v0, v1) {
     return gl.glBindBuffer(v0, v1.bufferId);
   }
 
   bufferData(int target, int size, data, int usage) {
-    if(data is NativeArray) {
+    if (data is NativeArray) {
       bufferDataNative(target, size, data, usage);
     } else {
       bufferDataNormal(target, size, data, usage);
@@ -454,7 +462,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   bufferSubData(target, offset, data, srcOffset, length) {
-    if(data is NativeArray) {
+    if (data is NativeArray) {
       bufferSubDataNative(target, offset, data, srcOffset, length);
     } else {
       bufferSubDataNormal(target, offset, data, srcOffset, length);
@@ -472,9 +480,11 @@ class OpenGLContextES extends OpenGL30Constant {
     gl.glBufferSubData(target, offset, size, data.data.cast<Void>());
   }
 
-  vertexAttribPointer(int index, int size, int type, bool normalized, int stride, int offset) {
+  vertexAttribPointer(
+      int index, int size, int type, bool normalized, int stride, int offset) {
     var offsetPointer = Pointer<Void>.fromAddress(offset);
-    gl.glVertexAttribPointer(index, size, type, normalized ? 1 : 0, stride, offsetPointer.cast<Void>());
+    gl.glVertexAttribPointer(index, size, type, normalized ? 1 : 0, stride,
+        offsetPointer.cast<Void>());
   }
 
   drawArrays(v0, v1, v2) {
@@ -494,19 +504,21 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   readPixels(int x, int y, int width, int height, int format, int type, data) {
-    if(data is NativeArray)  {
+    if (data is NativeArray) {
       readPixelsNative(x, y, width, height, format, type, data);
     } else {
       readPixelsNormal(x, y, width, height, format, type, data);
     }
   }
 
-  readPixelsNative(int x, int y, int width, int height, int format, int type, NativeArray data) {
+  readPixelsNative(int x, int y, int width, int height, int format, int type,
+      NativeArray data) {
     final dataPtr = data.data;
     gl.glReadPixels(x, y, width, height, format, type, dataPtr);
   }
 
-  readPixelsNormal(int x, int y, int width, int height, int format, int type, Uint8List data) {
+  readPixelsNormal(int x, int y, int width, int height, int format, int type,
+      Uint8List data) {
     final dataPtr = toPointer(data);
     gl.glReadPixels(x, y, width, height, format, type, dataPtr);
     Uint8List _data = (dataPtr as Pointer<Uint8>).asTypedList(data.length);
@@ -518,15 +530,18 @@ class OpenGLContextES extends OpenGL30Constant {
     print(" OpenGL copyTexImage2D TODO...  ");
   }
 
-  texSubImage2D(target, level, x, y, width, height, format, type, Uint8List data) {
+  texSubImage2D(
+      target, level, x, y, width, height, format, type, Uint8List data) {
     final dataPtr = toPointer(data);
-    gl.glTexSubImage2D(target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
+    gl.glTexSubImage2D(
+        target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
     calloc.free(dataPtr);
   }
 
   texSubImage2D2(x, y, width, height, Uint8List data) {
     final dataPtr = toPointer(data);
-    gl.glTexSubImage2D(TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
+    gl.glTexSubImage2D(
+        TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
     calloc.free(dataPtr);
   }
 
@@ -538,8 +553,10 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glBindRenderbuffer(v0, v1 ?? 0);
   }
 
-  renderbufferStorageMultisample(target, samples, internalformat, width, height) {
-    return gl.glRenderbufferStorageMultisample(target, samples, internalformat, width, height);
+  renderbufferStorageMultisample(
+      target, samples, internalformat, width, height) {
+    return gl.glRenderbufferStorageMultisample(
+        target, samples, internalformat, width, height);
   }
 
   renderbufferStorage(v0, v1, v2, v3) {
@@ -574,8 +591,10 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glGenFramebuffers(v0, v1);
   }
 
-  blitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter) {
-    return gl.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+  blitFramebuffer(
+      srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter) {
+    return gl.glBlitFramebuffer(
+        srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
   }
 
   createVertexArray() {
@@ -614,14 +633,14 @@ class OpenGLContextES extends OpenGL30Constant {
     int _len = infoLen.value;
     calloc.free(infoLen);
 
-
     String message = '';
 
     if (infoLen.value > 0) {
       final infoLog = calloc<Int8>(_len);
       gl.glGetProgramInfoLog(v0, _len, nullptr, infoLog);
-      
-      message = "\nError compiling shader:\n${infoLog.cast<Utf8>().toDartString()}";
+
+      message =
+          "\nError compiling shader:\n${infoLog.cast<Utf8>().toDartString()}";
       calloc.free(infoLog);
       return message;
     } else {
@@ -641,7 +660,8 @@ class OpenGLContextES extends OpenGL30Constant {
       final infoLog = calloc<Int8>(_len);
 
       gl.glGetShaderInfoLog(v0, _len, nullptr, infoLog);
-      message = "\nError compiling shader:\n${infoLog.cast<Utf8>().toDartString()}";
+      message =
+          "\nError compiling shader:\n${infoLog.cast<Utf8>().toDartString()}";
 
       calloc.free(infoLog);
       return message;
@@ -708,7 +728,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   drawBuffers(buffers) {
-   
     final ptr = calloc<Uint32>(buffers.length);
     ptr.asTypedList(buffers.length).setAll(0, List<int>.from(buffers));
 
@@ -757,7 +776,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniformMatrix4fv(location, bool transpose, value) {
-    if(value is NativeArray) {
+    if (value is NativeArray) {
       uniformMatrix4fvNative(location, transpose, value);
     } else {
       uniformMatrix4fvNormal(location, transpose, value);
@@ -766,14 +785,15 @@ class OpenGLContextES extends OpenGL30Constant {
 
   uniformMatrix4fvNormal(location, bool transpose, value) {
     var arrayPointer = toPointer(value);
-    gl.glUniformMatrix4fv(location, value.length ~/ 16, transpose ? 1 : 0, arrayPointer);
+    gl.glUniformMatrix4fv(
+        location, value.length ~/ 16, transpose ? 1 : 0, arrayPointer);
     calloc.free(arrayPointer);
   }
 
   uniformMatrix4fvNative(location, bool transpose, NativeArray value) {
-    gl.glUniformMatrix4fv(location, value.length ~/ 16, transpose ? 1 : 0, value.data);
+    gl.glUniformMatrix4fv(
+        location, value.length ~/ 16, transpose ? 1 : 0, value.data);
   }
-
 
   uniform1i(v0, v1) {
     return gl.glUniform1i(v0, v1);
@@ -791,7 +811,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform3fv(location, value) {
-    if(value is NativeArray) {
+    if (value is NativeArray) {
       uniform3fvNative(location, value);
     } else {
       uniform3fvNormal(location, value);
@@ -813,7 +833,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniformMatrix3fv(location, bool transpose, value) {
-    if(value is NativeArray) {
+    if (value is NativeArray) {
       uniformMatrix3fvNative(location, transpose, value);
     } else {
       uniformMatrix3fvNormal(location, transpose, value);
@@ -829,7 +849,6 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniformMatrix3fvNative(location, bool transpose, NativeArray value) {
-    
     gl.glUniformMatrix3fv(
         location, value.length ~/ 9, transpose ? 1 : 0, value.data);
   }
@@ -876,7 +895,8 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   uniform4f(location, num v0, num v1, num v2, num v3) {
-    return gl.glUniform4f(location, v0.toDouble(), v1.toDouble(), v2.toDouble(), v3.toDouble());
+    return gl.glUniform4f(
+        location, v0.toDouble(), v1.toDouble(), v2.toDouble(), v3.toDouble());
   }
 
   vertexAttribDivisor(index, divisor) {
@@ -919,7 +939,6 @@ class OpenGLContextES extends OpenGL30Constant {
 
     return _v;
   }
-
 }
 
 class Buffer {
@@ -934,17 +953,19 @@ class ActiveInfo {
   ActiveInfo(this.type, this.name, this.size);
 }
 
-
 toPointer(data) {
-  if(data is Float32List || data.runtimeType.toString() == "List<double>" || data.runtimeType.toString() == "List<num>" || data.runtimeType.toString() == "_GrowableList<double>") {
+  if (data is Float32List ||
+      data.runtimeType.toString() == "List<double>" ||
+      data.runtimeType.toString() == "List<num>" ||
+      data.runtimeType.toString() == "_GrowableList<double>") {
     final ptr = calloc<Float>(data.length);
     ptr.asTypedList(data.length).setAll(0, List<double>.from(data));
     return ptr;
-  } else if(data is Uint8List) {
+  } else if (data is Uint8List) {
     final ptr = calloc<Uint8>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
     return ptr;
   } else {
-    throw(" flutter_gl OpenGLContextES.dart toPointer ${data.runtimeType} TODO ");
+    throw (" flutter_gl OpenGLContextES.dart toPointer ${data.runtimeType} TODO ");
   }
 }

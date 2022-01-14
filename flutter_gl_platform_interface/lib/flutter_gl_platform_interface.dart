@@ -52,7 +52,7 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('getEgl() has not been implemented.');
   }
 
-  Future<bool> updateTexture(sourceTexture) {
+  Future updateTexture(sourceTexture) async {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 

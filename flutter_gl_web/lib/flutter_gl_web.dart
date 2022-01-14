@@ -47,7 +47,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return [];
   }
 
-  Future<bool> updateTexture(sourceTexture) {
+  updateTexture(sourceTexture) async {
     // web no need do something
     return Future.sync(() => true);
   }
