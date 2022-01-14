@@ -22,4 +22,7 @@ class NativeArray {
 
   }
 
+  dispose() {
+  }
+
 }

@@ -273,15 +273,15 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   stencilMask(v0) {
-    print(" OpenGL stencilMask ...  ");
+    return gl.glStencilMask(v0);
   }
 
   stencilFunc(v0, v1, v2) {
-    print(" OpenGL stencilFunc ...  ");
+    return gl.glStencilFunc(v0, v1, v2);
   }
 
   stencilOp(v0, v1, v2) {
-    print(" OpenGL stencilOp ...  ");
+    return gl.glStencilOp(v0, v1, v2);
   }
 
   clearStencil(v0) {
