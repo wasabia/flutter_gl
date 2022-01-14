@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -163,10 +164,9 @@ class _MyAppState extends State<ExampleDemoTest> {
   animate() {
     render();
 
-    // Future.delayed(Duration(milliseconds: 40), () {
-
-    //   animate();
-    // });
+    Future.delayed(Duration(milliseconds: 40), () {
+      animate();
+    });
   }
 
   setupDefaultFBO() {
@@ -234,14 +234,36 @@ class _MyAppState extends State<ExampleDemoTest> {
   prepare() {
     final _gl = flutterGlPlugin.gl;
 
-    var vs = """
+    String _version = "300 es";
+
+    if(Platform.isMacOS || Platform.isWindows) {
+      _version = "150";
+    }
+    
+    var vs = """#version ${_version}
+    ${
+      (Platform.isMacOS || Platform.isWindows) ? """
+  #define attribute in
+  #define varying out
+  #define texture2D texture
+      """ : ""
+    }
+
     attribute vec4 a_Position;
     void main() {
       gl_Position = a_Position;
     }
     """;
 
-    var fs = """
+    var fs = """#version ${_version}
+    ${
+      (Platform.isMacOS || Platform.isWindows) ? """
+  #define varying in
+  out highp vec4 pc_fragColor;
+  #define gl_FragColor pc_fragColor
+      """ : ""
+    }
+
     precision mediump float;
     uniform vec4 u_color;
     void main() {
