@@ -143,7 +143,7 @@ int CustomRender::updateTexture(int sourceTexture) {
   glClear(GLbitfield(GL_COLOR_BUFFER_BIT));
 
 
-  int data = renderWorker.renderTexture(sourceTexture, true);
+  int data = renderWorker.renderTexture(sourceTexture, false);
 
 
   // use PBO better???
