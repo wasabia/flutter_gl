@@ -207,19 +207,17 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     String _version = "300 es";
 
-    if(Platform.isMacOS || Platform.isWindows) {
+    if (Platform.isMacOS || Platform.isWindows) {
       _version = "150";
     }
-    
+
     var vs = """#version ${_version}
 
-    ${
-      (Platform.isMacOS || Platform.isWindows) ? """
+    ${(Platform.isMacOS || Platform.isWindows) ? """
   #define attribute in
   #define varying out
   #define texture2D texture
-      """ : ""
-    }
+      """ : ""}
 
     attribute vec3 a_Position;
     void main() {
@@ -228,13 +226,11 @@ class _MyAppState extends State<ExampleTriangle01> {
     """;
 
     var fs = """#version ${_version}
-    ${
-      (Platform.isMacOS || Platform.isWindows) ? """
+    ${(Platform.isMacOS || Platform.isWindows) ? """
   #define varying in
   out highp vec4 pc_fragColor;
   #define gl_FragColor pc_fragColor
-      """ : ""
-    }
+      """ : ""}
 
     void main() {
         gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);

@@ -1,4 +1,3 @@
-
 import 'dart:ffi' as ffi;
 
 /// https://www.khronos.org/registry/OpenGL/index_es.php#headers3
@@ -9899,7 +9898,6 @@ const int GL_SHADER_BINARY_VIV = 36804;
 
 const int __gles2_gl32_h_ = 1;
 
-
 const int KHRONOS_SUPPORT_INT64 = 1;
 
 const int KHRONOS_SUPPORT_FLOAT = 1;
@@ -12441,8 +12439,6 @@ typedef _dart_glGenFramebuffers = void Function(
   int n,
   ffi.Pointer<ffi.Uint32> framebuffers,
 );
-
-
 
 typedef _c_glGenRenderbuffers = ffi.Void Function(
   ffi.Int32 n,

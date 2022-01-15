@@ -1,6 +1,6 @@
 # Flutter GL
 
-Flutter GL can call OpenGL ES API with Dart
+cross-platform call OpenGL API by Dart through dart:ffi. Provides OpenGL with Texture Widget on Flutter. 
 
 Support iOS, Android, Web, macOS, Windows
 
@@ -9,11 +9,12 @@ Linux TODO
 Used by [three_dart](https://github.com/wasabia/three_dart)
 
 
-## OpenGL ES API
-Now the api is similar to WebGL
+## OpenGL API
 
-## How to use
-Now this is only support draw to FBO. then share the FBO texture to Native side.
+the api is similar to WebGL
+
+only support draw to FBO. then share the FBO texture to Native side.
+
 
 ### import
 

@@ -1,11 +1,9 @@
 part of native_array;
 
-
 class Float32Array extends NativeFloat32Array {
   Float32Array(size) : super(size);
   Float32Array.from(listData) : super.from(listData);
 }
-
 
 class Uint32Array extends NativeUint32Array {
   Uint32Array(size) : super(size);

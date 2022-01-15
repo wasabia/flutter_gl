@@ -30,7 +30,8 @@ DynamicLibrary loadLibrary() {
   } else if (Platform.isLinux) {
     name = 'libGL.so.1';
   } else if (Platform.isMacOS) {
-    name = '/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL';
+    name =
+        '/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL';
   } else {
     throw UnsupportedError('unsupported platform ${Platform.operatingSystem}');
   }
@@ -51,7 +52,10 @@ DynamicLibrary loadLibrary() {
   try {
     if (glGetProcAddressName != null) {
       final func = library.lookup(glGetProcAddressName);
-      _glGetProcAddress = Pointer<NativeFunction<GlGetProcAddressNative>>.fromAddress(func.address).asFunction<GlGetProcAddress>();
+      _glGetProcAddress =
+          Pointer<NativeFunction<GlGetProcAddressNative>>.fromAddress(
+                  func.address)
+              .asFunction<GlGetProcAddress>();
     }
   } catch (ex) {
     throw Exception('failed to loookup $glGetProcAddressName function');
@@ -60,7 +64,8 @@ DynamicLibrary loadLibrary() {
   return library;
 }
 
-Pointer<NativeFunction<FN>> loadFunction<FN extends Function>(DynamicLibrary lib, String name) {
+Pointer<NativeFunction<FN>> loadFunction<FN extends Function>(
+    DynamicLibrary lib, String name) {
   Pointer<NativeFunction<FN>>? funcPointer;
   if (lib.providesSymbol(name)) {
     funcPointer = lib.lookup(name);
@@ -70,7 +75,8 @@ Pointer<NativeFunction<FN>> loadFunction<FN extends Function>(DynamicLibrary lib
   return funcPointer;
 }
 
-Pointer<NativeFunction<FN>> loadDynamicFunction<FN extends Function>(String name) {
+Pointer<NativeFunction<FN>> loadDynamicFunction<FN extends Function>(
+    String name) {
   if (_glGetProcAddress != null) {
     final address = _glGetProcAddress!(name.toNativeUtf8());
     return Pointer<NativeFunction<FN>>.fromAddress(address);

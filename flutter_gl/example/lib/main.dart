@@ -5,5 +5,3 @@ import './MyApp.dart';
 void main() {
   runApp(MyApp());
 }
-
-

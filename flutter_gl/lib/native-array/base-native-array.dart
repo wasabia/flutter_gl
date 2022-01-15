@@ -19,5 +19,4 @@ class NativeArray {
   toDartList() {}
 
   dispose() {}
-
 }

@@ -1,4 +1,3 @@
-
 import 'OpenGL20Constant.dart';
 
 class OpenGL30Constant extends OpenGL20Constant {
@@ -307,8 +306,6 @@ class OpenGL30Constant extends OpenGL20Constant {
   int VERTEX_ATTRIB_ARRAY_DIVISOR = 35070;
   int VERTEX_ATTRIB_ARRAY_INTEGER = 35069;
   int WAIT_FAILED = 37149;
-
-
 
   int UNPACK_FLIP_Y_WEBGL = 0x9240;
   int UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;

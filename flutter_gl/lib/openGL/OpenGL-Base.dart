@@ -1,11 +1,8 @@
-
 class OpenGLBase {
-
-  
   int get defaultFrameBuffer => 0;
   int get defaultTexture => 0;
   dynamic _gl;
-    
+
   dynamic element;
 
   dynamic get gl => _gl;
@@ -16,8 +13,7 @@ class OpenGLBase {
 
   void glFlush() {}
 
-  void dispose(){}
+  void dispose() {}
 
   void makeCurrent(List<int> egls) {}
-
 }

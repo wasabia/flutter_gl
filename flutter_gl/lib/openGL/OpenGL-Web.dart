@@ -1,16 +1,14 @@
 import 'dart:ui' as ui;
 import 'dart:html';
 import './OpenGL-Base.dart';
-import 'opengl/OpenGLContextES.dart' if (dart.library.js) 'opengl/OpenGLContextWeb.dart';
-
+import 'opengl/OpenGLContextES.dart'
+    if (dart.library.js) 'opengl/OpenGLContextWeb.dart';
 
 getInstance(Map<String, dynamic> options) {
   return OpenGLWeb(options);
 }
 
-
 class OpenGLWeb extends OpenGLBase {
-
   late int width;
   late int height;
 
@@ -20,12 +18,13 @@ class OpenGLWeb extends OpenGLBase {
   bool _alpha = false;
   bool _antialias = false;
 
-
   dynamic get gl {
     _gl ??= getContext({
-      "gl": this.element.getContext("webgl2", {"alpha": _alpha, "antialias": _antialias})
+      "gl": this
+          .element
+          .getContext("webgl2", {"alpha": _alpha, "antialias": _antialias})
     });
-    
+
     return _gl;
   }
 
@@ -38,26 +37,16 @@ class OpenGLWeb extends OpenGLBase {
     this.dpr = options["dpr"];
 
     ui.platformViewRegistry.registerViewFactory(divId, (int viewId) {
-      this.element = CanvasElement(width: (width * dpr).toInt(), height: (height * dpr).toInt())
-      ..id = 'canvas-id';
+      this.element = CanvasElement(
+          width: (width * dpr).toInt(), height: (height * dpr).toInt())
+        ..id = 'canvas-id';
 
       return this.element;
     });
-   
   }
-
-
 
   makeCurrent(List<int> egls) {
     // web no need do something
     // gl.viewport(0, 0, width, height);
   }
-
-
-
-
 }
-
-
-
-
