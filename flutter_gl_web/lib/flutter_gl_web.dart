@@ -52,4 +52,8 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return Future.sync(() => true);
   }
 
+  dispose() {
+    // on web what should dispose ???
+  }
+
 }
