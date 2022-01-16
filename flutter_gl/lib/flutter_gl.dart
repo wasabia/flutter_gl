@@ -6,12 +6,11 @@ import 'openGL/OpenGL.dart';
 export './openGL/OpenGL.dart';
 export './native-array/index.dart';
 
-
 /// FlutterGlPlugin
-/// 
+///
 /// flutterGlPlugin = FlutterGlPlugin();
 /// Map<String, dynamic> _options = {
-///     "width": width, 
+///     "width": width,
 ///     "height": height,
 ///     "antialias": true,
 ///     "alpha": false
@@ -45,8 +44,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return resp;
   }
 
-
-  /// set opengl context for ffi thread 
+  /// set opengl context for ffi thread
   prepareContext() async {
     egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
     openGL.makeCurrent(egls);
@@ -59,7 +57,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return result;
   }
 
-  /// update texture to flutter 
+  /// update texture to flutter
   Future updateTexture(sourceTexture) async {
     return await FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
