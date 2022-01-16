@@ -35,7 +35,7 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
       - name: '>> Dart package <<'
-        uses: k-paxian/dart-package-publisher@master
+        uses: wasabia/dart-package-publisher@master
         with:
           relativePath: flutter_gl_web
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
