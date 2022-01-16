@@ -83,6 +83,13 @@ packages:
       relative: true
     source: path
     version: "0.0.9"
+  flutter_gl_macos:
+    dependency: transitive
+    description:
+      name: flutter_gl_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   flutter_gl_platform_interface:
     dependency: transitive
     description:
@@ -97,6 +104,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.3"
+  flutter_gl_windows:
+    dependency: transitive
+    description:
+      name: flutter_gl_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
