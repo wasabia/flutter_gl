@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Publish flutter_gl package to pub.dev
+name: Publish flutter_gl_platform_interface package to pub.dev
 
 # Controls when the workflow will run
 on:
@@ -37,8 +37,9 @@ jobs:
       - name: '>> Dart package <<'
         uses: wasabia/dart-package-publisher@master
         with:
-          relativePath: flutter_gl
+          relativePath: flutter_gl_platform_interface
           accessToken: ${{ secrets.OAUTH_ACCESS_TOKEN }}
           refreshToken: ${{ secrets.OAUTH_REFRESH_TOKEN }}
           format: true
           flutter: true
+          skipTests: true
