@@ -1,10 +1,10 @@
 name: flutter_gl_windows
 description: Windows platform implementation of flutter_gl, cross-platform call OpenGL API by Dart through dart:ffi. Provides OpenGL with Texture Widget on Flutter. 
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/wasabia/flutter_gl
 
 environment:
-  sdk: ">=2.16.0-80.1.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
