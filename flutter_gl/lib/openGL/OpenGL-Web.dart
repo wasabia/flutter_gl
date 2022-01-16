@@ -47,6 +47,5 @@ class OpenGLWeb extends OpenGLBase {
 
   makeCurrent(List<int> egls) {
     // web no need do something
-    // gl.viewport(0, 0, width, height);
   }
 }

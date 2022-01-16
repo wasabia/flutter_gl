@@ -13,8 +13,8 @@ dependencies:
     sdk: flutter
   flutter_gl:
     path: ../
-  cupertino_icons: ^1.0.2
-  path: ^1.8.0
+  cupertino_icons: ^1.0.4
+  path: ^1.8.1
   path_provider: ^2.0.1
   ffi: ^1.1.2
 

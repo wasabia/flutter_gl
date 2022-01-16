@@ -1,5 +1,5 @@
 name: flutter_gl_macos
-description: A new flutter plugin project.
+description: macOS platform implementation for flutter_gl
 version: 0.0.2
 homepage: https://github.com/wasabia/flutter_gl
 

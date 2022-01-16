@@ -1,5 +1,5 @@
 name: flutter_gl_windows
-description: A new flutter plugin project.
+description: Windows platform implementation for flutter_gl
 version: 0.0.1
 homepage: https://github.com/wasabia/flutter_gl
 
@@ -14,7 +14,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
+  flutter_lints: ^1.0.4
   flutter_gl_platform_interface: ^0.0.3
 
 # For information on the generic Dart part of this file, see the

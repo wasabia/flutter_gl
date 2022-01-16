@@ -65,6 +65,38 @@ cd flutter_gl/flutter_gl/example
 flutter run
 ```
 
+## share opengl context with flutter_gl
+
+### Android
+
+when init the plugin, save share opengl context with ThreeEgl,
+
+```
+ThreeEgl.setContext("shareContext", shareEglEnv.eglContext);
+```
+
+so you can get it use ThreeEgl lib, then create yourself opengl context share with "shareContext"
+
+```
+shareContext = ThreeEgl.getContext("shareContext");
+```
+
+
+### iOS
+
+for iOS the key is 3 ... 
+```
+eAGLShareContext = ThreeEgl.getContext(key: 3);
+```
+
+### Web
+no need ? just webgl
+
+### Windows
+
+not support get share context now
+
+
 ## Android
 
 check the example project

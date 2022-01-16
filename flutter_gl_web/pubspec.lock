@@ -58,10 +58,10 @@ packages:
   flutter_gl_platform_interface:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_platform_interface"
-      relative: true
-    source: path
-    version: "0.0.2"
+      name: flutter_gl_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter

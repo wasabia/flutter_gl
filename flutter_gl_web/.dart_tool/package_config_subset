@@ -26,6 +26,10 @@ fake_async
 2.12
 file:///Users/zhaolei/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/
 file:///Users/zhaolei/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib/
+flutter_gl_platform_interface
+2.12
+file:///Users/zhaolei/.pub-cache/hosted/pub.dartlang.org/flutter_gl_platform_interface-0.0.3/
+file:///Users/zhaolei/.pub-cache/hosted/pub.dartlang.org/flutter_gl_platform_interface-0.0.3/lib/
 js
 2.12
 file:///Users/zhaolei/.pub-cache/hosted/pub.dartlang.org/js-0.6.3/
@@ -98,10 +102,6 @@ flutter_web_plugins
 2.12
 file:///Users/zhaolei/development/flutter/packages/flutter_web_plugins/
 file:///Users/zhaolei/development/flutter/packages/flutter_web_plugins/lib/
-flutter_gl_platform_interface
-2.12
-file:///Users/zhaolei/workspace/flutter_gl/flutter_gl_platform_interface/
-file:///Users/zhaolei/workspace/flutter_gl/flutter_gl_platform_interface/lib/
 flutter_gl_web
 2.12
 file:///Users/zhaolei/workspace/flutter_gl/flutter_gl_web/

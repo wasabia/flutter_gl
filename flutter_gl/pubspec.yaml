@@ -10,14 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
   flutter_gl_platform_interface: ^0.0.3
   flutter_gl_web: ^0.0.3
   flutter_gl_macos: ^0.0.2
   flutter_gl_windows: ^0.0.1
-  http: ^0.13.4
-  universal_html: ^2.0.8
   ffi: ^1.1.2
 
 dev_dependencies:

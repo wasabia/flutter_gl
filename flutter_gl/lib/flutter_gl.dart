@@ -6,6 +6,17 @@ import 'openGL/OpenGL.dart';
 export './openGL/OpenGL.dart';
 export './native-array/index.dart';
 
+
+/// FlutterGlPlugin
+/// 
+/// flutterGlPlugin = FlutterGlPlugin();
+/// Map<String, dynamic> _options = {
+///     "width": width, 
+///     "height": height,
+///     "antialias": true,
+///     "alpha": false
+/// };
+/// await flutterGlPlugin.initialize(options: _options);
 class FlutterGlPlugin extends FlutterGlPlatform {
   late dynamic openGL;
 
@@ -27,8 +38,6 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     final resp = await FlutterGlPlatform.instance.initialize(options: _options);
     textureId = resp["textureId"];
 
-    print(" flutter_gl initialize textureId ${textureId} ");
-
     // used for web
     _options["divId"] = textureId.toString();
     openGL = OpenGL().init(_options);
@@ -36,20 +45,21 @@ class FlutterGlPlugin extends FlutterGlPlatform {
     return resp;
   }
 
+
+  /// set opengl context for ffi thread 
   prepareContext() async {
     egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
-
-    print("prepareContext egls: ${egls} ");
-
     openGL.makeCurrent(egls);
   }
 
+  /// get created opengl context from native
   Future<List<int>> getEgl(int textureId) async {
     var result =
         List<int>.from(await FlutterGlPlatform.instance.getEgl(textureId));
     return result;
   }
 
+  /// update texture to flutter 
   Future updateTexture(sourceTexture) async {
     return await FlutterGlPlatform.instance.updateTexture(sourceTexture);
   }
