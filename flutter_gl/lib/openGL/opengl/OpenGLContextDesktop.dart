@@ -916,6 +916,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glFinish();
   }
 
+  texStorage2D(target, levels, internalformat, width, height) {
+    return glTexStorage2D(target, levels, internalformat, width, height);
+  }
+
   // GLint x,
   // GLint y,
   // GLsizei width,

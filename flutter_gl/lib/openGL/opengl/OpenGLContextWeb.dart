@@ -530,6 +530,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.finish();
   }
 
+  texStorage2D(target, levels, internalformat, width, height) {
+    return gl.texStorage2D(target, levels, internalformat, width, height);
+  }
+
   Uint8List readCurrentPixels(int x, int y, int width, int height) {
     int _len = width * height * 4;
     var buffer = Uint8List(_len);

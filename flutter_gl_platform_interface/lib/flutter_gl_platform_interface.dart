@@ -36,15 +36,13 @@ abstract class FlutterGlPlatform extends PlatformInterface {
   // for web
   dynamic get element => openGL.element;
 
-
-  
-
   /// Launches the given [url]. Completes to [true] if the launch was successful.
   Future<String?> get platformVersion {
     throw UnimplementedError('platformVersion has not been implemented.');
   }
 
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options}) async {
+  Future<Map<String, dynamic>> initialize(
+      {Map<String, dynamic>? options}) async {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 
@@ -56,10 +54,7 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 
-
   dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }
-
-
 }

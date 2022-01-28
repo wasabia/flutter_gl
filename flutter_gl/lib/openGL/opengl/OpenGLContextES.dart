@@ -911,6 +911,10 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glFinish();
   }
 
+  texStorage2D(target, levels, internalformat, width, height) {
+    return gl.glTexStorage2D(target, levels, internalformat, width, height);
+  }
+
   // GLint x,
   // GLint y,
   // GLsizei width,

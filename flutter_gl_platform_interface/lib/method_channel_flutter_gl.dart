@@ -6,16 +6,13 @@ const MethodChannel _channel = MethodChannel('flutter_gl');
 
 /// An implementation of [FlutterGlPlatform] that uses method channels.
 class MethodChannelFlutterGl extends FlutterGlPlatform {
-
   bool get isInitialized => this.textureId != null;
 
-  Future<Map<String, dynamic>> initialize({Map<String, dynamic>? options, bool renderToVideo = false}) async {
+  Future<Map<String, dynamic>> initialize(
+      {Map<String, dynamic>? options, bool renderToVideo = false}) async {
     final resp = await _channel.invokeMethod(
       'initialize',
-      <String, dynamic>{
-        'options': options,
-        'renderToVideo': renderToVideo
-      },
+      <String, dynamic>{'options': options, 'renderToVideo': renderToVideo},
     );
 
     this.textureId = resp["textureId"];
@@ -24,9 +21,7 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
   }
 
   Future<List<int>> getEgl(int textureId) async {
-    final _args = {
-      "textureId": textureId
-    };
+    final _args = {"textureId": textureId};
 
     final _result = await _channel.invokeMethod('getEgl', _args);
 
@@ -34,10 +29,7 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
   }
 
   Future updateTexture(sourceTexture) async {
-    final _args = {
-      "textureId": textureId,
-      "sourceTexture": sourceTexture
-    };
+    final _args = {"textureId": textureId, "sourceTexture": sourceTexture};
 
     final _result = await _channel.invokeMethod('updateTexture', _args);
 
@@ -57,13 +49,9 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
   }
 
   dispose() {
-
     this.isDisposed = true;
 
-    final _args = {
-      "textureId": textureId
-    };
+    final _args = {"textureId": textureId};
     _channel.invokeMethod('dispose', _args);
   }
-
 }
