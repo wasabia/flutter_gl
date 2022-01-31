@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
-import 'package:flutter_gl/flutter_gl.dart';
+import 'package:flutter_gl/native-array/index.dart';
 import 'package:flutter_gl/openGL/opengl/OpenGL30Constant.dart';
 import 'package:flutter_gl/openGL/opengl-desktop/opengl.dart';
 
@@ -124,68 +124,13 @@ class OpenGLContextDesktop extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
-    if (data is NativeArray) {
-      textImage2DNative(target, level, internalformat, width, height, border,
-          format, type, data);
-    } else {
-      textImage2DNormal(target, level, internalformat, width, height, border,
-          format, type, data);
-    }
-  }
-
-  textImage2DNative(target, level, internalformat, width, height, border,
-      format, type, NativeArray data) {
-    var nativeBuffer = data.data;
-    glTexImage2D(target, level, internalformat, width, height, border, format,
-        type, nativeBuffer.cast<Void>());
-  }
-
-  textImage2DNormal(target, level, internalformat, width, height, border,
-      format, type, data) {
-    Pointer<Int8> nativeBuffer;
-    if (data != null) {
-      nativeBuffer = calloc<Int8>(data.length);
-      nativeBuffer.asTypedList(data.length).setAll(0, data);
-      glTexImage2D(target, level, internalformat, width, height, border, format,
-          type, nativeBuffer.cast<Void>());
-      calloc.free(nativeBuffer);
-    } else {
-      glTexImage2D(target, level, internalformat, width, height, border, format,
-          type, nullptr);
-    }
+    return glTexImage2D(target, level, internalformat, width, height, border, format,
+        type, getData(data));
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    if (data is NativeArray) {
-      texImage2D_NOSIZENative(
-          target, level, internalformat, format, type, data);
-    } else {
-      texImage2D_NOSIZENormal(
-          target, level, internalformat, format, type, data);
-    }
-  }
-
-  texImage2D_NOSIZENormal(target, level, internalformat, format, type, data) {
-    Pointer<Int8> nativeBuffer;
-    print(" texImage2D_NOSIZENormal called need confirm ?? DEBUG TODO ");
-    if (data != null) {
-      nativeBuffer = calloc<Int8>(data.length);
-      nativeBuffer.asTypedList(data.length).setAll(0, data);
-      texImage2D(target, level, internalformat, 0, 0, 0, format, type,
-          nativeBuffer.cast<Void>());
-      calloc.free(nativeBuffer);
-    } else {
-      texImage2D(target, level, internalformat, 0, 0, 0, format, type, nullptr);
-    }
-
-    return;
-  }
-
-  texImage2D_NOSIZENative(target, level, internalformat, format, type, data) {
-    var nativeBuffer = data.data;
-    print(" texImage2D_NOSIZENative called need confirm ?? DEBUG TODO ");
     return texImage2D(target, level, internalformat, 0, 0, 0, format, type,
-        nativeBuffer.cast<Void>());
+        getData(data));
   }
 
   texImage3D(int target, int level, int internalformat, int width, int height,
@@ -536,18 +481,22 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   }
 
   texSubImage2D(
-      target, level, x, y, width, height, format, type, Uint8List data) {
-    final dataPtr = toPointer(data);
+      target, level, x, y, width, height, format, type, data) {
+    final dataPtr = getData(data);
     glTexSubImage2D(
-        target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
+        target, level, x, y, width, height, format, type, dataPtr);
     calloc.free(dataPtr);
   }
 
-  texSubImage2D2(x, y, width, height, Uint8List data) {
+  texSubImage2D2(x, y, width, height, data) {
     final dataPtr = toPointer(data);
     glTexSubImage2D(
         TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
     calloc.free(dataPtr);
+  }
+
+  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels) {
+    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels));
   }
 
   compressedTexSubImage2D(target, level, xoffset, yoffset, width, height,
@@ -624,8 +573,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glIsProgram(v0);
   }
 
-  bindAttribLocation(v0, v1, v2) {
-    return glBindAttribLocation(v0, v1, v2);
+  bindAttribLocation(program, index, name) {
+    final _name = name.toNativeUtf8();
+    gl.glBindAttribLocation(program, index, _name.cast<Int8>());
+    calloc.free( _name );
   }
 
   linkProgram(v0) {
@@ -923,6 +874,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glTexStorage2D(target, levels, internalformat, width, height);
   }
 
+  texStorage3D(target, levels, internalformat, width, height, depth) {
+    return gl.glTexStorage3D(target, levels, internalformat, width, height, depth);
+  }
+
   // GLint x,
   // GLint y,
   // GLsizei width,
@@ -965,6 +920,7 @@ class ActiveInfo {
   ActiveInfo(this.type, this.name, this.size);
 }
 
+
 toPointer(data) {
   if (data is Float32List ||
       data.runtimeType.toString() == "List<double>" ||
@@ -979,5 +935,18 @@ toPointer(data) {
     return ptr;
   } else {
     throw (" flutter_gl OpenGLContextES.dart toPointer ${data.runtimeType} TODO ");
+  }
+}
+
+
+getData(data) {
+  if(data == null) {
+    return nullptr;
+  }
+
+  if(data is NativeArray) {
+    return data.data.cast<Void>();
+  } else {
+    return toPointer(data);
   }
 }

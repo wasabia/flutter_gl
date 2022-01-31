@@ -17,6 +17,12 @@ dependencies:
   ffi: ^1.1.2
 
 
+dependency_overrides:
+  flutter_gl_macos:
+    path: ../flutter_gl_macos
+
+
+
 
 dev_dependencies:
   flutter_test:

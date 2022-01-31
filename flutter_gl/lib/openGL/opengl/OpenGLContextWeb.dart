@@ -1,8 +1,8 @@
 import 'dart:typed_data';
-
-import 'package:flutter_gl/flutter_gl.dart';
+import 'package:flutter_gl/native-array/index.dart';
 
 import 'OpenGL30Constant.dart';
+
 
 getContext(Map<String, dynamic> parameters) {
   return OpenGLContextWeb(parameters);
@@ -66,38 +66,19 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
 
     return gl.texImage2D(target, level, internalformat, width, height, border,
-        format, type, _data);
+        format, type, getData(data));
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
-
-    return gl.texImage2D(target, level, internalformat, format, type, _data);
+    return gl.texImage2D(target, level, internalformat, format, type, getData(data));
   }
 
   texImage3D(target, level, internalformat, width, height, depth, border,
       format, type, data) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
     return gl.texImage3D(target, level, internalformat, width, height, depth,
-        border, format, type, _data);
+        border, format, type, getData(data));
   }
 
   depthFunc(v0) {
@@ -243,13 +224,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   bufferData(int target, int size, data, int usage) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
-    return gl.bufferData(target, _data, usage);
+    return gl.bufferData(target, getData(data), usage);
   }
 
   vertexAttribPointer(
@@ -275,13 +250,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   readPixels(int x, int y, int width, int height, int format, int type, data) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
-    gl.readPixels(x, y, width, height, format, type, _data);
+    gl.readPixels(x, y, width, height, format, type, getData(data));
   }
 
   isProgram(v0) {
@@ -295,19 +264,17 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texSubImage2D(
       target, level, xoffset, yoffset, width, height, format, type, data) {
-    var _data;
-    if (data is NativeArray) {
-      _data = data.data;
-    } else {
-      _data = data;
-    }
     gl.texSubImage2D(
-        target, level, xoffset, yoffset, width, height, format, type, _data);
+        target, level, xoffset, yoffset, width, height, format, type, getData(data));
   }
 
   texSubImage2D_NOSIZE(target, level, xoffset, yoffset, format, type, data) {
     return gl.texSubImage2D(
         target, level, xoffset, yoffset, format, type, data);
+  }
+
+  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels) {
+    return gl.texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels));
   }
 
   compressedTexSubImage2D(
@@ -349,13 +316,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   bufferSubData(target, dstByteOffset, srcData, srcOffset, length) {
-    var _data;
-    if (srcData is NativeArray) {
-      _data = srcData.data;
-    } else {
-      _data = srcData;
-    }
-    return gl.bufferSubData(target, dstByteOffset, _data);
+    return gl.bufferSubData(target, dstByteOffset, getData(srcData));
   }
 
   createVertexArray() {
@@ -370,8 +331,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.attachShader(v0, v1);
   }
 
-  bindAttribLocation(v0, v1, v2) {
-    return gl.bindAttribLocation(v0, v1, v2);
+  bindAttribLocation(program, index, name) {
+    return gl.bindAttribLocation(program, index, name);
   }
 
   linkProgram(v0) {
@@ -467,11 +428,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   uniformMatrix4fv(location, bool transpose, value) {
-    if (value is NativeArray) {
-      return gl.uniformMatrix4fv(location, transpose, value.data);
-    } else {
-      return gl.uniformMatrix4fv(location, transpose, value);
-    }
+    return gl.uniformMatrix4fv(location, transpose, getData(value));
   }
 
   uniform1i(v0, v1) {
@@ -499,11 +456,7 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   uniformMatrix3fv(location, bool transpose, value) {
-    if (value is NativeArray) {
-      return gl.uniformMatrix3fv(location, transpose, value.data);
-    } else {
-      return gl.uniformMatrix3fv(location, transpose, value);
-    }
+    return gl.uniformMatrix3fv(location, transpose, getData(value));
   }
 
   getAttribLocation(program, String name) {
@@ -550,10 +503,28 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.texStorage2D(target, levels, internalformat, width, height);
   }
 
+  texStorage3D(target, levels, internalformat, width, height, depth) {
+    return gl.texStorage3D(target, levels, internalformat, width, height, depth);
+  }
+
+
   Uint8List readCurrentPixels(int x, int y, int width, int height) {
     int _len = width * height * 4;
     var buffer = Uint8List(_len);
     gl.readPixels(x, y, width, height, RGBA, UNSIGNED_BYTE, buffer);
     return buffer;
+  }
+}
+
+
+getData(data) {
+  if(data == null) {
+    return null;
+  }
+
+  if(data is NativeArray) {
+    return data.data;
+  } else {
+    return data;
   }
 }
