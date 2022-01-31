@@ -418,14 +418,12 @@ class OpenGLContextES extends OpenGL30Constant {
     final dataPtr = getData(data);
     gl.glTexSubImage2D(
         target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
-    calloc.free(dataPtr);
   }
 
   texSubImage2D2(x, y, width, height, data) {
     final dataPtr = getData(data);
     gl.glTexSubImage2D(
         TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
-    calloc.free(dataPtr);
   }
 
 
@@ -860,7 +858,7 @@ toPointer(data) {
       data.runtimeType.toString() == "List<num>" ||
       data.runtimeType.toString() == "_GrowableList<double>") {
     final ptr = calloc<Float>(data.length);
-    ptr.asTypedList(data.length).setAll(0, List<double>.from(data));
+    ptr.asTypedList(data.length).setAll( 0, List<double>.from(data.map((e) => e.toDouble())) );
     return ptr;
   } else if (data is Uint8List) {
     final ptr = calloc<Uint8>(data.length);
