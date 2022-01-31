@@ -526,8 +526,9 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(dataPtr);
   }
 
-  copyTexImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL copyTexImage2D TODO...  ");
+  copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
+    return gl.glCopyTexImage2D(
+        target, level, internalformat, x, y, width, height, border);
   }
 
   texSubImage2D(
@@ -545,8 +546,10 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(dataPtr);
   }
 
-  compressedTexSubImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL compressedTexSubImage2D ...  ");
+  compressedTexSubImage2D(target, level, xoffset, yoffset, width, height,
+      format, imageSize, pixels) {
+    return gl.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width,
+        height, format, imageSize, pixels);
   }
 
   bindRenderbuffer(v0, v1) {

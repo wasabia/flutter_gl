@@ -288,16 +288,32 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.isProgram(v0);
   }
 
-  copyTexImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL context Web copyTexImage2D TODO...  ");
+  copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
+    return gl.copyTexImage2D(
+        target, level, internalformat, x, y, width, height, border);
   }
 
-  texSubImage2D(v0, v1, v2, v3, v4, v5, v6, v7, v8) {
-    print(" OpenGL context Web texSubImage2D TODO...  ");
+  texSubImage2D(
+      target, level, xoffset, yoffset, width, height, format, type, data) {
+    var _data;
+    if (data is NativeArray) {
+      _data = data.data;
+    } else {
+      _data = data;
+    }
+    gl.texSubImage2D(
+        target, level, xoffset, yoffset, width, height, format, type, _data);
   }
 
-  compressedTexSubImage2D(v0, v1, v2, v3, v4, v5, v6, v7) {
-    print(" OpenGL context Web compressedTexSubImage2D TODO...  ");
+  texSubImage2D_NOSIZE(target, level, xoffset, yoffset, format, type, data) {
+    return gl.texSubImage2D(
+        target, level, xoffset, yoffset, format, type, data);
+  }
+
+  compressedTexSubImage2D(
+      target, level, xoffset, yoffset, width, height, format, pixels) {
+    return gl.compressedTexSubImage2D(
+        target, level, xoffset, yoffset, width, height, format, pixels);
   }
 
   bindRenderbuffer(v0, v1) {
