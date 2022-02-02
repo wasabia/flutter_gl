@@ -86,9 +86,9 @@ packages:
   flutter_gl_windows:
     dependency: "direct main"
     description:
-      name: flutter_gl_windows
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "../flutter_gl_windows"
+      relative: true
+    source: path
     version: "0.0.2"
   flutter_test:
     dependency: "direct dev"
@@ -114,6 +114,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.12.11"
+  material_color_utilities:
+    dependency: transitive
+    description:
+      name: material_color_utilities
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.2"
   meta:
     dependency: transitive
     description:
@@ -181,7 +188,7 @@ packages:
       name: test_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.3"
+    version: "0.4.8"
   typed_data:
     dependency: transitive
     description:
@@ -198,4 +205,4 @@ packages:
     version: "2.1.1"
 sdks:
   dart: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=1.20.0"

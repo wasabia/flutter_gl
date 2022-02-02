@@ -4,7 +4,7 @@
 
 GLuint OpenGLProgram::getProgram() {
 
-    char *vertex_shader = "#version 140\n"
+    char *vertex_shader = "#version 410\n"
     "precision mediump float;\n"
     "in vec4 Position;\n"
     "in vec2 TextureCoords;\n"
@@ -14,7 +14,7 @@ GLuint OpenGLProgram::getProgram() {
         "TextureCoordsVarying = TextureCoords;\n"
     "}\0";
 
-    char *fragment_shader = "#version 140\n"   
+    char *fragment_shader = "#version 410\n"   
     "precision mediump float;\n"
     "uniform sampler2D Texture0;\n"
     "in vec2 TextureCoordsVarying;\n"

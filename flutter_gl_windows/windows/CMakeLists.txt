@@ -7,7 +7,7 @@ project(${PROJECT_NAME} LANGUAGES CXX C)
 set(PLUGIN_NAME "flutter_gl_windows_plugin")
 
 LINK_DIRECTORIES(
-  "${PROJECT_SOURCE_DIR}/glfw-3.3.6/build/src/Debug"
+  "${PROJECT_SOURCE_DIR}/glfw"
 )
 
 add_library(${PLUGIN_NAME} SHARED
@@ -27,7 +27,7 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 
 
 include_directories(
-  ${PROJECT_SOURCE_DIR}/glfw-3.3.6/include
+  ${PROJECT_SOURCE_DIR}/glfw/include
   ${PROJECT_SOURCE_DIR}/glad/include
 )
 

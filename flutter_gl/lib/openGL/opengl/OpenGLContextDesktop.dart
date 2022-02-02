@@ -124,13 +124,13 @@ class OpenGLContextDesktop extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
-    return glTexImage2D(target, level, internalformat, width, height, border, format,
-        type, getData(data));
+    return glTexImage2D(target, level, internalformat, width, height, border,
+        format, type, getData(data));
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    return texImage2D(target, level, internalformat, 0, 0, 0, format, type,
-        getData(data));
+    return texImage2D(
+        target, level, internalformat, 0, 0, 0, format, type, getData(data));
   }
 
   texImage3D(int target, int level, int internalformat, int width, int height,
@@ -476,15 +476,13 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   }
 
   copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
-    return gl.glCopyTexImage2D(
+    return glCopyTexImage2D(
         target, level, internalformat, x, y, width, height, border);
   }
 
-  texSubImage2D(
-      target, level, x, y, width, height, format, type, data) {
+  texSubImage2D(target, level, x, y, width, height, format, type, data) {
     final dataPtr = getData(data);
-    glTexSubImage2D(
-        target, level, x, y, width, height, format, type, dataPtr);
+    glTexSubImage2D(target, level, x, y, width, height, format, type, dataPtr);
     calloc.free(dataPtr);
   }
 
@@ -495,13 +493,15 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     calloc.free(dataPtr);
   }
 
-  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels) {
-    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels));
+  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth,
+      format, type, pixels) {
+    return glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width,
+        height, depth, format, type, getData(pixels));
   }
 
   compressedTexSubImage2D(target, level, xoffset, yoffset, width, height,
       format, imageSize, pixels) {
-    return gl.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width,
+    return glCompressedTexSubImage2D(target, level, xoffset, yoffset, width,
         height, format, imageSize, pixels);
   }
 
@@ -573,10 +573,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glIsProgram(v0);
   }
 
-  bindAttribLocation(program, index, name) {
+  bindAttribLocation(program, index, String name) {
     final _name = name.toNativeUtf8();
-    gl.glBindAttribLocation(program, index, _name.cast<Int8>());
-    calloc.free( _name );
+    glBindAttribLocation(program, index, _name.cast<Int8>());
+    calloc.free(_name);
   }
 
   linkProgram(v0) {
@@ -875,7 +875,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   }
 
   texStorage3D(target, levels, internalformat, width, height, depth) {
-    return gl.glTexStorage3D(target, levels, internalformat, width, height, depth);
+    return glTexStorage3D(target, levels, internalformat, width, height, depth);
   }
 
   // GLint x,
@@ -920,7 +920,6 @@ class ActiveInfo {
   ActiveInfo(this.type, this.name, this.size);
 }
 
-
 toPointer(data) {
   if (data is Float32List ||
       data.runtimeType.toString() == "List<double>" ||
@@ -938,13 +937,12 @@ toPointer(data) {
   }
 }
 
-
 getData(data) {
-  if(data == null) {
+  if (data == null) {
     return nullptr;
   }
 
-  if(data is NativeArray) {
+  if (data is NativeArray) {
     return data.data.cast<Void>();
   } else {
     return toPointer(data);
