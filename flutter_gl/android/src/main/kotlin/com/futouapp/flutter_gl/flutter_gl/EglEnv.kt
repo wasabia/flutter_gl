@@ -89,7 +89,9 @@ class EglEnv {
         }
         eglConfig = configs[0]
 
-        val attributes = intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION, 2, EGL14.EGL_NONE)
+        val attributes = intArrayOf(
+            EGL14.EGL_CONTEXT_CLIENT_VERSION, 3, EGL14.EGL_NONE
+        )
         eglContext = EGL14.eglCreateContext(eglDisplay, eglConfig, shareContext, attributes, 0)
 
         if (eglContext == EGL14.EGL_NO_CONTEXT) {

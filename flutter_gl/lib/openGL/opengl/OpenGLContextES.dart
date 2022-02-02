@@ -132,12 +132,12 @@ class OpenGLContextES extends OpenGL30Constant {
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
     return gl.glTexImage2D(target, level, internalformat, width, height, border,
-          format, type, getData(data));
+          format, type, getData(data).cast<Void>());
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
     return gl.texImage2D(
-        target, level, internalformat, format, type, getData(data));
+        target, level, internalformat, format, type, getData(data).cast<Void>());
   }
 
   texImage3D(int target, int level, int internalformat, int width, int height,
@@ -355,11 +355,11 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   bufferData(int target, int size, data, int usage) {
-    return gl.glBufferData(target, size, getData(data), usage);
+    return gl.glBufferData(target, size, getData(data).cast<Void>(), usage);
   }
 
   bufferSubData(target, offset, data, srcOffset, length) {
-    gl.glBufferSubData(target, offset, length, getData(data));
+    gl.glBufferSubData(target, offset, length, getData(data).cast<Void>());
   }
 
   vertexAttribPointer(
@@ -428,7 +428,7 @@ class OpenGLContextES extends OpenGL30Constant {
 
 
   texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels) {
-    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels));
+    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels).cast<Void>());
   }
 
   compressedTexSubImage2D(target, level, xoffset, yoffset, width, height,
@@ -623,8 +623,8 @@ class OpenGLContextES extends OpenGL30Constant {
 
     gl.glDrawBuffers(buffers.length, ptr);
 
-    calloc.free(ptr);
-    return;
+    // calloc.free(ptr);
+    // return;
   }
 
   drawElementsInstanced(mode, count, type, offset, instanceCount) {

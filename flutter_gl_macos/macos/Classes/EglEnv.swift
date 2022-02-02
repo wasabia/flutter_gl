@@ -22,6 +22,10 @@ public class EglEnv : NSObject {
   func setUpEnv(shareContext: NSOpenGLContext?) {
 
     let attr = [
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAColorSize), 24,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAAlphaSize), 8,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFADepthSize), 24,
+        NSOpenGLPixelFormatAttribute(NSOpenGLPFAStencilSize), 8,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAllowOfflineRenderers),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAAccelerated),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFADoubleBuffer),
@@ -30,7 +34,7 @@ public class EglEnv : NSObject {
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAMinimumPolicy),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion4_1Core),
+        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
         0
     ]
 

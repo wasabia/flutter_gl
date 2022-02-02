@@ -4,7 +4,7 @@ class NativeArray {
   late int _size;
   late int oneByteSize;
   int get length => _size;
-  int get bytesLength => length * oneByteSize;
+  int get lengthInBytes => length * oneByteSize;
 
   get data {}
 
