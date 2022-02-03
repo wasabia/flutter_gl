@@ -3,7 +3,6 @@ import 'package:flutter_gl/native-array/index.dart';
 
 import 'OpenGL30Constant.dart';
 
-
 getContext(Map<String, dynamic> parameters) {
   return OpenGLContextWeb(parameters);
 }
@@ -66,13 +65,13 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texImage2D(target, level, internalformat, width, height, border, format, type,
       data) {
-
     return gl.texImage2D(target, level, internalformat, width, height, border,
         format, type, getData(data));
   }
 
   texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
-    return gl.texImage2D(target, level, internalformat, format, type, getData(data));
+    return gl.texImage2D(
+        target, level, internalformat, format, type, getData(data));
   }
 
   texImage3D(target, level, internalformat, width, height, depth, border,
@@ -264,8 +263,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
 
   texSubImage2D(
       target, level, xoffset, yoffset, width, height, format, type, data) {
-    gl.texSubImage2D(
-        target, level, xoffset, yoffset, width, height, format, type, getData(data));
+    gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format,
+        type, getData(data));
   }
 
   texSubImage2D_NOSIZE(target, level, xoffset, yoffset, format, type, data) {
@@ -273,8 +272,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
         target, level, xoffset, yoffset, format, type, data);
   }
 
-  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels) {
-    return gl.texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, getData(pixels));
+  texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth,
+      format, type, pixels) {
+    return gl.texSubImage3D(target, level, xoffset, yoffset, zoffset, width,
+        height, depth, format, type, getData(pixels));
   }
 
   compressedTexSubImage2D(
@@ -504,9 +505,9 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   texStorage3D(target, levels, internalformat, width, height, depth) {
-    return gl.texStorage3D(target, levels, internalformat, width, height, depth);
+    return gl.texStorage3D(
+        target, levels, internalformat, width, height, depth);
   }
-
 
   Uint8List readCurrentPixels(int x, int y, int width, int height) {
     int _len = width * height * 4;
@@ -516,13 +517,12 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 }
 
-
 getData(data) {
-  if(data == null) {
+  if (data == null) {
     return null;
   }
 
-  if(data is NativeArray) {
+  if (data is NativeArray) {
     return data.data;
   } else {
     return data;

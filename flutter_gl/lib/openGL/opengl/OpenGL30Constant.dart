@@ -1,4 +1,5 @@
 import 'OpenGL20Constant.dart';
+
 class OpenGL30Constant extends OpenGL20Constant {
   int ACTIVE_UNIFORM_BLOCKS = 35382;
   int ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH = 35381;
