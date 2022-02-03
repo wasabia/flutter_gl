@@ -13,19 +13,8 @@ dependencies:
   flutter_gl_platform_interface: ^0.0.3
   flutter_gl_web: ^0.0.4
   flutter_gl_macos: ^0.0.3
-  # flutter_gl_windows: ^0.0.2
-  flutter_gl_windows:
-    path: ../flutter_gl_windows
+  flutter_gl_windows: ^0.0.3
   ffi: ^1.1.2
-
-
-dependency_overrides:
-  flutter_gl_macos:
-    path: ../flutter_gl_macos
-  flutter_gl_windows:
-    path: ../flutter_gl_windows
-
-
 
 dev_dependencies:
   flutter_test:
