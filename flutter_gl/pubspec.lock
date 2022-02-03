@@ -89,7 +89,7 @@ packages:
       path: "../flutter_gl_windows"
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
