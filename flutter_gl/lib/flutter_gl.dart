@@ -26,7 +26,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   // for web
   dynamic get element => openGL.element;
 
-  FlutterGlPlugin() {}
+  FlutterGlPlugin();
 
   Future<Map<String, dynamic>> initialize(
       {Map<String, dynamic>? options}) async {

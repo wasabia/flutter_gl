@@ -30,8 +30,8 @@ class PlatformNativeArray extends NativeArray {
     return data;
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList.map((e) => e.toInt())));
+  set(newList, [int index = 0]) {
+    this.toDartList().setAll(index, List<int>.from(newList.map((e) => e.toInt())));
     return this;
   }
 
@@ -61,10 +61,10 @@ class NativeFloat32Array extends PlatformNativeArray {
         .setAll(0, List<double>.from(listData.map((e) => e.toDouble())));
   }
 
-  set(newList) {
+  set(newList, [int index = 0]) {
     this
         .toDartList()
-        .setAll(0, List<double>.from(newList.map((e) => e.toDouble())));
+        .setAll(index, List<double>.from(newList.map((e) => e.toDouble())));
     return this;
   }
 
@@ -180,10 +180,10 @@ class NativeFloat64Array extends PlatformNativeArray {
         .setAll(0, List<double>.from(listData.map((e) => e.toDouble())));
   }
 
-  set(newList) {
+  set(newList, [int index = 0]) {
     this
         .toDartList()
-        .setAll(0, List<double>.from(newList.map((e) => e.toDouble())));
+        .setAll(index, List<double>.from(newList.map((e) => e.toDouble())));
     return this;
   }
 }

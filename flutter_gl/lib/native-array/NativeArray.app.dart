@@ -61,10 +61,17 @@ class NativeFloat32Array extends PlatformNativeArray {
     return (data as Pointer<Float>).asTypedList(length);
   }
 
-  set(newList) {
-    this
+  set(newList, [int index = 0]) {
+    if(newList is Float32Array) {
+      this
         .toDartList()
-        .setAll(0, List<double>.from(newList.map((e) => e.toDouble())));
+        .setAll(index, List<double>.from(newList.toDartList()));
+    } else {
+      this
+        .toDartList()
+        .setAll(index, List<double>.from(newList.map((e) => e.toDouble())));
+    }
+    
     return this;
   }
 

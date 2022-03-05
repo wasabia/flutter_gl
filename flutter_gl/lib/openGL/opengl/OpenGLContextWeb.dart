@@ -444,8 +444,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform4f(location, v0, v1, v2, v3);
   }
 
-  uniform1fv(location, List<num> value) {
-    return gl.uniform1fv(location, value);
+  uniform1fv(location, value) {
+    return gl.uniform1fv(location, getData(value));
   }
 
   uniform3fv(location, List<num> value) {
@@ -507,6 +507,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
   texStorage3D(target, levels, internalformat, width, height, depth) {
     return gl.texStorage3D(
         target, levels, internalformat, width, height, depth);
+  }
+
+  invalidateFramebuffer(target, attachments) {
+    return gl.invalidateFramebuffer(target, attachments);
   }
 
   Uint8List readCurrentPixels(int x, int y, int width, int height) {

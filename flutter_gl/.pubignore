@@ -59,6 +59,3 @@ ios/GeneratedPluginRegistrant.m
 ios/xcuserdata
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
-
-
-example/

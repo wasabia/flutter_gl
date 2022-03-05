@@ -810,6 +810,11 @@ class OpenGLContextES extends OpenGL30Constant {
         target, levels, internalformat, width, height, depth);
   }
 
+  invalidateFramebuffer(target, attachments) {
+    // TODO  Failed to lookup symbol 'glInvalidateFramebuffer'
+    // return gl.glInvalidateFramebuffer(target, attachments.length, toPointer(List<int>.from(attachments)) );
+  }
+
   // GLint x,
   // GLint y,
   // GLsizei width,
@@ -864,6 +869,10 @@ toPointer(data) {
     return ptr;
   } else if (data is Uint8List) {
     final ptr = calloc<Uint8>(data.length);
+    ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
+    return ptr;
+  } else if (data is List<int>) {
+    final ptr = calloc<Uint32>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
     return ptr;
   } else {

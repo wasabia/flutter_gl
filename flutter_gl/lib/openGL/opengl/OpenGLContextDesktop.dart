@@ -878,6 +878,11 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glTexStorage3D(target, levels, internalformat, width, height, depth);
   }
 
+  invalidateFramebuffer(target, attachments) {
+    // TODO  Failed to lookup symbol 'glInvalidateFramebuffer'
+    // return gl.glInvalidateFramebuffer(target, attachments.length, attachments);
+  }
+
   // GLint x,
   // GLint y,
   // GLsizei width,
