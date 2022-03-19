@@ -20,19 +20,19 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     this.gl = parameters["gl"];
   }
 
-  scissor(x, y, z, w) {
+  void scissor(int x, int y, int z, int w) {
     return glScissor(x, y, z, w);
   }
 
-  viewport(x, y, z, w) {
+  void viewport(int x, int y, int z, int w) {
     return glViewport(x, y, z, w);
   }
 
-  getShaderPrecisionFormat() {
+  Map<String, int> getShaderPrecisionFormat() {
     return {'rangeMin': 1, 'rangeMax': 1, 'precision': 1};
   }
 
-  getExtension(String key) {
+  List<String> getExtension(String key) {
     print("OpenGLES getExtension key: ${key}  EXTENSIONS: ${EXTENSIONS}");
 
     if (Platform.isMacOS || Platform.isWindows) {
@@ -47,7 +47,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return _extensions;
   }
 
-  getExtensionDesktop(String key) {
+  List<String> getExtensionDesktop(String key) {
     List<String> _extensions = [];
     var nExtension = getIntegerv(NUM_EXTENSIONS);
     for (int i = 0; i < nExtension; i++) {
@@ -57,17 +57,17 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return _extensions;
   }
 
-  getStringi(int key, int index) {
+  String getStringi(int key, int index) {
     Pointer _v = glGetStringi(key, index);
     return _v.cast<Utf8>().toDartString();
   }
 
-  getString(int key) {
+  String getString(int key) {
     Pointer _v = glGetString(key);
     return _v.cast<Utf8>().toDartString();
   }
 
-  getParameter(key) {
+  int getParameter(int key) {
     // print("OpenGL getParameter key: ${key} ");
 
     List<int> _intValues = [
@@ -94,7 +94,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     }
   }
 
-  createTexture() {
+  int createTexture() {
     final vPointer = calloc<Uint32>();
     glGenTextures(1, vPointer);
     int _v = vPointer.value;
@@ -102,38 +102,40 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return _v;
   }
 
-  genTextures(v0, v1) {
+  void genTextures(int v0, Pointer<Uint32> v1) {
     return glGenTextures(v0, v1);
   }
 
-  bindTexture(type, texture) {
+  void bindTexture(int type, int texture) {
     return glBindTexture(type, texture);
   }
 
-  bindTexture2(texture) {
+  void bindTexture2(int texture) {
     return glBindTexture(TEXTURE_2D, texture);
   }
 
-  activeTexture(v0) {
+  void activeTexture(int v0) {
     return glActiveTexture(v0);
   }
 
-  texParameteri(v0, v1, v2) {
+  void texParameteri(int v0, int v1, int v2) {
     return glTexParameteri(v0, v1, v2);
   }
 
-  texImage2D(target, level, internalformat, width, height, border, format, type,
-      data) {
+  void texImage2D(int target, int level, int internalformat, int width,
+      int height, int border, int format, int type, data) {
     return glTexImage2D(target, level, internalformat, width, height, border,
         format, type, getData(data));
   }
 
-  texImage2D_NOSIZE(target, level, internalformat, format, type, data) {
+  void texImage2D_NOSIZE(
+      int target, int level, int internalformat, int format, int type, data) {
     return texImage2D(
         target, level, internalformat, 0, 0, 0, format, type, getData(data));
   }
 
-  texImage3D(int target, int level, int internalformat, int width, int height,
+  void texImage3D(int target, int level, int internalformat, int width,
+      int height,
       int depth, int border, int format, int type, data) {
     if (data is NativeArray) {
       texImage3DNative(target, level, internalformat, width, height, depth,
@@ -144,7 +146,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     }
   }
 
-  texImage3DNative(
+  void texImage3DNative(
       int target,
       int level,
       int internalformat,
@@ -160,7 +162,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
         format, type, nativeBuffer.cast<Void>());
   }
 
-  texImage3DNormal(int target, int level, int internalformat, int width,
+  void texImage3DNormal(int target, int level, int internalformat, int width,
       int height, int depth, int border, int format, int type, data) {
     Pointer<Int8> nativeBuffer;
     if (data != null) {
@@ -175,55 +177,55 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     }
   }
 
-  depthFunc(v0) {
+  void depthFunc(int v0) {
     return glDepthFunc(v0);
   }
 
-  depthMask(bool v0) {
+  void depthMask(bool v0) {
     return glDepthMask(v0 ? 1 : 0);
   }
 
-  enable(v0) {
+  void enable(int v0) {
     return glEnable(v0);
   }
 
-  disable(v0) {
+  void disable(int v0) {
     return glDisable(v0);
   }
 
-  blendEquation(v0) {
+  void blendEquation(int v0) {
     return glBlendEquation(v0);
   }
 
-  useProgram(v0) {
+  void useProgram(int v0) {
     return glUseProgram(v0);
   }
 
-  blendFuncSeparate(v0, v1, v2, v3) {
+  void blendFuncSeparate(int v0, int v1, int v2, int v3) {
     return glBlendFuncSeparate(v0, v1, v2, v3);
   }
 
-  blendFunc(v0, v1) {
+  void blendFunc(int v0, int v1) {
     return glBlendFunc(v0, v1);
   }
 
-  blendEquationSeparate(var0, var1) {
+  void blendEquationSeparate(int var0, int var1) {
     return glBlendEquationSeparate(var0, var1);
   }
 
-  frontFace(v0) {
+  void frontFace(int v0) {
     return glFrontFace(v0);
   }
 
-  cullFace(v0) {
+  void cullFace(int v0) {
     return glCullFace(v0);
   }
 
-  lineWidth(num v0) {
+  void lineWidth(num v0) {
     return glLineWidth(v0.toDouble());
   }
 
-  polygonOffset(v0, v1) {
+  void polygonOffset(double v0, double v1) {
     return glPolygonOffset(v0, v1);
   }
 
@@ -239,34 +241,34 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     print(" OpenGL stencilOp ...  ");
   }
 
-  clearStencil(v0) {
+  void clearStencil(int v0) {
     return glClearStencil(v0);
   }
 
-  clearDepth(num v0) {
+  void clearDepth(num v0) {
     return glClearDepthf(v0.toDouble());
   }
 
-  colorMask(bool v0, bool v1, bool v2, bool v3) {
+  void colorMask(bool v0, bool v1, bool v2, bool v3) {
     return glColorMask(v0 ? 1 : 0, v1 ? 1 : 0, v2 ? 1 : 0, v3 ? 1 : 0);
   }
 
-  clearColor(num r, num g, num b, num a) {
+  void clearColor(num r, num g, num b, num a) {
     return glClearColor(r.toDouble(), g.toDouble(), b.toDouble(), a.toDouble());
   }
 
-  compressedTexImage2D(
-      target, level, internalformat, width, height, border, imageSize, data) {
+  void compressedTexImage2D(int target, int level, int internalformat,
+      int width, int height, int border, int imageSize, data) {
     print(" OPENGL compressedTexImage2D TODO ------------------------------ ");
     return texImage2D(target, level, internalformat, width, height, border, 0,
         imageSize, data);
   }
 
-  generateMipmap(v0) {
+  void generateMipmap(int v0) {
     return glGenerateMipmap(v0);
   }
 
-  deleteTexture(int v0) {
+  void deleteTexture(int v0) {
     var _texturesList = [v0];
     final ptr = calloc<Uint32>(_texturesList.length);
     ptr.asTypedList(1).setAll(0, _texturesList);
@@ -274,7 +276,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-  deleteFramebuffer(int v0) {
+  void deleteFramebuffer(int v0) {
     var _list = [v0];
     final ptr = calloc<Uint32>(_list.length);
     ptr.asTypedList(1).setAll(0, _list);
@@ -282,7 +284,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-  deleteRenderbuffer(int v0) {
+  void deleteRenderbuffer(int v0) {
     var _list = [v0];
     final ptr = calloc<Uint32>(_list.length);
     ptr.asTypedList(1).setAll(0, _list);
@@ -290,7 +292,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-  texParameterf(v0, v1, v2) {
+  void texParameterf(int v0, int v1, double v2) {
     return glTexParameterf(v0, v1, v2);
   }
 
@@ -862,19 +864,19 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glVertexAttribDivisor(index, divisor);
   }
 
-  flush() {
+  void flush() {
     return glFlush();
   }
 
-  finish() {
+  void finish() {
     return glFinish();
   }
 
-  texStorage2D(target, levels, internalformat, width, height) {
+  void texStorage2D(target, levels, internalformat, width, height) {
     return glTexStorage2D(target, levels, internalformat, width, height);
   }
 
-  texStorage3D(target, levels, internalformat, width, height, depth) {
+  void texStorage3D(target, levels, internalformat, width, height, depth) {
     return glTexStorage3D(target, levels, internalformat, width, height, depth);
   }
 
@@ -902,7 +904,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return res;
   }
 
-  getIntegerv(int v0) {
+  int getIntegerv(int v0) {
     Pointer<Int32> ptr = calloc<Int32>();
     glGetIntegerv(v0, ptr);
 
@@ -930,11 +932,15 @@ toPointer(data) {
       data.runtimeType.toString() == "List<double>" ||
       data.runtimeType.toString() == "List<num>" ||
       data.runtimeType.toString() == "_GrowableList<double>") {
-    final ptr = calloc<Float>(data.length);
+    final Pointer<Float> ptr = calloc<Float>(data.length);
     ptr.asTypedList(data.length).setAll(0, List<double>.from(data));
     return ptr;
   } else if (data is Uint8List) {
-    final ptr = calloc<Uint8>(data.length);
+    final Pointer<Uint8> ptr = calloc<Uint8>(data.length);
+    ptr.asTypedList(data.length).setAll(0, data);
+    return ptr;
+  } else if (data is List<int>) {
+    final Pointer<Uint32> ptr = calloc<Uint32>(data.length);
     ptr.asTypedList(data.length).setAll(0, data.map((e) => e));
     return ptr;
   } else {
