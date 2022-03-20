@@ -194,8 +194,7 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     print(" render n: ${n} ");
 
-    // _gl.finish();
-    _gl.flush();
+    _gl.finish();
 
     if (!kIsWeb) {
       flutterGlPlugin.updateTexture(sourceTexture);
