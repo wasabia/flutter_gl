@@ -9,6 +9,8 @@ class NativeArray {
   int get byteLength => lengthInBytes;
   int get len => length;
   int get BYTES_PER_ELEMENT => oneByteSize;
+  
+  bool disposed = false;
 
   get data {}
 
@@ -22,5 +24,5 @@ class NativeArray {
 
   toDartList() {}
 
-  dispose() {}
+  void dispose() {}
 }

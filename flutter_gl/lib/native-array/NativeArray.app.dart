@@ -1,8 +1,12 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'index.dart';
 
 class PlatformNativeArray extends NativeArray {
+
+
+
   get data {}
 
   operator [](int index) {}
@@ -29,9 +33,22 @@ class PlatformNativeArray extends NativeArray {
   clone() {
     print(" NativeArray clone need implement ");
   }
+
+  
+
+  @override
+  void dispose() {
+    if(!disposed) {
+      calloc.free(data);
+      disposed = true;
+    }
+    super.dispose();
+  }
+
 }
 
 class NativeFloat32Array extends PlatformNativeArray {
+
   late Pointer<Float> list;
 
   get data => list;
@@ -87,9 +104,6 @@ class NativeFloat32Array extends PlatformNativeArray {
     return NativeFloat32Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeUint16Array extends PlatformNativeArray {
@@ -130,9 +144,6 @@ class NativeUint16Array extends PlatformNativeArray {
     return NativeUint16Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeUint32Array extends PlatformNativeArray {
@@ -175,9 +186,6 @@ class NativeUint32Array extends PlatformNativeArray {
     return NativeUint32Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeInt8Array extends PlatformNativeArray {
@@ -218,9 +226,6 @@ class NativeInt8Array extends PlatformNativeArray {
     return NativeInt8Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeInt16Array extends PlatformNativeArray {
@@ -261,9 +266,6 @@ class NativeInt16Array extends PlatformNativeArray {
     return NativeInt16Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeInt32Array extends PlatformNativeArray {
@@ -304,9 +306,6 @@ class NativeInt32Array extends PlatformNativeArray {
     return NativeInt32Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
 
 class NativeUint8Array extends PlatformNativeArray {
@@ -347,7 +346,4 @@ class NativeUint8Array extends PlatformNativeArray {
     return NativeUint8Array(_dartList.length).set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
-  }
 }
