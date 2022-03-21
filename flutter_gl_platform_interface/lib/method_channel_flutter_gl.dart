@@ -30,13 +30,11 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
 
   Future updateTexture(sourceTexture) async {
     final _args = {"textureId": textureId, "sourceTexture": sourceTexture};
-
     final _result = await _channel.invokeMethod('updateTexture', _args);
-
     return _result;
   }
 
-  updateSize(Map<String, dynamic> options) async {
+  Future updateSize(Map<String, dynamic> options) async {
     final _args = {
       "textureId": textureId,
       "width": options["width"],
@@ -48,10 +46,10 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return _result;
   }
 
-  dispose() {
+  void dispose() async {
     this.isDisposed = true;
 
     final _args = {"textureId": textureId};
-    _channel.invokeMethod('dispose', _args);
+    await _channel.invokeMethod('dispose', _args);
   }
 }

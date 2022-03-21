@@ -1,6 +1,6 @@
 part of native_array;
 
-class NativeArray {
+abstract class NativeArray<T extends num> {
   late int _size;
   late int oneByteSize;
   int get length => _size;
@@ -10,17 +10,21 @@ class NativeArray {
   int get len => length;
   int get BYTES_PER_ELEMENT => oneByteSize;
 
-  get data {}
+  get data;
 
-  NativeArray(size) {
-    _size = size;
+  T operator [](int index); //=> data[index];
+  void operator []=(int index, T value); // => data[index] = value;
+
+  NativeArray(int size) : _size = size;
+
+  List<T> toJson() => toDartList();
+  List<T> toDartList();
+  List<T> sublist(int start, [int? end]) => toDartList().sublist(start, end);
+  NativeArray set(List<T> newList, [int index = 0]) {
+    toDartList().setAll(0, newList);
+    return this;
   }
 
-  toJson() {
-    return toDartList();
-  }
-
-  toDartList() {}
-
-  dispose() {}
+  NativeArray clone();
+  void dispose();
 }

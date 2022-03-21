@@ -1,353 +1,304 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'index.dart';
 
-class PlatformNativeArray extends NativeArray {
-  get data {}
-
-  operator [](int index) {}
-
-  void operator []=(int index, value) {}
-
+abstract class PlatformNativeArray<T extends num> extends NativeArray<T> {
   PlatformNativeArray(int size) : super(size) {}
+  PlatformNativeArray.from(List<T> listData) : super(listData.length) {}
 
-  PlatformNativeArray.from(List listData) : super(listData.length) {}
-
-  sublist(int len) {
-    return this.toDartList().sublist(len);
+  PlatformNativeArray clone() {
+    throw Exception(" NativeArray clone need implement ");
   }
 
-  toDartList() {
+  @override
+  void operator []=(int index, T value) {
+    final list = toDartList();
+    list[index] = value;
+  }
+}
+
+class NativeFloat32Array extends PlatformNativeArray<double> {
+  late Pointer<Float> _list;
+
+  Pointer<Float> get data => _list;
+
+  NativeFloat32Array(int size) : super(size) {
+    _list = calloc<Float>(size);
+    oneByteSize = sizeOf<Float>();
+  }
+  NativeFloat32Array.from(List<double> listData) : super.from(listData) {
+    _list = calloc<Float>(listData.length);
+    oneByteSize = sizeOf<Float>();
+    toDartList().setAll(0, listData);
+  }
+
+  Float32List toDartList() {
     return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, newList);
+  NativeFloat32Array setArray(Float32Array newList, [int index = 0]) {
+    toDartList().setAll(index, newList.toDartList());
     return this;
   }
 
-  clone() {
-    print(" NativeArray clone need implement ");
+  NativeFloat32Array clone() {
+    var dartList = this.toDartList();
+    return NativeFloat32Array(dartList.length)..set(dartList);
+  }
+
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  double operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeFloat32Array extends PlatformNativeArray {
-  late Pointer<Float> list;
+class NativeFloat64Array extends PlatformNativeArray<double> {
+  late Pointer<Double> _list;
 
-  get data => list;
+  Pointer<Double> get data => _list;
 
-  operator [](int index) {
-    return this.list[index];
+  NativeFloat64Array(int size) : super(size) {
+    _list = calloc<Double>(size);
+    oneByteSize = sizeOf<Double>();
+  }
+  NativeFloat64Array.from(List<double> listData) : super.from(listData) {
+    _list = calloc<Double>(listData.length);
+    oneByteSize = sizeOf<Double>();
+    toDartList().setAll(0, listData);
   }
 
-  void operator []=(int index, value) {
-    this.list[index] = value.toDouble();
+  Float64List toDartList() {
+    return data.asTypedList(length);
   }
 
-  NativeFloat32Array(int size) : super(size) {
-    list = calloc<Float>(size);
-    oneByteSize = sizeOf<Float>();
-  }
-
-  NativeFloat32Array.from(List listData) : super.from(listData) {
-    list = calloc<Float>(listData.length);
-    oneByteSize = sizeOf<Float>();
-    this
-        .toDartList()
-        .setAll(0, List<double>.from(listData.map((e) => e.toDouble())));
-  }
-
-  toDartList() {
-    return (data as Pointer<Float>).asTypedList(length);
-  }
-
-  set(newList, [int index = 0]) {
-    if(newList is Float32Array) {
-      this
-        .toDartList()
-        .setAll(index, List<double>.from(newList.toDartList()));
-    } else {
-      this
-        .toDartList()
-        .setAll(index, List<double>.from(newList.map((e) => e.toDouble())));
-    }
-    
+  NativeFloat64Array setArray(Float64Array newList, [int index = 0]) {
+    toDartList().setAll(index, newList.toDartList());
     return this;
   }
 
-  setAt(newList, int index) {
-    this
-        .toDartList()
-        .setAll(index, List<double>.from(newList.map((e) => e.toDouble())));
-    return this;
+  NativeFloat64Array clone() {
+    var dartList = this.toDartList();
+    return NativeFloat64Array(dartList.length)..set(dartList);
   }
 
-  clone() {
-    var _dartList = this.toDartList();
-    return NativeFloat32Array(_dartList.length).set(_dartList);
+  void dispose() {
+    calloc.free(_list);
   }
 
-  dispose() {
-    calloc.free(list);
+  @override
+  double operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeUint16Array extends PlatformNativeArray {
-  late Pointer<Uint16> list;
+class NativeUint16Array extends PlatformNativeArray<int> {
+  late Pointer<Uint16> _list;
 
-  get data => list;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Uint16> get data => _list;
 
   NativeUint16Array(int size) : super(size) {
-    list = calloc<Uint16>(size);
+    _list = calloc<Uint16>(size);
     oneByteSize = sizeOf<Uint16>();
   }
 
-  NativeUint16Array.from(List listData) : super.from(listData) {
-    list = calloc<Uint16>(listData.length);
+  NativeUint16Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Uint16>(listData.length);
     oneByteSize = sizeOf<Uint16>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    this.toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Uint16>).asTypedList(length);
+  Uint16List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
-  }
-
-  clone() {
+  NativeUint16Array clone() {
     var _dartList = this.toDartList();
-    return NativeUint16Array(_dartList.length).set(_dartList);
+    return NativeUint16Array(_dartList.length)..set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeUint32Array extends PlatformNativeArray {
-  late Pointer<Uint32> list;
+class NativeUint32Array extends PlatformNativeArray<int> {
+  late Pointer<Uint32> _list;
 
-  get data => list;
-
-  get buffer => data;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Uint32> get data => _list;
+  Pointer<Uint32> get buffer => data;
 
   NativeUint32Array(int size) : super(size) {
-    list = calloc<Uint32>(size);
+    _list = calloc<Uint32>(size);
     oneByteSize = sizeOf<Uint32>();
   }
 
-  NativeUint32Array.from(List listData) : super.from(listData) {
-    list = calloc<Uint32>(listData.length);
+  NativeUint32Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Uint32>(listData.length);
     oneByteSize = sizeOf<Uint32>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    this.toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Uint32>).asTypedList(length);
+  Uint32List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
-  }
-
-  clone() {
+  NativeUint32Array clone() {
     var _dartList = this.toDartList();
-    return NativeUint32Array(_dartList.length).set(_dartList);
+    return NativeUint32Array(_dartList.length)..set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeInt8Array extends PlatformNativeArray {
-  late Pointer<Int8> list;
+class NativeInt8Array extends PlatformNativeArray<int> {
+  late Pointer<Int8> _list;
 
-  get data => list;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Int8> get data => _list;
 
   NativeInt8Array(int size) : super(size) {
-    list = calloc<Int8>(size);
+    _list = calloc<Int8>(size);
     oneByteSize = sizeOf<Int8>();
   }
-
-  NativeInt8Array.from(List listData) : super.from(listData) {
-    list = calloc<Int8>(listData.length);
+  NativeInt8Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Int8>(listData.length);
     oneByteSize = sizeOf<Int8>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Int8>).asTypedList(length);
+  Int8List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
+  NativeInt8Array clone() {
+    var _dartList = toDartList();
+    return NativeInt8Array(_dartList.length)..set(_dartList);
   }
 
-  clone() {
-    var _dartList = this.toDartList();
-    return NativeInt8Array(_dartList.length).set(_dartList);
+  void dispose() {
+    calloc.free(_list);
   }
 
-  dispose() {
-    calloc.free(list);
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeInt16Array extends PlatformNativeArray {
-  late Pointer<Int16> list;
+class NativeInt16Array extends PlatformNativeArray<int> {
+  late Pointer<Int16> _list;
 
-  get data => list;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Int16> get data => _list;
 
   NativeInt16Array(int size) : super(size) {
-    list = calloc<Int16>(size);
+    _list = calloc<Int16>(size);
     oneByteSize = sizeOf<Int16>();
   }
-
-  NativeInt16Array.from(List listData) : super.from(listData) {
-    list = calloc<Int16>(listData.length);
+  NativeInt16Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Int16>(listData.length);
     oneByteSize = sizeOf<Int16>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    this.toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Int16>).asTypedList(length);
+  Int16List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
-  }
-
-  clone() {
+  NativeInt16Array clone() {
     var _dartList = this.toDartList();
-    return NativeInt16Array(_dartList.length).set(_dartList);
+    return NativeInt16Array(_dartList.length)..set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeInt32Array extends PlatformNativeArray {
-  late Pointer<Int32> list;
+class NativeInt32Array extends PlatformNativeArray<int> {
+  late Pointer<Int32> _list;
 
-  get data => list;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Int32> get data => _list;
 
   NativeInt32Array(int size) : super(size) {
-    list = calloc<Int32>(size);
+    _list = calloc<Int32>(size);
     oneByteSize = sizeOf<Int32>();
   }
-
-  NativeInt32Array.from(List listData) : super.from(listData) {
-    list = calloc<Int32>(listData.length);
+  NativeInt32Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Int32>(listData.length);
     oneByteSize = sizeOf<Int32>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    this.toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Int32>).asTypedList(length);
+  Int32List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
-  }
-
-  clone() {
+  NativeInt32Array clone() {
     var _dartList = this.toDartList();
-    return NativeInt32Array(_dartList.length).set(_dartList);
+    return NativeInt32Array(_dartList.length)..set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
 
-class NativeUint8Array extends PlatformNativeArray {
-  late Pointer<Uint8> list;
+class NativeUint8Array extends PlatformNativeArray<int> {
+  late Pointer<Uint8> _list;
 
-  get data => list;
-
-  operator [](int index) {
-    return this.list[index];
-  }
-
-  void operator []=(int index, value) {
-    this.list[index] = value;
-  }
+  Pointer<Uint8> get data => _list;
 
   NativeUint8Array(int size) : super(size) {
-    list = calloc<Uint8>(size);
+    _list = calloc<Uint8>(size);
     oneByteSize = sizeOf<Uint8>();
   }
-
-  NativeUint8Array.from(List listData) : super.from(listData) {
-    list = calloc<Uint8>(listData.length);
+  NativeUint8Array.from(List<int> listData) : super.from(listData) {
+    _list = calloc<Uint8>(listData.length);
     oneByteSize = sizeOf<Uint8>();
-    this.toDartList().setAll(0, List<int>.from(listData.map((e) => e.toInt())));
+    this.toDartList().setAll(0, listData);
   }
 
-  toDartList() {
-    return (data as Pointer<Uint8>).asTypedList(length);
+  Uint8List toDartList() {
+    return data.asTypedList(length);
   }
 
-  set(newList) {
-    this.toDartList().setAll(0, List<int>.from(newList));
-    return this;
-  }
-
-  clone() {
+  NativeUint8Array clone() {
     var _dartList = this.toDartList();
-    return NativeUint8Array(_dartList.length).set(_dartList);
+    return NativeUint8Array(_dartList.length)..set(_dartList);
   }
 
-  dispose() {
-    calloc.free(list);
+  void dispose() {
+    calloc.free(_list);
+  }
+
+  @override
+  int operator [](int index) {
+    return _list.elementAt(index).value;
   }
 }
