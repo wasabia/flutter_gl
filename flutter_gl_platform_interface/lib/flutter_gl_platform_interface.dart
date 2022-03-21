@@ -54,7 +54,7 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 
-  dispose() {
+  void dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 }

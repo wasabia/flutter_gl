@@ -520,7 +520,7 @@ class OpenGLContextES extends OpenGL30Constant {
 
     String message = '';
 
-    if (infoLen.value > 0) {
+    if (_len > 0) {
       final infoLog = calloc<Int8>(_len);
       gl.glGetProgramInfoLog(v0, _len, nullptr, infoLog);
 
@@ -541,7 +541,7 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(infoLen);
 
     String message = '';
-    if (infoLen.value > 1) {
+    if (_len > 1) {
       final infoLog = calloc<Int8>(_len);
 
       gl.glGetShaderInfoLog(v0, _len, nullptr, infoLog);

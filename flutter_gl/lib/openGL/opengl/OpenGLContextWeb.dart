@@ -448,8 +448,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform1fv(location, getData(value));
   }
 
-  uniform3fv(location, List<num> value) {
-    return gl.uniform3fv(location, value);
+  uniform3fv(location, NativeArray value) {
+    return gl.uniform3fv(location, value.data);
   }
 
   uniform1f(v0, num v1) {
