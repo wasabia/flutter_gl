@@ -403,18 +403,18 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(dataPtr);
   }
 
-  void copyTexImage2D(target, level, internalformat, x, y, width, height, border) {
+  void copyTexImage2D(target, level, internalformat, x, y, int width, int height, border) {
     return gl.glCopyTexImage2D(
         target, level, internalformat, x, y, width, height, border);
   }
 
-  void texSubImage2D(target, level, x, y, width, height, format, type, data) {
+  void texSubImage2D(target, level, x, y, int width, int height, format, type, data) {
     final dataPtr = getData(data);
     gl.glTexSubImage2D(
         target, level, x, y, width, height, format, type, dataPtr.cast<Void>());
   }
 
-  void texSubImage2D2(x, y, width, height, data) {
+  void texSubImage2D2(x, y, int width, int height, data) {
     final dataPtr = getData(data);
     gl.glTexSubImage2D(
         TEXTURE_2D, 0, x, y, width, height, RGBA, UNSIGNED_BYTE, dataPtr);
@@ -437,7 +437,7 @@ class OpenGLContextES extends OpenGL30Constant {
   }
 
   void renderbufferStorageMultisample(
-      target, samples, internalformat, width, height) {
+      target, samples, internalformat, int width, int height) {
     return gl.glRenderbufferStorageMultisample(
         target, samples, internalformat, width, height);
   }
