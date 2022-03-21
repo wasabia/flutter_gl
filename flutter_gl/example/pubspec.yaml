@@ -16,7 +16,7 @@ dependencies:
     path: ../
   cupertino_icons: ^1.0.4
   path: ^1.8.0
-  path_provider: ^2.0.1
+  path_provider: ^2.0.9
   ffi: ^1.1.2
 
 dev_dependencies:

@@ -59,11 +59,6 @@ class _MyAppState extends State<ExampleDemoTest> {
     print("_options: ${_options}  ");
 
     await flutterGlPlugin.initialize(options: _options);
-    // await flutterGlPlugin.prepareContext();
-    // setupDefaultFBO();
-    // sourceTexture = defaultFramebufferTexture;
-
-    // setup();
 
     print(" flutterGlPlugin: textureid: ${flutterGlPlugin.textureId} ");
 
@@ -88,8 +83,6 @@ class _MyAppState extends State<ExampleDemoTest> {
       setupDefaultFBO();
       sourceTexture = defaultFramebufferTexture;
     }
-
-    // prepare();
 
     animate();
 
@@ -190,7 +183,7 @@ class _MyAppState extends State<ExampleDemoTest> {
   }
 
   render() async {
-    print("1 render start: ${DateTime.now().millisecondsSinceEpoch} ");
+    print("render start: ${DateTime.now().millisecondsSinceEpoch} ");
     final _gl = flutterGlPlugin.gl;
 
     int _current = DateTime.now().millisecondsSinceEpoch;
@@ -201,18 +194,7 @@ class _MyAppState extends State<ExampleDemoTest> {
     _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-    // var colorLocation = _gl.getUniformLocation(glProgram, "u_color");
-    // print(" colorLocation: ${colorLocation} ");
-
-    // var u_color = List<num>.from([1.0, _blue, 0.0, 1.0]);
-
-    // _gl.uniform4fv(colorLocation, u_color);
-    // _gl.drawArrays(_gl.TRIANGLES, 0, n);
-
-    // _gl.finish(); which one?
-    _gl.flush();
-
-    print("2 render start: ${DateTime.now().millisecondsSinceEpoch} ");
+    _gl.finish();
 
     // var pixels = _gl.readCurrentPixels(0, 0, 100, 100);
     // print(" --------------pixels............. ");
@@ -221,148 +203,10 @@ class _MyAppState extends State<ExampleDemoTest> {
     print(
         " update sourceTexture: ${sourceTexture} t: ${DateTime.now().millisecondsSinceEpoch} ");
 
-    print("3 render start: ${DateTime.now().millisecondsSinceEpoch} ");
     if (!kIsWeb) {
       var res = await flutterGlPlugin.updateTexture(sourceTexture);
-      print(
-          "30 render start: ${DateTime.now().millisecondsSinceEpoch} res: ${res} ");
-    }
-
-    print("4 render start: ${DateTime.now().millisecondsSinceEpoch} ");
-  }
-
-  prepare() {
-    final _gl = flutterGlPlugin.gl;
-
-    String _version = "300 es";
-
-    if (Platform.isMacOS || Platform.isWindows) {
-      _version = "150";
-    }
-
-    var vs = """#version ${_version}
-    ${(Platform.isMacOS || Platform.isWindows) ? """
-  #define attribute in
-  #define varying out
-  #define texture2D texture
-      """ : ""}
-
-    attribute vec4 a_Position;
-    void main() {
-      gl_Position = a_Position;
-    }
-    """;
-
-    var fs = """#version ${_version}
-    ${(Platform.isMacOS || Platform.isWindows) ? """
-  #define varying in
-  out highp vec4 pc_fragColor;
-  #define gl_FragColor pc_fragColor
-      """ : ""}
-
-    precision mediump float;
-    uniform vec4 u_color;
-    void main() {
-      gl_FragColor = u_color;
-    }
-    """;
-
-    if (!initShaders(_gl, vs, fs)) {
-      throw ('Failed to intialize shaders.');
-    }
-
-    // Write the positions of vertices to a vertex shader
-    n = initVertexBuffers(_gl);
-    if (n < 0) {
-      throw ('Failed to set the positions of the vertices');
     }
   }
 
-  initVertexBuffers(gl) {
-    // Vertices
-    var dim = 3;
 
-    // 1. Use Float32Array
-    var vertices0 = new Float32List.fromList([
-      0.0, 0.5, 0.0, // Vertice #1
-      -0.5, -0.5, 0.0, // Vertice #2
-      0.5, -0.5, 0.0 // Vertice #3
-    ]);
-
-    var vertices = Float32Array.from(vertices0);
-
-    // 2. Use Float32List direct
-    // var vertices = new Float32List.fromList([
-    //   0.0, 0.5, 0.0,  // Vertice #1
-    //   -0.5, -0.5, 0.0, // Vertice #2
-    //   0.5, -0.5, 0.0 // Vertice #3
-    // ]);
-
-    // Create a buffer object
-    var vertexBuffer = gl.createBuffer();
-    if (vertexBuffer == null) {
-      print('Failed to create the buffer object');
-      return -1;
-    }
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    gl.bufferData(
-        gl.ARRAY_BUFFER,
-        vertices.length * Float32List.bytesPerElement,
-        vertices,
-        gl.STATIC_DRAW);
-
-    // Assign the vertices in buffer object to a_Position variable
-    var a_Position = gl.getAttribLocation(glProgram, 'a_Position');
-    if (a_Position < 0) {
-      print('Failed to get the storage location of a_Position');
-      return -1;
-    }
-    gl.vertexAttribPointer(
-        a_Position, dim, gl.FLOAT, false, Float32List.bytesPerElement * 3, 0);
-    gl.enableVertexAttribArray(a_Position);
-
-    // Return number of vertices
-    return (vertices.length / dim).toInt();
-  }
-
-  initShaders(gl, vs_source, fs_source) {
-    // Compile shaders
-    var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
-    var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
-
-    // Create program
-    glProgram = gl.createProgram();
-
-    // Attach and link shaders to the program
-    gl.attachShader(glProgram, vertexShader);
-    gl.attachShader(glProgram, fragmentShader);
-    gl.linkProgram(glProgram);
-    var _res = gl.getProgramParameter(glProgram, gl.LINK_STATUS);
-    print("getProgramParameter: ${_res}  ");
-    if (_res == false || _res == 0) {
-      print("Unable to initialize the shader program");
-      return false;
-    }
-
-    // Use program
-    gl.useProgram(glProgram);
-
-    return true;
-  }
-
-  makeShader(gl, src, type) {
-    var shader = gl.createShader(type);
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-    var _res = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-
-    print("makeShader getShaderParameter: ${_res}");
-
-    if (_res == 0 || _res == false) {
-      print("Error compiling shader: ${gl.getShaderInfoLog(shader)}");
-      return;
-    }
-    return shader;
-  }
 }

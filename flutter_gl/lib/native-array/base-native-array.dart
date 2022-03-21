@@ -9,6 +9,8 @@ abstract class NativeArray<T extends num> {
   int get byteLength => lengthInBytes;
   int get len => length;
   int get BYTES_PER_ELEMENT => oneByteSize;
+  
+  bool disposed = false;
 
   get data;
 
@@ -26,5 +28,5 @@ abstract class NativeArray<T extends num> {
   }
 
   NativeArray clone();
-  void dispose();
+  void dispose() {}
 }

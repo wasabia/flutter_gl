@@ -14,9 +14,6 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   late dynamic gl;
 
   OpenGLContextDesktop(Map<String, dynamic> parameters) {
-    print(" OpenGLContextDesktop ");
-    print(parameters);
-
     this.gl = parameters["gl"];
   }
 

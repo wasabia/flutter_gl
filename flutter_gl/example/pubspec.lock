@@ -82,7 +82,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.11"
+    version: "0.0.13"
   flutter_gl_macos:
     dependency: transitive
     description:
@@ -107,9 +107,9 @@ packages:
   flutter_gl_windows:
     dependency: transitive
     description:
-      path: "../../flutter_gl_windows"
-      relative: true
-    source: path
+      name: flutter_gl_windows
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
@@ -135,6 +135,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.12.11"
+  material_color_utilities:
+    dependency: transitive
+    description:
+      name: material_color_utilities
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.3"
   meta:
     dependency: transitive
     description:
@@ -155,7 +162,7 @@ packages:
       name: path_provider
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   path_provider_android:
     dependency: transitive
     description:
@@ -265,7 +272,7 @@ packages:
       name: test_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.3"
+    version: "0.4.8"
   typed_data:
     dependency: transitive
     description:

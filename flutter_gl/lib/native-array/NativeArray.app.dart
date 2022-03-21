@@ -16,6 +16,15 @@ abstract class PlatformNativeArray<T extends num> extends NativeArray<T> {
     final list = toDartList();
     list[index] = value;
   }
+  
+  @override
+  void dispose() {
+    if(!disposed) {
+      calloc.free(data);
+      disposed = true;
+    }
+    super.dispose();
+  }
 }
 
 class NativeFloat32Array extends PlatformNativeArray<double> {
@@ -45,10 +54,6 @@ class NativeFloat32Array extends PlatformNativeArray<double> {
   NativeFloat32Array clone() {
     var dartList = this.toDartList();
     return NativeFloat32Array(dartList.length)..set(dartList);
-  }
-
-  void dispose() {
-    calloc.free(_list);
   }
 
   @override
@@ -86,10 +91,6 @@ class NativeFloat64Array extends PlatformNativeArray<double> {
     return NativeFloat64Array(dartList.length)..set(dartList);
   }
 
-  void dispose() {
-    calloc.free(_list);
-  }
-
   @override
   double operator [](int index) {
     return _list.elementAt(index).value;
@@ -119,10 +120,6 @@ class NativeUint16Array extends PlatformNativeArray<int> {
   NativeUint16Array clone() {
     var _dartList = this.toDartList();
     return NativeUint16Array(_dartList.length)..set(_dartList);
-  }
-
-  void dispose() {
-    calloc.free(_list);
   }
 
   @override
@@ -157,10 +154,6 @@ class NativeUint32Array extends PlatformNativeArray<int> {
     return NativeUint32Array(_dartList.length)..set(_dartList);
   }
 
-  void dispose() {
-    calloc.free(_list);
-  }
-
   @override
   int operator [](int index) {
     return _list.elementAt(index).value;
@@ -189,10 +182,6 @@ class NativeInt8Array extends PlatformNativeArray<int> {
   NativeInt8Array clone() {
     var _dartList = toDartList();
     return NativeInt8Array(_dartList.length)..set(_dartList);
-  }
-
-  void dispose() {
-    calloc.free(_list);
   }
 
   @override
@@ -225,10 +214,6 @@ class NativeInt16Array extends PlatformNativeArray<int> {
     return NativeInt16Array(_dartList.length)..set(_dartList);
   }
 
-  void dispose() {
-    calloc.free(_list);
-  }
-
   @override
   int operator [](int index) {
     return _list.elementAt(index).value;
@@ -259,10 +244,6 @@ class NativeInt32Array extends PlatformNativeArray<int> {
     return NativeInt32Array(_dartList.length)..set(_dartList);
   }
 
-  void dispose() {
-    calloc.free(_list);
-  }
-
   @override
   int operator [](int index) {
     return _list.elementAt(index).value;
@@ -291,10 +272,6 @@ class NativeUint8Array extends PlatformNativeArray<int> {
   NativeUint8Array clone() {
     var _dartList = this.toDartList();
     return NativeUint8Array(_dartList.length)..set(_dartList);
-  }
-
-  void dispose() {
-    calloc.free(_list);
   }
 
   @override
