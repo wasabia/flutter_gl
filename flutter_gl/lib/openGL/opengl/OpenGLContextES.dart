@@ -422,8 +422,8 @@ class OpenGLContextES extends OpenGL30Constant {
 
   void texSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth,
       format, type, pixels) {
-    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width,
-        height, depth, format, type, getData(pixels).cast<Void>());
+    return gl.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width.toInt(),
+        height.toInt(), depth, format, type, getData(pixels).cast<Void>());
   }
 
   void compressedTexSubImage2D(target, level, xoffset, yoffset, width, height,
@@ -585,12 +585,14 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glDisableVertexAttribArray(v0);
   }
 
-  void vertexAttribIPointer(v0, v1, v2, v3, v4) {
-    return gl.vertexAttribIPointer(v0, v1, v2, v3, v4);
+  void vertexAttribIPointer(index, size, type, stride, pointer) {
+    var _pointer = calloc<Int32>();
+    _pointer.value = pointer;
+    gl.glVertexAttribIPointer(index, size, type, stride, _pointer.cast<Void>());
   }
 
   void vertexAttrib2fv(v0, v1) {
-    return gl.vertexAttrib2fv(v0, v1);
+    return gl.glVertexAttrib2fv(v0, v1);
   }
 
   void vertexAttrib3fv(v0, v1) {
@@ -767,15 +769,8 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glUniform4iv(v0, v1);
   }
 
-  void uniform4fv(location, List<num> value) {
-    int count = value.length;
-    final valuePtr = calloc<Float>(count);
-    List<double> _values = value.map((e) => e.toDouble()).toList().cast();
-    valuePtr.asTypedList(count).setAll(0, _values);
-
-    // print("uniform4fv location: ${location} value: ${value} ");
-
-    return gl.glUniform4fv(location, count ~/ 4, valuePtr.cast<Void>());
+  void uniform4fv(location, NativeArray value) {
+    return gl.glUniform4fv(location, value.length ~/ 4, value.data.cast<Void>());
   }
 
   void uniform4f(location, num v0, num v1, num v2, num v3) {
@@ -795,11 +790,11 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glFinish();
   }
 
-  void texStorage2D(target, levels, internalformat, width, height) {
+  void texStorage2D(target, levels, internalformat, int width, int height) {
     return gl.glTexStorage2D(target, levels, internalformat, width, height);
   }
 
-  void texStorage3D(target, levels, internalformat, width, height, depth) {
+  void texStorage3D(target, levels, internalformat, int width, int height, depth) {
     return gl.glTexStorage3D(
         target, levels, internalformat, width, height, depth);
   }
