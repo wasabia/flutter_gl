@@ -472,8 +472,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform1iv(location, value);
   }
 
-  uniform2iv(v0, v1) {
-    return gl.uniform2iv(v0, v1);
+  uniform2iv(v0, count, v1) {
+    return gl.uniform2iv(v0, count, v1);
   }
 
   uniform3iv(v0, v1) {
