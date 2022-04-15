@@ -182,8 +182,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.deleteRenderbuffer(v0);
   }
 
-  texParameterf(v0, v1, v2) {
-    return gl.texParameterf(v0, v1, v2);
+  void texParameterf(int target, int pname, double param) {
+    return gl.texParameterf(target, pname, param);
   }
 
   pixelStorei(v0, v1) {

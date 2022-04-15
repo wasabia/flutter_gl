@@ -4,6 +4,7 @@
 library native_array;
 
 import 'dart:typed_data';
+import 'dart:math' as math;
 
 import './NativeArray.app.dart' if (dart.library.js) './NativeArray.web.dart';
 

@@ -255,8 +255,8 @@ class OpenGLContextES extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-  void texParameterf(int v0, int v1, int v2) {
-    return gl.glTexParameterf(v0, v1, v2);
+  void texParameterf(int target, int pname, double param) {
+    return gl.glTexParameterf(target, pname, param);
   }
 
   void pixelStorei(int v0, int v1) {
