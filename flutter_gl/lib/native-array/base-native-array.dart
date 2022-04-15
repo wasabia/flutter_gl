@@ -23,7 +23,7 @@ abstract class NativeArray<T extends num> {
   List<T> toDartList();
   List<T> sublist(int start, [int? end]) => toDartList().sublist(start, end);
   NativeArray set(List<T> newList, [int index = 0]) {
-    toDartList().setAll(0, newList);
+    toDartList().setAll(index, newList);
     return this;
   }
 
