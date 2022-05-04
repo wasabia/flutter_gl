@@ -151,10 +151,6 @@ public class CustomRender: NSObject, FlutterTexture {
   
     ThreeEgl.setContext(key: 3, context: eAGLShareContext!);
     
-    var size: GLint = 0;
-    glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &size);
-    print("GL_MAX_TEXTURE_SIZE: \(size) ")
-    
     initGL(context: self.eglEnv!.context!);
  
   }

@@ -41,20 +41,20 @@ abstract class FlutterGlPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion has not been implemented.');
   }
 
-  Future<Map<String, dynamic>> initialize(
+  Future<Map<String, dynamic>> initialize_interface(
       {Map<String, dynamic>? options}) async {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 
-  Future<List<int>> getEgl(int textureId) async {
+  Future<List<int>> getEgl_interface(int textureId) async {
     throw UnimplementedError('getEgl() has not been implemented.');
   }
 
-  Future updateTexture(sourceTexture) async {
+  Future updateTexture_interface(int textureId, sourceTexture) async {
     throw UnimplementedError('updateTexture() has not been implemented.');
   }
 
-  void dispose() {
+  void dispose_interface(int textureId) {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 }

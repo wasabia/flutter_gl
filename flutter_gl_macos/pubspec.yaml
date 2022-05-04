@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_gl_platform_interface: ^0.0.3
+  flutter_gl_platform_interface:
+    path: ../flutter_gl_platform_interface
   ffi: ^1.1.2
   
 dev_dependencies:

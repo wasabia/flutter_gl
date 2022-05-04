@@ -34,7 +34,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
 
     _options.addAll(options ?? {});
 
-    final resp = await FlutterGlPlatform.instance.initialize(options: _options);
+    final resp = await FlutterGlPlatform.instance.initialize_interface(options: _options);
     textureId = resp["textureId"];
 
     // used for web
@@ -46,23 +46,23 @@ class FlutterGlPlugin extends FlutterGlPlatform {
 
   /// set opengl context for ffi thread
   prepareContext() async {
-    egls = await FlutterGlPlatform.instance.getEgl(this.textureId!);
+    egls = await FlutterGlPlatform.instance.getEgl_interface(this.textureId!);
     openGL.makeCurrent(egls);
   }
 
   /// get created opengl context from native
   Future<List<int>> getEgl(int textureId) async {
     var result =
-        List<int>.from(await FlutterGlPlatform.instance.getEgl(textureId));
+        List<int>.from(await FlutterGlPlatform.instance.getEgl_interface(textureId));
     return result;
   }
 
   /// update texture to flutter
   Future updateTexture(sourceTexture) async {
-    return await FlutterGlPlatform.instance.updateTexture(sourceTexture);
+    return await FlutterGlPlatform.instance.updateTexture_interface(this.textureId!, sourceTexture);
   }
 
   dispose() {
-    return FlutterGlPlatform.instance.dispose();
+    return FlutterGlPlatform.instance.dispose_interface(this.textureId!);
   }
 }

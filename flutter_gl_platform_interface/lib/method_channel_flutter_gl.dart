@@ -8,7 +8,7 @@ const MethodChannel _channel = MethodChannel('flutter_gl');
 class MethodChannelFlutterGl extends FlutterGlPlatform {
   bool get isInitialized => this.textureId != null;
 
-  Future<Map<String, dynamic>> initialize(
+  Future<Map<String, dynamic>> initialize_interface(
       {Map<String, dynamic>? options, bool renderToVideo = false}) async {
     final resp = await _channel.invokeMethod(
       'initialize',
@@ -20,7 +20,7 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return Map<String, dynamic>.from(resp);
   }
 
-  Future<List<int>> getEgl(int textureId) async {
+  Future<List<int>> getEgl_interface(int textureId) async {
     final _args = {"textureId": textureId};
 
     final _result = await _channel.invokeMethod('getEgl', _args);
@@ -28,13 +28,13 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return List<int>.from(_result);
   }
 
-  Future updateTexture(sourceTexture) async {
+  Future updateTexture_interface(int textureId, sourceTexture) async {
     final _args = {"textureId": textureId, "sourceTexture": sourceTexture};
     final _result = await _channel.invokeMethod('updateTexture', _args);
     return _result;
   }
 
-  Future updateSize(Map<String, dynamic> options) async {
+  Future updateSize_interface(int textureId, Map<String, dynamic> options) async {
     final _args = {
       "textureId": textureId,
       "width": options["width"],
@@ -46,7 +46,7 @@ class MethodChannelFlutterGl extends FlutterGlPlatform {
     return _result;
   }
 
-  void dispose() async {
+  void dispose_interface(int textureId) async {
     this.isDisposed = true;
 
     final _args = {"textureId": textureId};

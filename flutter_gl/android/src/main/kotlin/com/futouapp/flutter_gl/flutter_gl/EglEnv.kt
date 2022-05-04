@@ -124,6 +124,10 @@ class EglEnv {
         }
     }
 
+    fun buildNewWindowSurface(surfaceTexture: SurfaceTexture): EGLSurface {
+        val surfaceAttribs = intArrayOf(EGL14.EGL_NONE)
+        return EGL14.eglCreateWindowSurface(eglDisplay, eglConfig, surfaceTexture, surfaceAttribs, 0)
+    }
 
     fun buildWindowSurfaceFromSurface(surface: Surface) {
         if (eglSurface != EGL14.EGL_NO_SURFACE) {
@@ -140,6 +144,12 @@ class EglEnv {
     fun makeCurrent() {
         Log.d(this.javaClass.name, " egl make current ")
         if (!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
+            checkEglError("EGL make current failed")
+        }
+    }
+
+    fun makeCurrentWithSurface(surface: EGLSurface) {
+        if (!EGL14.eglMakeCurrent(eglDisplay, surface, surface, eglContext)) {
             checkEglError("EGL make current failed")
         }
     }

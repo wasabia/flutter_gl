@@ -82,9 +82,9 @@ public class FlutterGlMacosPlugin: NSObject, FlutterPlugin {
       }
 
       let textureId = args["textureId"] as? Int64;
-      var render = self.renders[textureId!];
+        let render = self.renders[textureId!];
 
-      var eglResult = render?.getEgl();
+        let eglResult = render?.getEgl();
 
       result(eglResult);
     case "updateTexture":

@@ -21,7 +21,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
 
   var renders = mutableMapOf<Int, CustomRender>();
 
-
   companion object {
     lateinit var messenger: BinaryMessenger;
     lateinit var context: Context;
@@ -43,28 +42,21 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
+
     } else if (call.method == "initialize") {
       val args = call.arguments as Map<String, Any>;
-      var textureID = args["textureID"] as Int?;
-
       var options = args["options"] as Map<String, Any>;
 
       val entry = registry.createSurfaceTexture();
       val surfaceTexture = entry.surfaceTexture();
-      textureID = entry.id().toInt();
+      var textureID = entry.id().toInt();
 
       var render = CustomRender(options, surfaceTexture, textureID);
       renders[textureID] = render;
-
-//      println("initialize textureID: ${textureID}  render.screenScale: ${render.screenScale} ")
-
       var resp = mapOf(
-        "textureId" to textureID,
-        "dpr" to render.screenScale
+        "textureId" to textureID
       )
-
       result.success(resp);
-
     } else if(call.method == "getEgl") {
       val args = call.arguments as Map<String, Any>;
       val textureId = args["textureId"] as Int;
@@ -79,7 +71,6 @@ class FlutterGlPlugin: FlutterPlugin, MethodCallHandler {
       val sourceTexture = args["sourceTexture"] as Int;
 
       val render = this.renders[textureId];
-
       val resp = render!!.updateTexture(sourceTexture);
 
       result.success(resp);

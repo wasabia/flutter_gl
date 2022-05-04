@@ -82,7 +82,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.13"
+    version: "0.0.15"
   flutter_gl_macos:
     dependency: transitive
     description:

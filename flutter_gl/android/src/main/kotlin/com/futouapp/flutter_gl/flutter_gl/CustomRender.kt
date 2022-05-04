@@ -3,6 +3,7 @@ package com.futouapp.flutter_gl.flutter_gl
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.EGLSurface
 import android.opengl.GLES32.*
 import android.os.Handler
 import android.os.HandlerThread
@@ -15,68 +16,53 @@ class CustomRender {
     var disposed = false;
 
     private lateinit var worker: RenderWorker
-    var options: Map<String, Any>;
-    var width: Int;
-    var height: Int;
 
-    var glWidth: Int = 1;
-    var glHeight: Int = 1;
-
-    var surfaceTexture: SurfaceTexture;
     var textureId: Int;
-    var screenScale: Double = 1.0;
     var context: Context;
 
     lateinit var eglEnv: EglEnv;
-    lateinit var dartEglEnv: EglEnv;
-    lateinit var shareEglEnv: EglEnv;
 
-    var maxTextureSize = 4096;
 
-    var renderThread: HandlerThread = HandlerThread("flutterGlCustomRender");
-    private var renderHandler : Handler
+    companion object {
+        var shareEglEnv: EglEnv? = null;
+        var dartEglEnv: EglEnv? = null;
+
+        var renderThread: HandlerThread? = null;
+        var renderHandler : Handler? = null;
+    }
 
     constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int) {
-        this.options = options;
-        this.width = options["width"] as Int;
-        this.height = options["height"] as Int;
-        screenScale = options["dpr"] as Double;
-
-        this.surfaceTexture = surfaceTexture;
         this.textureId = textureId;
         this.context = FlutterGlPlugin.context;
 
-        renderThread.start()
-        renderHandler = Handler(renderThread.looper)
+        if(renderThread == null) {
+            renderThread = HandlerThread("flutterGlCustomRender");
+            renderThread!!.start();
+            renderHandler = Handler(renderThread!!.looper)
+        }
+
 
         this.executeSync {
-            setup();
+            setup(surfaceTexture, options);
         }
 
     }
 
-
-    fun setup() {
-        glWidth = (width * screenScale).toInt()
-        glHeight = (height * screenScale).toInt()
-
-        this.initEGL();
+    fun setup(surfaceTexture: SurfaceTexture, options: Map<String, Any>) {
+        this.initEGL(surfaceTexture, options);
 
         this.worker = RenderWorker();
         this.worker.setup();
-
     }
 
     fun updateTexture(sourceTexture: Int): Boolean {
-
-
         this.execute {
+            eglEnv.makeCurrent();
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
-
 
             this.worker.renderTexture(sourceTexture, null);
 
@@ -84,39 +70,41 @@ class CustomRender {
 
             checkGlError("update texture 01");
             eglEnv.swapBuffers();
-
         }
 
         return true;
     }
 
 
-    fun initEGL() {
+    fun initEGL(surfaceTexture: SurfaceTexture, options: Map<String, Any>) {
 
-        shareEglEnv = EglEnv();
-        shareEglEnv.setupRender();
+        var glWidth = ((options["width"] as Int) * (options["dpr"] as Double)).toInt();
+        var glHeight = ((options["height"] as Int) * (options["dpr"] as Double)).toInt();
 
-        ThreeEgl.setContext("shareContext", shareEglEnv.eglContext);
+        if(shareEglEnv == null) {
+            shareEglEnv = EglEnv();
+            shareEglEnv!!.setupRender();
+            ThreeEgl.setContext("shareContext", shareEglEnv!!.eglContext);
+        }
+
+        surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
 
         eglEnv = EglEnv();
-        dartEglEnv = EglEnv();
-
-        eglEnv.setupRender(shareEglEnv.eglContext);
-        dartEglEnv.setupRender(shareEglEnv.eglContext);
-
-        // TODO DEBUG
-        surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
+        eglEnv.setupRender(shareEglEnv!!.eglContext);
         eglEnv.buildWindowSurface(surfaceTexture);
-
-        dartEglEnv.buildOffScreenSurface(glWidth, glHeight);
-
         eglEnv.makeCurrent();
+
+        if(dartEglEnv == null) {
+            dartEglEnv = EglEnv();
+            dartEglEnv!!.setupRender(shareEglEnv!!.eglContext);
+            dartEglEnv!!.buildOffScreenSurface(glWidth, glHeight);
+        }
     }
 
 
     fun executeSync(task: () -> Unit) {
         val semaphore = Semaphore(0)
-        renderHandler.post {
+        renderHandler!!.post {
             task.invoke()
             semaphore.release()
         }
@@ -124,23 +112,27 @@ class CustomRender {
     }
 
     fun execute(task: () -> Unit) {
-        renderHandler.post {
+        renderHandler!!.post {
             task.invoke()
         }
     }
 
     fun getEgl() : List<Long> {
         var _res = mutableListOf<Long>();
-        _res.addAll(this.eglEnv.getEgl());
-        _res.addAll(this.dartEglEnv.getEgl());
+
+        var egls = this.eglEnv.getEgl().toMutableList();
+        var dartEgls = dartEglEnv!!.getEgl().toMutableList();
+
+        _res.addAll( egls );
+        _res.addAll( dartEgls );
         return _res;
     }
 
     fun dispose() {
         disposed = true;
-        this.shareEglEnv.dispose();
+//        this.shareEglEnv.dispose();
         this.eglEnv.dispose();
-        this.dartEglEnv.dispose();
+//        this.dartEglEnv.dispose();
         this.worker.dispose();
     }
 

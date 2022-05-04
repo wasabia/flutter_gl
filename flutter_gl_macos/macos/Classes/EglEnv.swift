@@ -49,7 +49,7 @@ public class EglEnv : NSObject {
   }
   
   func getContext() -> Int64 {
-    var _p = self.context!;
+    let _p = self.context!;
     // todo two different context object hashValue is always different???
     return Int64(_p.hashValue);
   }

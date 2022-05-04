@@ -3,19 +3,15 @@ import FlutterMacOS
 
 import OpenGL
 
-// 单例
 public class OpenGLProgram {
   
-
   init() {
     
   }
-
-  
   
   func getProgram() -> GLuint {
     
-    var vertex_shader = """
+      let vertex_shader = """
     #version 330
     precision mediump float;
 
@@ -32,7 +28,7 @@ public class OpenGLProgram {
 
     """;
     
-    var fragment_shader = """
+      let fragment_shader = """
     #version 330
     precision mediump float;
 
