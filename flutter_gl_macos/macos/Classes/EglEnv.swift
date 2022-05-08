@@ -34,13 +34,14 @@ public class EglEnv : NSObject {
         NSOpenGLPixelFormatAttribute(NSOpenGLPFASamples), 4,
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAMinimumPolicy),
         NSOpenGLPixelFormatAttribute(NSOpenGLPFAOpenGLProfile),
-        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion3_2Core),
+        NSOpenGLPixelFormatAttribute(NSOpenGLProfileVersion4_1Core),
         0
     ]
 
     let format = NSOpenGLPixelFormat(attributes: attr)
-    self.context = NSOpenGLContext(format: format!, share: shareContext)
-
+      
+      self.context = NSOpenGLContext(format: format!, share: shareContext)
+    
   }
   
   func makeCurrent() {
@@ -53,7 +54,7 @@ public class EglEnv : NSObject {
     // todo two different context object hashValue is always different???
     return Int64(_p.hashValue);
   }
-  
+
   func dispose() {
     self.context = nil;
   }

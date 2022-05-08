@@ -20,6 +20,7 @@ class CustomRender {
     var textureId: Int;
     var context: Context;
 
+    // TODO use same context different surface will have better performance???
     lateinit var eglEnv: EglEnv;
 
 

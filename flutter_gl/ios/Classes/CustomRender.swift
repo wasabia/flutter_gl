@@ -20,9 +20,9 @@ public class CustomRender: NSObject, FlutterTexture {
   var textureCache: CVOpenGLESTextureCache?;
   var texture: CVOpenGLESTexture? = nil;
 
-  var eAGLShareContext: EAGLContext?;
-  var eglEnv: EglEnv?;
-  var dartEglEnv: EglEnv?;
+  static var eAGLShareContext: EAGLContext?;
+  static var eglEnv: EglEnv?;
+  static var dartEglEnv: EglEnv?;
 
   var worker: RenderWorker? = nil;
   var frameBuffer: GLuint = 0;
@@ -45,8 +45,6 @@ public class CustomRender: NSObject, FlutterTexture {
     
     super.init();
 
-    self.eAGLShareContext = EAGLContext.init(api: EAGLRenderingAPI.openGLES3);
-    
     self.setup();
   }
   
@@ -65,8 +63,8 @@ public class CustomRender: NSObject, FlutterTexture {
     var _egls = [Int64](repeating: 0, count: 6);
     
 
-    _egls[2] = self.eglEnv!.getContext();
-    _egls[5] = self.dartEglEnv!.getContext();
+      _egls[2] = CustomRender.eglEnv!.getContext();
+      _egls[5] = CustomRender.dartEglEnv!.getContext();
     
   
     return _egls;
@@ -100,29 +98,32 @@ public class CustomRender: NSObject, FlutterTexture {
   
   // ==================================
   func initEGL() {
-    let glWidth = width * Double(self.screenScale);
-    let glHeight = height * Double(self.screenScale);
-
+      
+      if(CustomRender.eAGLShareContext == nil) {
+          CustomRender.eAGLShareContext = EAGLContext.init(api: EAGLRenderingAPI.openGLES3);
+          ThreeEgl.setContext(key: 3, context: CustomRender.eAGLShareContext!);
+      }
+      
     
-    
-    self.eglEnv = EglEnv();
-    self.dartEglEnv = EglEnv();
+      if(CustomRender.dartEglEnv == nil) {
+          CustomRender.dartEglEnv = EglEnv();
+          CustomRender.dartEglEnv!.setupRender(shareContext: CustomRender.eAGLShareContext);
+          ThreeEgl.setContext(key: CustomRender.dartEglEnv!.getContext(), context: CustomRender.dartEglEnv!.context!);
+      }
+      
+      if(CustomRender.eglEnv == nil) {
+          CustomRender.eglEnv = EglEnv();
+          CustomRender.eglEnv!.setupRender(shareContext: CustomRender.eAGLShareContext);
+      }
+      
+      CustomRender.eglEnv!.makeCurrent();
+      
 
-    self.eglEnv!.setupRender(shareContext: eAGLShareContext);
-    self.dartEglEnv!.setupRender(shareContext: eAGLShareContext);
-
-    self.eglEnv!.makeCurrent();
-
-    ThreeEgl.setContext(key: self.dartEglEnv!.getContext(), context: self.dartEglEnv!.context!);
-  
-    ThreeEgl.setContext(key: 3, context: eAGLShareContext!);
-
-    
 //    var size: GLint = 0;
 //    glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &size);
 //    print("GL_MAX_TEXTURE_SIZE: \(size) ")
     
-    initGL(context: self.eglEnv!.context!);
+      initGL(context: CustomRender.eglEnv!.context!);
  
   }
   
@@ -131,7 +132,6 @@ public class CustomRender: NSObject, FlutterTexture {
     let glWidth = width * Double(self.screenScale);
     let glHeight = height * Double(self.screenScale);
     
-    print("FlutterGL initGL  glWidth \(glWidth) glHeight: \(glHeight)  screenScale: \(screenScale)  ");
 
     self.createCVBufferWithSize(
       size: CGSize(width: glWidth, height: glHeight),
@@ -228,17 +228,17 @@ public class CustomRender: NSObject, FlutterTexture {
   func dispose() {
     self.disposed = true;
     
-    ThreeEgl.remove(key: self.eglEnv!.getContext());
-    ThreeEgl.remove(key: self.dartEglEnv!.getContext());
+//    ThreeEgl.remove(key: self.eglEnv!.getContext());
+      ThreeEgl.remove(key: CustomRender.dartEglEnv!.getContext());
     ThreeEgl.remove(key: 3);
 
-    self.eAGLShareContext = nil;
+//      CustomRender.eAGLShareContext = nil;
     
-    self.eglEnv!.dispose();
-    self.dartEglEnv!.dispose();
+//    self.eglEnv!.dispose();
+      CustomRender.dartEglEnv!.dispose();
     
-    self.eglEnv = nil;
-    self.dartEglEnv = nil;
+//    self.eglEnv = nil;
+      CustomRender.dartEglEnv = nil;
     
     EAGLContext.setCurrent(nil);
   }
