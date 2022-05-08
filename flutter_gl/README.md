@@ -55,6 +55,10 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 flutterGlPlugin.updateTexture(sourceTexture);
 ```
 
+### why use NativeArray replace Dart List
+
+Dart List convert to ffi pointer need memeory copy.
+
 ### Run Examples
 
 Clone or download this repo

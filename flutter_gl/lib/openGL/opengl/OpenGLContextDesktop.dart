@@ -289,8 +289,8 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     calloc.free(ptr);
   }
 
-  void texParameterf(int v0, int v1, double v2) {
-    return glTexParameterf(v0, v1, v2);
+  void texParameterf(int target, int pname, double param) {
+    return glTexParameterf(target, pname, param);
   }
 
   pixelStorei(v0, v1) {
@@ -829,8 +829,8 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glUniform1iv(location, count, valuePtr);
   }
 
-  uniform2iv(v0, v1) {
-    return glUniform2iv(v0, 1, v1);
+  void uniform2iv(int location, int count, value) {
+    return glUniform2iv(location, count, value);
   }
 
   uniform3iv(v0, v1) {
