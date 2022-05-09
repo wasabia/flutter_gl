@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    //ExampleTriangle01  only fix for web if you want run on native app maybe need fix shader???
     // return ExampleTriangle01();
     return ExampleDemoTest();
   }

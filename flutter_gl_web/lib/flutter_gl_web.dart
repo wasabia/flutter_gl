@@ -17,7 +17,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   }
 
   /// initialize plugin
-  Future<Map<String, dynamic>> initialize(
+  Future<Map<String, dynamic>> initialize_interface(
       {Map<String, dynamic>? options}) async {
     _divId = DateTime.now().microsecondsSinceEpoch;
     this.textureId = _divId;
@@ -30,19 +30,19 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   }
 
   /// getEgl no meaning in web
-  Future<List<int>> getEgl(int textureId) async {
+  Future<List<int>> getEgl_interface(int textureId) async {
     // web no need do something
     return [];
   }
 
   /// updateTexture no meaning in web
-  updateTexture(sourceTexture) async {
+  updateTexture_interface(int textureId, sourceTexture) async {
     // web no need do something
     return Future.sync(() => true);
   }
 
   /// dispose no meaning in web?
-  dispose() {
+  dispose_interface(int textureId) {
     // on web what should dispose ???
   }
 }

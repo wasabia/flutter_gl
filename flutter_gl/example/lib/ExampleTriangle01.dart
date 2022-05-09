@@ -95,9 +95,7 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     print(" screenSize: ${screenSize} dpr: ${dpr} ");
 
-    Future.delayed(Duration(milliseconds: 300), () {
-      initPlatformState();
-    });
+    initPlatformState();
   }
 
   @override
@@ -206,17 +204,17 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     String _version = "300 es";
 
-    if (Platform.isMacOS || Platform.isWindows) {
-      _version = "150";
+    if(!kIsWeb) {
+      // if (Platform.isMacOS || Platform.isWindows) {
+      //   _version = "150";
+      // }
     }
+    
 
     var vs = """#version ${_version}
 
-    ${(Platform.isMacOS || Platform.isWindows) ? """
-  #define attribute in
-  #define varying out
-  #define texture2D texture
-      """ : ""}
+      #define attribute in
+      #define varying out
 
     attribute vec3 a_Position;
     void main() {
@@ -225,11 +223,9 @@ class _MyAppState extends State<ExampleTriangle01> {
     """;
 
     var fs = """#version ${_version}
-    ${(Platform.isMacOS || Platform.isWindows) ? """
-  #define varying in
-  out highp vec4 pc_fragColor;
-  #define gl_FragColor pc_fragColor
-      """ : ""}
+    #define varying in
+    out highp vec4 pc_fragColor;
+    #define gl_FragColor pc_fragColor
 
     void main() {
         gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
@@ -258,7 +254,7 @@ class _MyAppState extends State<ExampleTriangle01> {
       0, 0.5, 0, // Vertice #1
     ]);
 
-    int _vao = gl.createVertexArrays();
+    var _vao = gl.createVertexArray();
 
     gl.bindVertexArray(_vao);
 
