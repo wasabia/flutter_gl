@@ -374,7 +374,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     Pointer<Uint32> vao = calloc<Uint32>();
     glGenVertexArrays(1, vao);
     int _v = vao.value;
-    calloc.free(vao);
+    // calloc.free(vao);
     return _v;
   }
 

@@ -4,17 +4,18 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'dart:ui' as ui;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_gl/flutter_gl.dart';
 
-class ExampleTriangle01 extends StatefulWidget {
+class ExampleTriangle extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<ExampleTriangle01> {
+class _MyAppState extends State<ExampleTriangle> {
   late FlutterGlPlugin flutterGlPlugin;
 
   int? fboId;
@@ -25,7 +26,6 @@ class _MyAppState extends State<ExampleTriangle01> {
   Size? screenSize;
 
   dynamic glProgram;
-  dynamic _vao;
 
   dynamic sourceTexture;
 
@@ -39,8 +39,6 @@ class _MyAppState extends State<ExampleTriangle01> {
   @override
   void initState() {
     super.initState();
-
-    print(" init state..... ");
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -57,6 +55,8 @@ class _MyAppState extends State<ExampleTriangle01> {
       "height": height.toInt(),
       "dpr": dpr
     };
+
+    print("_options: ${_options}  ");
 
     await flutterGlPlugin.initialize(options: _options);
 
@@ -75,16 +75,19 @@ class _MyAppState extends State<ExampleTriangle01> {
     if (!kIsWeb) {
       await flutterGlPlugin.prepareContext();
 
+      var _gl = flutterGlPlugin.gl;
+      var _size = _gl.getParameter(_gl.MAX_TEXTURE_SIZE);
+
+      print(" setup MAX_TEXTURE_SIZE: ${_size}  ");
+
       setupDefaultFBO();
       sourceTexture = defaultFramebufferTexture;
     }
 
-    prepare();
-
-    setState(() {
-
-    });
     // animate();
+
+    setState(() {});
+    print(" setup done.... ");
   }
 
   initSize(BuildContext context) {
@@ -117,7 +120,7 @@ class _MyAppState extends State<ExampleTriangle01> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            clickRender();
+            render();
           },
           child: Text("Render"),
         ),
@@ -144,6 +147,9 @@ class _MyAppState extends State<ExampleTriangle01> {
                     : Container();
               }
             })),
+        Row(
+          children: [],
+        )
       ],
     );
   }
@@ -151,17 +157,15 @@ class _MyAppState extends State<ExampleTriangle01> {
   animate() {
     render();
 
-    // Future.delayed(Duration(milliseconds: 40), () {
-    //   animate();
-    // });
+    Future.delayed(Duration(milliseconds: 40), () {
+      animate();
+    });
   }
 
   setupDefaultFBO() {
     final _gl = flutterGlPlugin.gl;
     int glWidth = (width * dpr).toInt();
     int glHeight = (height * dpr).toInt();
-
-    print("glWidth: ${glWidth} glHeight: ${glHeight} ");
 
     defaultFramebuffer = _gl.createFramebuffer();
     defaultFramebufferTexture = _gl.createTexture();
@@ -178,12 +182,8 @@ class _MyAppState extends State<ExampleTriangle01> {
         _gl.TEXTURE_2D, defaultFramebufferTexture, 0);
   }
 
-  clickRender() {
-    print(" click render ... ");
-    render();
-  }
-
-  render() {
+  render() async {
+    print("render start: ${DateTime.now().millisecondsSinceEpoch} ");
     final _gl = flutterGlPlugin.gl;
 
     int _current = DateTime.now().millisecondsSinceEpoch;
@@ -194,140 +194,19 @@ class _MyAppState extends State<ExampleTriangle01> {
     _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
 
-
-    _gl.useProgram(glProgram);
-    _gl.bindVertexArray(_vao);
-
-    _gl.drawArrays(_gl.TRIANGLES, 0, n);
-
-    print(" render n: ${n} ");
-
     _gl.finish();
 
+    // var pixels = _gl.readCurrentPixels(0, 0, 100, 100);
+    // print(" --------------pixels............. ");
+    // print(pixels);
+
+    print(
+        " update sourceTexture: ${sourceTexture} t: ${DateTime.now().millisecondsSinceEpoch} ");
+
     if (!kIsWeb) {
-      flutterGlPlugin.updateTexture(sourceTexture);
+      var res = await flutterGlPlugin.updateTexture(sourceTexture);
     }
   }
 
-  prepare() {
-    final _gl = flutterGlPlugin.gl;
 
-    String _version = "300 es";
-
-    if(!kIsWeb) {
-      // if (Platform.isMacOS || Platform.isWindows) {
-      //   _version = "150";
-      // }
-    }
-    
-
-    var vs = """#version ${_version}
-// #define attribute in
-// #define varying out
-// attribute vec3 a_Position;
-layout (location = 0) in vec3 a_Position;
-void main() {
-    gl_Position = vec4(a_Position, 1.0);
-}
-    """;
-
-    var fs = """#version ${_version}
-out highp vec4 pc_fragColor;
-#define gl_FragColor pc_fragColor
-
-void main() {
-  gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
-}
-    """;
-
-    if (!initShaders(_gl, vs, fs)) {
-      print('Failed to intialize shaders.');
-      return;
-    }
-
-    // Write the positions of vertices to a vertex shader
-    n = initVertexBuffers(_gl);
-    if (n < 0) {
-      print('Failed to set the positions of the vertices');
-      return;
-    }
-  }
-
-  initVertexBuffers(gl) {
-    // Vertices
-    var dim = 3;
-    var vertices = new Float32List.fromList([
-      -0.5, -0.5, 0, // Vertice #2
-      0.5, -0.5, 0, // Vertice #3
-      0, 0.5, 0, // Vertice #1
-    ]);
-
-    _vao = gl.createVertexArray();
-
-    gl.bindVertexArray(_vao);
-
-    // Create a buffer object
-    var vertexBuffer = gl.createBuffer();
-    if (vertexBuffer == null) {
-      print('Failed to create the buffer object');
-      return -1;
-    }
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    if(kIsWeb) {
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length, vertices, gl.STATIC_DRAW);
-    } else {
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length * Float32List.bytesPerElement, vertices, gl.STATIC_DRAW);
-    }
-    
-    // Assign the vertices in buffer object to a_Position variable
-    var a_Position = gl.getAttribLocation(glProgram, 'a_Position');
-    if (a_Position < 0) {
-      print('Failed to get the storage location of a_Position');
-      return -1;
-    }
-    gl.vertexAttribPointer(
-        a_Position, dim, gl.FLOAT, false, Float32List.bytesPerElement * 3, 0);
-    gl.enableVertexAttribArray(a_Position);
-
-    // Return number of vertices
-    return (vertices.length / dim).toInt();
-  }
-
-  initShaders(gl, vs_source, fs_source) {
-    // Compile shaders
-    var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
-    var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
-
-    // Create program
-    glProgram = gl.createProgram();
-
-    // Attach and link shaders to the program
-    gl.attachShader(glProgram, vertexShader);
-    gl.attachShader(glProgram, fragmentShader);
-    gl.linkProgram(glProgram);
-    var _res = gl.getProgramParameter(glProgram, gl.LINK_STATUS);
-    print(" initShaders LINK_STATUS _res: ${_res} ");
-    if (_res == false || _res == 0) {
-      print("Unable to initialize the shader program");
-      return false;
-    }
-
-    // Use program
-    gl.useProgram(glProgram);
-
-    return true;
-  }
-
-  makeShader(gl, src, type) {
-    var shader = gl.createShader(type);
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-    var _res = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-    if (_res == 0 || _res == false) {
-      print("Error compiling shader: ${gl.getShaderInfoLog(shader)}");
-      return;
-    }
-    return shader;
-  }
 }
