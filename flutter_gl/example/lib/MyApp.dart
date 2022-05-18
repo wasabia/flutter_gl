@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gl_example/ExampleDemoTest.dart';
 // import 'package:flutter_gl_example/ExampleDemoTest.dart';
 import 'ExampleTriangle01.dart';
-import 'ExampleTriangle.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -22,6 +21,5 @@ class _MyAppState extends State<MyApp> {
     //ExampleTriangle01  only fix for web if you want run on native app maybe need fix shader???
     return ExampleTriangle01();
     // return ExampleDemoTest();
-    // return ExampleTriangle();
   }
 }
