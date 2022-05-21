@@ -23,6 +23,8 @@ class CustomRender {
     // TODO use same context different surface will have better performance???
     lateinit var eglEnv: EglEnv;
 
+    var surfaceTexture: SurfaceTexture;
+
 
     companion object {
         var shareEglEnv: EglEnv? = null;
@@ -35,7 +37,8 @@ class CustomRender {
     constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int) {
         this.textureId = textureId;
         this.context = FlutterGlPlugin.context;
-
+        this.surfaceTexture = surfaceTexture;
+        
         if(renderThread == null) {
             renderThread = HandlerThread("flutterGlCustomRender");
             renderThread!!.start();
@@ -69,7 +72,7 @@ class CustomRender {
 
             glFinish();
 
-            checkGlError("update texture 01");
+            // checkGlError("update texture 01");
             eglEnv.swapBuffers();
         }
 

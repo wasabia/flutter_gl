@@ -189,15 +189,12 @@ class _MyAppState extends State<ExampleTriangle01> {
     int _current = DateTime.now().millisecondsSinceEpoch;
 
     num _blue = sin((_current - t) / 500);
-
     // Clear canvas
     _gl.clearColor(1.0, 0.0, _blue, 1.0);
     _gl.clear(_gl.COLOR_BUFFER_BIT);
-
-
-    _gl.useProgram(glProgram);
-    _gl.bindVertexArray(_vao);
-
+    
+    // _gl.bindVertexArray(_vao);
+    // _gl.useProgram(glProgram);
     _gl.drawArrays(_gl.TRIANGLES, 0, n);
 
     print(" render n: ${n} ");
@@ -215,17 +212,17 @@ class _MyAppState extends State<ExampleTriangle01> {
     String _version = "300 es";
 
     if(!kIsWeb) {
-      // if (Platform.isMacOS || Platform.isWindows) {
-      //   _version = "150";
-      // }
+      if (Platform.isMacOS || Platform.isWindows) {
+        _version = "150";
+      }
     }
     
 
     var vs = """#version ${_version}
-// #define attribute in
-// #define varying out
-// attribute vec3 a_Position;
-layout (location = 0) in vec3 a_Position;
+#define attribute in
+#define varying out
+attribute vec3 a_Position;
+// layout (location = 0) in vec3 a_Position;
 void main() {
     gl_Position = vec4(a_Position, 1.0);
 }
@@ -262,9 +259,11 @@ void main() {
       0, 0.5, 0, // Vertice #1
     ]);
 
-    _vao = gl.createVertexArray();
+    // _vao = gl.createVertexArray();
 
-    gl.bindVertexArray(_vao);
+    // print(" _vao: ${_vao} ");
+
+    // gl.bindVertexArray(_vao);
 
     // Create a buffer object
     var vertexBuffer = gl.createBuffer();
@@ -286,6 +285,7 @@ void main() {
       print('Failed to get the storage location of a_Position');
       return -1;
     }
+
     gl.vertexAttribPointer(
         a_Position, dim, gl.FLOAT, false, Float32List.bytesPerElement * 3, 0);
     gl.enableVertexAttribArray(a_Position);
