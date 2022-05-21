@@ -72,7 +72,7 @@ class CustomRender {
 
             glFinish();
 
-            // checkGlError("update texture 01");
+            checkGlError("update texture 01");
             eglEnv.swapBuffers();
         }
 

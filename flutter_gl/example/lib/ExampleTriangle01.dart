@@ -79,11 +79,13 @@ class _MyAppState extends State<ExampleTriangle01> {
       sourceTexture = defaultFramebufferTexture;
     }
 
-    prepare();
-
     setState(() {
 
     });
+
+    prepare();
+
+  
     // animate();
   }
 
@@ -188,6 +190,8 @@ class _MyAppState extends State<ExampleTriangle01> {
 
     int _current = DateTime.now().millisecondsSinceEpoch;
 
+    _gl.viewport(0, 0, (width * dpr).toInt(), (height * dpr).toInt());
+
     num _blue = sin((_current - t) / 500);
     // Clear canvas
     _gl.clearColor(1.0, 0.0, _blue, 1.0);
@@ -253,17 +257,14 @@ void main() {
   initVertexBuffers(gl) {
     // Vertices
     var dim = 3;
-    var vertices = new Float32List.fromList([
+    var vertices = new Float32Array.fromList([
       -0.5, -0.5, 0, // Vertice #2
       0.5, -0.5, 0, // Vertice #3
       0, 0.5, 0, // Vertice #1
     ]);
 
-    // _vao = gl.createVertexArray();
-
-    // print(" _vao: ${_vao} ");
-
-    // gl.bindVertexArray(_vao);
+    _vao = gl.createVertexArray();
+    gl.bindVertexArray(_vao);
 
     // Create a buffer object
     var vertexBuffer = gl.createBuffer();
@@ -276,9 +277,9 @@ void main() {
     if(kIsWeb) {
       gl.bufferData(gl.ARRAY_BUFFER, vertices.length, vertices, gl.STATIC_DRAW);
     } else {
-      gl.bufferData(gl.ARRAY_BUFFER, vertices.length * Float32List.bytesPerElement, vertices, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.lengthInBytes, vertices, gl.STATIC_DRAW);
     }
-    
+
     // Assign the vertices in buffer object to a_Position variable
     var a_Position = gl.getAttribLocation(glProgram, 'a_Position');
     if (a_Position < 0) {
