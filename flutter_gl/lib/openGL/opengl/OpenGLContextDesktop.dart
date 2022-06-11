@@ -768,6 +768,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return;
   }
 
+  void uniform2fv(location, NativeArray value) {
+    return glUniform2fv(location, value.length ~/ 2, value.data);
+  }
+
   uniform3fv(location, value) {
     if (value is NativeArray) {
       uniform3fvNative(location, value);

@@ -444,8 +444,12 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform4f(location, v0, v1, v2, v3);
   }
 
-  uniform1fv(location, value) {
-    return gl.uniform1fv(location, getData(value));
+  uniform1fv(location, NativeArray value) {
+    return gl.uniform1fv(location, value.data);
+  }
+
+  uniform2fv(location, NativeArray value) {
+    return gl.uniform2fv(location, value.data);
   }
 
   uniform3fv(location, NativeArray value) {
@@ -456,8 +460,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform1f(v0, v1);
   }
 
-  uniformMatrix3fv(location, bool transpose, value) {
-    return gl.uniformMatrix3fv(location, transpose, getData(value));
+  uniformMatrix3fv(location, bool transpose, NativeArray value) {
+    return gl.uniformMatrix3fv(location, transpose, value.data);
   }
 
   getAttribLocation(program, String name) {

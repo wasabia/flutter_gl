@@ -688,6 +688,10 @@ class OpenGLContextES extends OpenGL30Constant {
     return;
   }
 
+  void uniform2fv(location, NativeArray value) {
+    return gl.glUniform2fv(location, value.length ~/ 2, value.data);
+  }
+
   void uniform3fv(location, value) {
     if (value is NativeArray) {
       uniform3fvNative(location, value);
