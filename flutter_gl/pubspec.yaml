@@ -21,7 +21,7 @@ dependencies:
   # flutter_gl_web: ^0.0.4
   # flutter_gl_macos: ^0.0.3
   # flutter_gl_windows: ^0.0.3
-  ffi: ^1.1.2
+  ffi: ^2.0.1
 
 dev_dependencies:
   flutter_test:
