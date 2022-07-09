@@ -881,6 +881,75 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glTexStorage3D(target, levels, internalformat, width, height, depth);
   }
 
+  createTransformFeedback() {
+    final vPointer = calloc<Uint32>();
+    gl.glGenTransformFeedbacks(1, vPointer);
+    int _v = vPointer.value;
+    calloc.free(vPointer);
+    return _v;
+  }
+  bindTransformFeedback(target, transformFeedback) {
+    return gl.glBindTransformFeedback(target, transformFeedback);
+  }
+  transformFeedbackVaryings(program, count, List<String> varyings, bufferMode) {
+    final varyingsPtr = calloc<Pointer<Utf8>>(varyings.length);
+
+    int i = 0;
+    for(final varying in varyings) {
+      varyingsPtr[i] = varying.toNativeUtf8();
+      i = i + 1;
+    }
+
+    final result = gl.glTransformFeedbackVaryings(program, count, varyingsPtr, bufferMode);
+    calloc.free(varyingsPtr);
+
+    return result;
+  }
+  deleteTransformFeedback(int transformFeedback) {
+    var _list = [transformFeedback];
+    final ptr = calloc<Int32>(_list.length);
+    ptr.asTypedList(1).setAll(0, _list);
+    gl.glDeleteTransformFeedbacks(1, ptr);
+    calloc.free(ptr);
+  }
+  isTransformFeedback(transformFeedback) {
+    return gl.glIsTransformFeedback(transformFeedback);
+  }
+  beginTransformFeedback(primitiveMode) {
+    return gl.glBeginTransformFeedback(primitiveMode);
+  }
+  endTransformFeedback() {
+    return gl.glEndTransformFeedback();
+  }
+  pauseTransformFeedback() {
+    return gl.glPauseTransformFeedback();
+  }
+  resumeTransformFeedback() {
+    return gl.glResumeTransformFeedback();
+  }
+  getTransformFeedbackVarying(program, index) {
+    int maxLen = 100;
+    var length = calloc<Int32>();
+    var size = calloc<Int32>();
+    var type = calloc<Uint32>();
+    var name = calloc<Int8>(maxLen);
+
+    gl.glGetTransformFeedbackVarying(program, index, maxLen - 1, length, size, type, name);
+
+    int _type = type.value;
+    String _name = name.cast<Utf8>().toDartString();
+    int _size = size.value;
+    int _length = length.value;
+
+    calloc.free(type);
+    calloc.free(name);
+    calloc.free(size);
+    calloc.free(length);
+
+    return ActiveInfo(_type, _name, _size);
+  }
+
+
   invalidateFramebuffer(target, attachments) {
     // TODO  Failed to lookup symbol 'glInvalidateFramebuffer'
     // return gl.glInvalidateFramebuffer(target, attachments.length, attachments);

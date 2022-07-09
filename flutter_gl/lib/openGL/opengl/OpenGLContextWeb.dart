@@ -513,6 +513,37 @@ class OpenGLContextWeb extends OpenGL30Constant {
         target, levels, internalformat, width, height, depth);
   }
 
+  createTransformFeedback() {
+    return gl.createTransformFeedback();
+  }
+  bindTransformFeedback(target, transformFeedback) {
+    return gl.bindTransformFeedback(target, transformFeedback);
+  }
+  transformFeedbackVaryings(program, count, varyings, bufferMode) {
+    return gl.transformFeedbackVaryings(program, varyings, bufferMode);
+  }
+  deleteTransformFeedback(transformFeedback) {
+    return gl.deleteTransformFeedback(transformFeedback);
+  }
+  isTransformFeedback(transformFeedback) {
+    return gl.isTransformFeedback(transformFeedback);
+  }
+  beginTransformFeedback(primitiveMode) {
+    return gl.beginTransformFeedback(primitiveMode);
+  }
+  endTransformFeedback() {
+    return gl.endTransformFeedback();
+  }
+  pauseTransformFeedback() {
+    return gl.pauseTransformFeedback();
+  }
+  resumeTransformFeedback() {
+    return gl.resumeTransformFeedback();
+  }
+  getTransformFeedbackVarying(program, index) {
+    return gl.getTransformFeedbackVarying(program, index);
+  }
+
   invalidateFramebuffer(target, attachments) {
     return gl.invalidateFramebuffer(target, attachments);
   }
