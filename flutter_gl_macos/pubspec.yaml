@@ -1,6 +1,6 @@
 name: flutter_gl_macos
 description: macOS platform implementation of flutter_gl, cross-platform call OpenGL API by Dart through dart:ffi. Provides OpenGL with Texture Widget on Flutter. 
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/wasabia/flutter_gl
 
 environment:
@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_gl_platform_interface:
-    path: ../flutter_gl_platform_interface
+  flutter_gl_platform_interface: ^0.0.3
   ffi: ^2.0.1
   
 dev_dependencies:
