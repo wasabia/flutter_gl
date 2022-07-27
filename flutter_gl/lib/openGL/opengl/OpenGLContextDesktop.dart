@@ -892,11 +892,11 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return gl.glBindTransformFeedback(target, transformFeedback);
   }
   transformFeedbackVaryings(program, count, List<String> varyings, bufferMode) {
-    final varyingsPtr = calloc<Pointer<Utf8>>(varyings.length);
+    final varyingsPtr = calloc<Pointer<Int8>>(varyings.length);
 
     int i = 0;
     for(final varying in varyings) {
-      varyingsPtr[i] = varying.toNativeUtf8();
+      varyingsPtr[i] = varying.toNativeUtf8().cast<Int8>();
       i = i + 1;
     }
 
