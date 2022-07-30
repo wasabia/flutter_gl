@@ -56,7 +56,7 @@ packages:
       name: ffi
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.2"
+    version: "2.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -65,30 +65,30 @@ packages:
   flutter_gl_macos:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_macos"
-      relative: true
-    source: path
-    version: "0.0.3"
+      name: flutter_gl_macos
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.4"
   flutter_gl_platform_interface:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_platform_interface"
-      relative: true
-    source: path
-    version: "0.0.3"
+      name: flutter_gl_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.4"
   flutter_gl_web:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_web"
-      relative: true
-    source: path
+      name: flutter_gl_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.4"
   flutter_gl_windows:
     dependency: "direct main"
     description:
-      path: "../flutter_gl_windows"
-      relative: true
-    source: path
+      name: flutter_gl_windows
+      url: "https://pub.flutter-io.cn"
+    source: hosted
     version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
