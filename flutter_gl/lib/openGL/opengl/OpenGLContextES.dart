@@ -798,6 +798,9 @@ class OpenGLContextES extends OpenGL30Constant {
   void texStorage3D(target, levels, internalformat, int width, int height, depth) {
     return gl.glTexStorage3D(
         target, levels, internalformat, width, height, depth);
+  
+  void bindBufferBase(int target, int index, int buffer) {
+    return gl.glBindBufferBase(target, index, buffer);
   }
 
   createTransformFeedback() {
