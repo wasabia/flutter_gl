@@ -4300,34 +4300,19 @@ class LibOpenGLES {
   late final _dart_glTexStorage3D _glTexStorage3D =
       _glTexStorage3D_ptr.asFunction<_dart_glTexStorage3D>();
 
-  void glTexStorage3D(
+  void glGetInternalformativ(
     int target,
-    int levels,
     int internalformat,
-    int width,
-    int height,
-    int depth,
+    int pname,
+    int bufSize,
+    ffi.Pointer<ffi.Int32> params,
   ) {
-    return _glTexStorage3D(
+    return _glGetInternalformativ(
       target,
-      levels,
       internalformat,
-      width,
-      height,
-      depth,
-    );
-  }
-
-  late final _glBindBufferBase_ptr =
-      _lookup<ffi.NativeFunction<_c_glBindBufferBase>>('glBindBufferBase');
-  late final _dart_glBindBufferBase _glBindBufferBase =
-      _glBindBufferBase_ptr.asFunction<_dart_glBindBufferBase>();
-
-  void glBindBufferBase(int target, int index, int buffer) {
-    return _glBindBufferBase(
-      target,
-      index,
-      buffer,
+      pname,
+      bufSize,
+      params,
     );
   }
 
@@ -14855,18 +14840,6 @@ typedef _dart_glTexStorage3D = void Function(
   int width,
   int height,
   int depth,
-);
-
-typedef _c_glBindBufferBase = ffi.Void Function(
-  ffi.Uint32 target,
-  ffi.Uint32 index,
-  ffi.Uint32 buffer,
-);
-
-typedef _dart_glBindBufferBase = void Function(
-  int target,
-  int index,
-  int buffer,
 );
 
 typedef _c_glGetInternalformativ = ffi.Void Function(
