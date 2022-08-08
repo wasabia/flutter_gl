@@ -880,6 +880,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   void texStorage3D(target, levels, internalformat, width, height, depth) {
     return glTexStorage3D(target, levels, internalformat, width, height, depth);
   }
+  
+  void bindBufferBase(int target, int index, int buffer) {
+    return glBindBufferBase(target, index, buffer);
+  }
 
   createTransformFeedback() {
     final vPointer = calloc<Uint32>();
