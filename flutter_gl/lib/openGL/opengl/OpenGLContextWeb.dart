@@ -236,6 +236,10 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.drawArrays(v0, v1, v2);
   }
 
+  drawArraysInstanced(v0, v1, v2, v3) {
+    return gl.drawArraysInstanced(v0, v1, v2, v3);
+  }
+
   bindFramebuffer(v0, v1) {
     return gl.bindFramebuffer(v0, v1);
   }

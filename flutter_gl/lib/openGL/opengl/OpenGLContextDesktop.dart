@@ -439,6 +439,10 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     return glDrawArrays(v0, v1, v2);
   }
 
+  drawArraysInstanced(v0, v1, v2, v3) {
+    return glDrawArraysInstanced(v0, v1, v2, v3);
+  }
+
   bindFramebuffer(v0, v1) {
     return glBindFramebuffer(v0, v1 ?? 0);
   }
