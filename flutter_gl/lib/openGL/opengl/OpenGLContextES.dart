@@ -367,6 +367,10 @@ class OpenGLContextES extends OpenGL30Constant {
     return gl.glDrawArrays(v0, v1, v2);
   }
 
+  void drawArraysInstanced(int v0, int v1, int v2, int v3) {
+    return gl.glDrawArraysInstanced(v0, v1, v2, v3);
+  }
+
   void bindFramebuffer(int v0, int? v1) {
     return gl.glBindFramebuffer(v0, v1 ?? 0);
   }
