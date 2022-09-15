@@ -30,8 +30,6 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   }
 
   List<String> getExtension(String key) {
-    print("OpenGLES getExtension key: ${key}  EXTENSIONS: ${EXTENSIONS}");
-
     if (Platform.isMacOS || Platform.isWindows) {
       return getExtensionDesktop(key);
     }
@@ -256,7 +254,6 @@ class OpenGLContextDesktop extends OpenGL30Constant {
 
   void compressedTexImage2D(int target, int level, int internalformat,
       int width, int height, int border, int imageSize, data) {
-    print(" OPENGL compressedTexImage2D TODO ------------------------------ ");
     return texImage2D(target, level, internalformat, width, height, border, 0,
         imageSize, data);
   }
@@ -482,7 +479,7 @@ class OpenGLContextDesktop extends OpenGL30Constant {
   texSubImage2D(target, level, x, y, width, height, format, type, data) {
     final dataPtr = getData(data);
     glTexSubImage2D(target, level, x, y, width, height, format, type, dataPtr);
-    calloc.free(dataPtr);
+    // calloc.free(dataPtr);
   }
 
   texSubImage2D2(x, y, width, height, data) {
@@ -850,9 +847,6 @@ class OpenGLContextDesktop extends OpenGL30Constant {
     final valuePtr = calloc<Float>(count);
     List<double> _values = value.map((e) => e.toDouble()).toList().cast();
     valuePtr.asTypedList(count).setAll(0, _values);
-
-    // print("uniform4fv location: ${location} value: ${value} ");
-
     return glUniform4fv(location, count ~/ 4, valuePtr);
   }
 

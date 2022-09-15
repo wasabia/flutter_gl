@@ -28,5 +28,10 @@ abstract class NativeArray<T extends num> {
   }
 
   NativeArray clone();
+
+  void copy(NativeArray source) {
+    set(source.toDartList() as List<T>);
+  }
+
   void dispose() {}
 }
