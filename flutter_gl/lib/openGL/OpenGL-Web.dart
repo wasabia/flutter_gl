@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 import 'dart:html';
-import 'package:flutter/foundation.dart';
 
 import './OpenGL-Base.dart';
 import 'opengl/OpenGLContextES.dart'

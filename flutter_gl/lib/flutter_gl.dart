@@ -24,9 +24,7 @@ class FlutterGlPlugin extends FlutterGlPlatform {
   dynamic get gl => openGL.gl;
 
   // for web
-  // dynamic get element => openGL.element;
-
-  dynamic element;
+  dynamic get element => openGL.element;
 
   FlutterGlPlugin();
 
