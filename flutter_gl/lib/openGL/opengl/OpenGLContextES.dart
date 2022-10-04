@@ -804,6 +804,10 @@ class OpenGLContextES extends OpenGL30Constant {
         target, levels, internalformat, width, height, depth);
   }
 
+  void bindBufferBase(int target, int index, int buffer) {
+    return gl.glBindBufferBase(target, index, buffer);
+  }
+
   createTransformFeedback() {
     final vPointer = calloc<Uint32>();
     gl.glGenTransformFeedbacks(1, vPointer);
