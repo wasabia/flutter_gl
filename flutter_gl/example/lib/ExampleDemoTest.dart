@@ -129,7 +129,7 @@ class _MyAppState extends State<ExampleDemoTest> {
   }
 
   Widget _build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         Container(
             width: width,

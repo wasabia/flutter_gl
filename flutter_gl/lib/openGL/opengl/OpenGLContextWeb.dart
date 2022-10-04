@@ -448,8 +448,12 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform4f(location, v0, v1, v2, v3);
   }
 
-  uniform1fv(location, NativeArray value) {
-    return gl.uniform1fv(location, value.data);
+  uniform1fv(location, value) {
+    if(value is NativeArray) {
+      gl.uniform1fv(location, value.data);
+    } else {
+      gl.uniform1fv(location, value);
+    }
   }
 
   uniform2fv(location, NativeArray value) {
@@ -480,8 +484,8 @@ class OpenGLContextWeb extends OpenGL30Constant {
     return gl.uniform1iv(location, value);
   }
 
-  uniform2iv(v0, count, v1) {
-    return gl.uniform2iv(v0, count, v1);
+  uniform2iv(location, int count, value) {
+    return gl.uniform2iv(location, value);
   }
 
   uniform3iv(v0, v1) {
@@ -493,7 +497,11 @@ class OpenGLContextWeb extends OpenGL30Constant {
   }
 
   uniform4fv(v0, v1) {
-    return gl.uniform4fv(v0, v1);
+    if(v1 is NativeArray) {
+      return gl.uniform4fv(v0, v1.data);
+    } else {
+      return gl.uniform4fv(v0, v1);
+    }
   }
 
   vertexAttribDivisor(index, divisor) {
