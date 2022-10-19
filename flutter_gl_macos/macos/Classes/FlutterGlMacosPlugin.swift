@@ -98,7 +98,7 @@ public class FlutterGlMacosPlugin: NSObject, FlutterPlugin {
 
       let render = self.renders[textureId!];
 
-      let resp = render!.updateTexture(sourceTexture: sourceTexture!);
+      let resp = render?.updateTexture(sourceTexture: sourceTexture!);
 
       result(resp);  
     default:
