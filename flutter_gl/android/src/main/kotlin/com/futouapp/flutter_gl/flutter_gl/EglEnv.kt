@@ -18,10 +18,8 @@ class EglEnv {
     private var eglConfig: EGLConfig? = null
 
 
-    constructor() {}
-
     fun setupFBO(shareContext: EGLContext = EGL14.EGL_NO_CONTEXT) {
-        var attribs = intArrayOf(
+        val attribs = intArrayOf(
                 EGL14.EGL_RED_SIZE, 8,
                 EGL14.EGL_GREEN_SIZE, 8,
                 EGL14.EGL_BLUE_SIZE, 8,
@@ -37,7 +35,7 @@ class EglEnv {
     }
 
     fun setupVideoEncode(shareContext: EGLContext = EGL14.EGL_NO_CONTEXT) {
-        var attribs = intArrayOf(
+        val attribs = intArrayOf(
                 EGL14.EGL_RED_SIZE, 8,
                 EGL14.EGL_GREEN_SIZE, 8,
                 EGL14.EGL_BLUE_SIZE, 8,
@@ -53,7 +51,7 @@ class EglEnv {
     }
 
     fun setupRender(shareContext: EGLContext = EGL14.EGL_NO_CONTEXT) {
-        var attribs = intArrayOf(
+        val attribs = intArrayOf(
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_RED_SIZE, 8,
                 EGL14.EGL_GREEN_SIZE, 8,
@@ -83,7 +81,7 @@ class EglEnv {
 
         val configs = arrayOfNulls<EGLConfig>(1)
         val numConfigs = IntArray(1)
-        if (!EGL14.eglChooseConfig(eglDisplay, attributesList, 0, configs,
+        if (!eglChooseConfig(eglDisplay, attributesList, 0, configs,
                         0, configs.size, numConfigs, 0)) {
             checkEglError("EGL choose config failed")
         }

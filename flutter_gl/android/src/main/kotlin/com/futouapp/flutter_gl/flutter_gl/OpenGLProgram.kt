@@ -157,7 +157,7 @@ class OpenGLProgram {
             return compileShaders(FXAA_VERTEX_SHADER, FXAA_FRAGMENT_SHADER);
         }
 
-        throw Exception(" name: ${name} is not support ");
+        throw Exception(" name: $name is not support ");
     }
 
 
@@ -170,7 +170,7 @@ class OpenGLProgram {
         GLES30.glAttachShader(programHandle, fragmentShader)
         GLES30.glLinkProgram(programHandle)
 
-        var linkSuccess = IntArray(1);
+        val linkSuccess = IntArray(1);
         GLES30.glGetProgramiv(programHandle, GLES30.GL_LINK_STATUS, linkSuccess, 0)
         if (linkSuccess[0] == 0) {
 

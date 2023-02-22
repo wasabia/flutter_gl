@@ -6,11 +6,11 @@ object BufferUtils {
     /**
      * Float类型占4Byte
      */
-    val BYTES_PER_FLOAT = 4
+    private const val BYTES_PER_FLOAT = 4
     /**
      * Short类型占2Byte
      */
-    val BYTES_PER_SHORT = 2
+    private const val BYTES_PER_SHORT = 2
 
     /**
      * 创建一个FloatBuffer
