@@ -1,107 +1,91 @@
 package com.futouapp.flutter_gl.flutter_gl
 
 
-import android.content.Context
-import android.graphics.SurfaceTexture
-import android.opengl.EGLSurface
 import android.opengl.GLES32.*
 import android.os.Handler
 import android.os.HandlerThread
 import com.futouapp.threeegl.ThreeEgl
+import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Semaphore
 
 
-class CustomRender {
+class CustomRender(
+    private val entry: SurfaceTextureEntry,
+    private val glWidth: Int,
+    private val glHeight: Int,
+) {
 
-    var disposed = false;
+    var disposed = false
 
     private lateinit var worker: RenderWorker
-
-    var textureId: Int;
-    var context: Context;
-
-    // TODO use same context different surface will have better performance???
-    lateinit var eglEnv: EglEnv;
-
-    var surfaceTexture: SurfaceTexture;
-
+    private lateinit var eglEnv: EglEnv
 
     companion object {
-        var shareEglEnv: EglEnv? = null;
-        var dartEglEnv: EglEnv? = null;
+        var shareEglEnv: EglEnv? = null
+        var dartEglEnv: EglEnv? = null
 
-        var renderThread: HandlerThread? = null;
-        var renderHandler : Handler? = null;
+        var renderThread: HandlerThread? = null
+        var renderHandler : Handler? = null
     }
 
-    constructor(options: Map<String, Any>, surfaceTexture: SurfaceTexture, textureId: Int) {
-        this.textureId = textureId;
-        this.context = FlutterGlPlugin.context;
-        this.surfaceTexture = surfaceTexture;
-        
+    init {
         if(renderThread == null) {
-            renderThread = HandlerThread("flutterGlCustomRender");
-            renderThread!!.start();
+            renderThread = HandlerThread("flutterGlCustomRender")
+            renderThread!!.start()
             renderHandler = Handler(renderThread!!.looper)
         }
-
-
         this.executeSync {
-            setup(surfaceTexture, options);
+            setup()
         }
-
     }
 
-    fun setup(surfaceTexture: SurfaceTexture, options: Map<String, Any>) {
-        this.initEGL(surfaceTexture, options);
+    fun setup() {
+        this.initEGL()
 
-        this.worker = RenderWorker();
-        this.worker.setup();
+        this.worker = RenderWorker()
+        this.worker.setup()
     }
 
     fun updateTexture(sourceTexture: Int): Boolean {
         this.execute {
-            eglEnv.makeCurrent();
+            eglEnv.makeCurrent()
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
 
-            this.worker.renderTexture(sourceTexture, null);
+            this.worker.renderTexture(sourceTexture, null)
 
-            glFinish();
+            glFinish()
 
-            checkGlError("update texture 01");
-            eglEnv.swapBuffers();
+            checkGlError()
+            eglEnv.swapBuffers()
         }
 
-        return true;
+        return true
     }
 
 
-    fun initEGL(surfaceTexture: SurfaceTexture, options: Map<String, Any>) {
-
-        var glWidth = ((options["width"] as Int) * (options["dpr"] as Double)).toInt();
-        var glHeight = ((options["height"] as Int) * (options["dpr"] as Double)).toInt();
+    private fun initEGL() {
 
         if(shareEglEnv == null) {
-            shareEglEnv = EglEnv();
-            shareEglEnv!!.setupRender();
-            ThreeEgl.setContext("shareContext", shareEglEnv!!.eglContext);
+            shareEglEnv = EglEnv()
+            shareEglEnv!!.setupRender()
+            ThreeEgl.setContext("shareContext", shareEglEnv!!.eglContext)
         }
 
-        surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
+        entry.surfaceTexture().setDefaultBufferSize(glWidth, glHeight)
 
-        eglEnv = EglEnv();
-        eglEnv.setupRender(shareEglEnv!!.eglContext);
-        eglEnv.buildWindowSurface(surfaceTexture);
-        eglEnv.makeCurrent();
+        eglEnv = EglEnv()
+        eglEnv.setupRender(shareEglEnv!!.eglContext)
+        eglEnv.buildWindowSurface(entry.surfaceTexture())
+        eglEnv.makeCurrent()
 
         if(dartEglEnv == null) {
-            dartEglEnv = EglEnv();
-            dartEglEnv!!.setupRender(shareEglEnv!!.eglContext);
-            dartEglEnv!!.buildOffScreenSurface(glWidth, glHeight);
+            dartEglEnv = EglEnv()
+            dartEglEnv!!.setupRender(shareEglEnv!!.eglContext)
+            dartEglEnv!!.buildOffScreenSurface(glWidth, glHeight)
         }
     }
 
@@ -122,31 +106,40 @@ class CustomRender {
     }
 
     fun getEgl() : List<Long> {
-        var _res = mutableListOf<Long>();
+        val res = mutableListOf<Long>()
 
-        var egls = this.eglEnv.getEgl().toMutableList();
-        var dartEgls = dartEglEnv!!.getEgl().toMutableList();
+        val egls = this.eglEnv.getEgl().toMutableList()
+        val dartEgls = dartEglEnv!!.getEgl().toMutableList()
 
-        _res.addAll( egls );
-        _res.addAll( dartEgls );
-        return _res;
+        res.addAll( egls )
+        res.addAll( dartEgls )
+
+        return res
     }
 
     fun dispose() {
-        disposed = true;
-//        this.shareEglEnv.dispose();
-        this.eglEnv.dispose();
-//        this.dartEglEnv.dispose();
-        this.worker.dispose();
+        this.worker.dispose()
+
+        this.eglEnv.dispose()
+
+        dartEglEnv?.dispose()
+        dartEglEnv = null
+
+        shareEglEnv?.dispose()
+        shareEglEnv = null
+
+
+        entry.release()
+
+        disposed = true
     }
 
 
-    //检查每一步操作是否有错误的方法
-    fun checkGlError(op: String) {
-        val error: Int = glGetError();
+    private fun checkGlError() {
+        val error: Int = glGetError()
         if (error != GL_NO_ERROR) {
-            println("ES20_ERROR ${op}: glError ${error}")
-            throw RuntimeException("$op: glError $error")
+            println("ES20_ERROR update texture: glError $error")
+            throw RuntimeException("glError $error")
         }
     }
 }

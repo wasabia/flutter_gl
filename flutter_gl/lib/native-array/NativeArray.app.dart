@@ -5,7 +5,8 @@ import 'index.dart';
 
 abstract class PlatformNativeArray<T extends num> extends NativeArray<T> {
   PlatformNativeArray(int size) : super(size) {}
-  PlatformNativeArray.from(List<T> listData) : super(listData.length) {}
+
+  PlatformNativeArray.from(List<T> listData) : super(listData.length);
 
   PlatformNativeArray clone() {
     throw Exception(" NativeArray clone need implement ");
@@ -16,10 +17,10 @@ abstract class PlatformNativeArray<T extends num> extends NativeArray<T> {
     final list = toDartList();
     list[index] = value;
   }
-  
+
   @override
   void dispose() {
-    if(!disposed) {
+    if (!disposed) {
       calloc.free(data);
       disposed = true;
     }
