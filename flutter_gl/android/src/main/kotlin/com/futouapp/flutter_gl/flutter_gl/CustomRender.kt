@@ -1,10 +1,9 @@
 package com.futouapp.flutter_gl.flutter_gl
 
-import android.graphics.SurfaceTexture
+
 import android.opengl.GLES32.*
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import com.futouapp.threeegl.ThreeEgl
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Semaphore
@@ -15,26 +14,33 @@ class CustomRender(
     private val glWidth: Int,
     private val glHeight: Int,
 ) {
-    private var disposed = false
+
+    var disposed = false
 
     private lateinit var worker: RenderWorker
     private lateinit var eglEnv: EglEnv
 
-    private val renderThread: HandlerThread = HandlerThread("flutterGlCustomRender")
-    private val renderHandler: Handler
+    companion object {
+        var shareEglEnv: EglEnv? = null
+        var dartEglEnv: EglEnv? = null
+
+        var renderThread: HandlerThread? = null
+        var renderHandler : Handler? = null
+    }
 
     init {
-
-        renderThread.start()
-        renderHandler = Handler(renderThread.looper)
-
+        if(renderThread == null) {
+            renderThread = HandlerThread("flutterGlCustomRender")
+            renderThread!!.start()
+            renderHandler = Handler(renderThread!!.looper)
+        }
         this.executeSync {
-            setup(entry.surfaceTexture())
+            setup()
         }
     }
 
-    private fun setup(surfaceTexture: SurfaceTexture) {
-        this.initEGL(surfaceTexture)
+    fun setup() {
+        this.initEGL()
 
         this.worker = RenderWorker()
         this.worker.setup()
@@ -53,7 +59,7 @@ class CustomRender(
 
             glFinish()
 
-            checkGlError("update texture 01")
+            checkGlError()
             eglEnv.swapBuffers()
         }
 
@@ -61,60 +67,79 @@ class CustomRender(
     }
 
 
-    private fun initEGL(surfaceTexture: SurfaceTexture) {
+    private fun initEGL() {
 
-        surfaceTexture.setDefaultBufferSize(glWidth, glHeight)
+        if(shareEglEnv == null) {
+            shareEglEnv = EglEnv()
+            shareEglEnv!!.setupRender()
+            ThreeEgl.setContext("shareContext", shareEglEnv!!.eglContext)
+        }
+
+        entry.surfaceTexture().setDefaultBufferSize(glWidth, glHeight)
 
         eglEnv = EglEnv()
-        eglEnv.setupRender(eglEnv.eglContext)
-        ThreeEgl.setContext("shareContext", eglEnv.eglContext)
-
-        eglEnv.buildWindowSurface(surfaceTexture)
+        eglEnv.setupRender(shareEglEnv!!.eglContext)
+        eglEnv.buildWindowSurface(entry.surfaceTexture())
         eglEnv.makeCurrent()
 
+        if(dartEglEnv == null) {
+            dartEglEnv = EglEnv()
+            dartEglEnv!!.setupRender(shareEglEnv!!.eglContext)
+            dartEglEnv!!.buildOffScreenSurface(glWidth, glHeight)
+        }
     }
 
 
-    private fun executeSync(task: () -> Unit) {
+    fun executeSync(task: () -> Unit) {
         val semaphore = Semaphore(0)
-        renderHandler.post {
+        renderHandler!!.post {
             task.invoke()
             semaphore.release()
         }
         semaphore.acquire()
     }
 
-    private fun execute(task: () -> Unit) {
-        renderHandler.post {
+    fun execute(task: () -> Unit) {
+        renderHandler!!.post {
             task.invoke()
         }
     }
 
-    fun getEgl(): List<Long> {
+    fun getEgl() : List<Long> {
         val res = mutableListOf<Long>()
-        val egls = this.eglEnv.getEgl().toMutableList()
 
-        res.addAll(egls)
+        val egls = this.eglEnv.getEgl().toMutableList()
+        val dartEgls = dartEglEnv!!.getEgl().toMutableList()
+
+        res.addAll( egls )
+        res.addAll( dartEgls )
+
         return res
     }
 
     fun dispose() {
-        Log.d("CustomRender", "dispose: releasing surface texture")
-        entry.release()
+        this.worker.dispose()
 
-        eglEnv.dispose()
-        worker.dispose()
+        this.eglEnv.dispose()
+
+        dartEglEnv?.dispose()
+        dartEglEnv = null
+
+        shareEglEnv?.dispose()
+        shareEglEnv = null
+
+
+        entry.release()
 
         disposed = true
     }
 
 
-    //检查每一步操作是否有错误的方法
-    private fun checkGlError(op: String) {
+    private fun checkGlError() {
         val error: Int = glGetError()
         if (error != GL_NO_ERROR) {
-            println("ES20_ERROR ${op}: glError ${error}")
-            throw RuntimeException("$op: glError $error")
+            println("ES20_ERROR update texture: glError $error")
+            throw RuntimeException("glError $error")
         }
     }
 }
