@@ -71,6 +71,7 @@ public class CustomRender: NSObject, FlutterTexture {
   }
   
   func updateTexture(sourceTexture: Int64) -> Bool {
+    CustomRender.eglEnv?.makeCurrent();
  
     glBindFramebuffer(GLenum(GL_FRAMEBUFFER), frameBuffer);
     
