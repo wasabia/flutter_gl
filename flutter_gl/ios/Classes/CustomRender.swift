@@ -231,7 +231,7 @@ public class CustomRender: NSObject, FlutterTexture {
     
 //    ThreeEgl.remove(key: self.eglEnv!.getContext());
       ThreeEgl.remove(key: CustomRender.dartEglEnv!.getContext());
-    ThreeEgl.remove(key: 3);
+//    ThreeEgl.remove(key: 3);
 
 //      CustomRender.eAGLShareContext = nil;
     
